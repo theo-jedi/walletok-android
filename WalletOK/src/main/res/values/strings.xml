@@ -4,4 +4,6 @@
     <string name="welcome_title">Добро пожаловать\nв КошелОК </string>
     <string name="welcome_text">Тут вы сможете контролировать свои\nдоходы и расходы</string>
     <string name="sign_in">Войти с помощью Google</string>
+
+    <string name="server_client_id">1046661703173–2qu6jhfvbko49d4p5gp0asla0s05ijk6.apps.googleusercontent.com</string>
 </resources>
