@@ -6,4 +6,5 @@
     <string name="expenses_text_view">Расход</string>
     <string name="no_entries_text_view">У вас пока нет записей</string>
     <string name="add_operation">Добавить операцию</string>
+    <string name="settings">Settings</string>
 </resources>
