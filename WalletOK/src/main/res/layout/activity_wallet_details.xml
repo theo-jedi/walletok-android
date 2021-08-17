@@ -31,7 +31,7 @@
 
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/walletNameTextView"
         style="@style/TextAppearance.MaterialComponents.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/walletMoneyTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
@@ -51,7 +51,7 @@
         android:textColor="?attr/colorOnSurface"
         android:textSize="32sp"
         app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/walletNameTextView" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardIncome"
@@ -64,7 +64,7 @@
         app:cardCornerRadius="8dp"
         app:layout_constraintEnd_toStartOf="@id/cardExpenses"
         app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-        app:layout_constraintTop_toBottomOf="@+id/textView2">
+        app:layout_constraintTop_toBottomOf="@+id/walletMoneyTextView">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -190,6 +190,7 @@
         android:layout_height="48dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/dark_gray"
+        app:rippleColor="@android:color/darker_gray"
         android:text="@string/add_operation"
         android:textAllCaps="false"
         android:textSize="16sp"
