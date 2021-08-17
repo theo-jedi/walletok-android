@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">WalletOK</string>
+    <string name="wallet_name_textview">Кошелек 1</string>
+    <string name="amount_of_money_textview">0 ₽</string>
+    <string name="income_text_view">Доход</string>
+    <string name="expenses_text_view">Расход</string>
+    <string name="no_entries_text_view">У вас пока нет записей</string>
+    <string name="add_operation">Добавить операцию</string>
 </resources>
