@@ -15,20 +15,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
 class AuthActivity : AppCompatActivity() {
 
-    private val authorizationHandler =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
-
-            if (result?.resultCode == RESULT_OK) {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                val account = task.result
-
-                onSignedIn(this, account)
-            } else {
-                showErrorToast()
-            }
-
-        }
-
     companion object {
         fun newIntent(context: Context): Intent {
             return Intent(context, AuthActivity::class.java)
@@ -47,6 +33,20 @@ class AuthActivity : AppCompatActivity() {
             // todo start next activity
         }
     }
+
+    private val authorizationHandler =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
+
+            if (result?.resultCode == RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                val account = task.result
+
+                onSignedIn(this, account)
+            } else {
+                showErrorToast()
+            }
+
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
