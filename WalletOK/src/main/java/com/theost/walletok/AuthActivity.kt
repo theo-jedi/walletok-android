@@ -19,19 +19,6 @@ class AuthActivity : AppCompatActivity() {
         fun newIntent(context: Context): Intent {
             return Intent(context, AuthActivity::class.java)
         }
-
-        fun onLastSignedIn(context: Context): Boolean {
-            val account = GoogleSignIn.getLastSignedInAccount(context)
-            if (account != null) {
-                onSignedIn(context, account)
-                return true
-            }
-            return false
-        }
-
-        fun onSignedIn(context: Context, account: GoogleSignInAccount?) {
-            // todo start next activity
-        }
     }
 
     private val authorizationHandler =
@@ -41,7 +28,7 @@ class AuthActivity : AppCompatActivity() {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 val account = task.result
 
-                onSignedIn(this, account)
+                onSignedIn(account)
             } else {
                 showErrorToast()
             }
@@ -66,6 +53,10 @@ class AuthActivity : AppCompatActivity() {
         val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
         return mGoogleSignInClient.signInIntent
+    }
+
+    private fun onSignedIn(account: GoogleSignInAccount?) {
+        // todo start next activity
     }
 
     private fun showErrorToast() {

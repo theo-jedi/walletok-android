@@ -1,18 +1,31 @@
 package com.theost.walletok
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.theost.walletok.utils.AuthUtils
 
 
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!AuthActivity.onLastSignedIn(this)) {
-            val intent = AuthActivity.newIntent(this)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK and Intent.FLAG_ACTIVITY_NO_HISTORY
-            startActivity(intent)
-        }
+        onLastSignedIn()
         finish()
+    }
+
+    private fun onLastSignedIn() {
+        val account = AuthUtils.getLastSignedInAccount(this)
+        if (account == null) {
+            val intent = AuthActivity.newIntent(this)
+            startActivity(intent)
+        } else {
+            onSignedIn(account)
+        }
+    }
+
+    private fun onSignedIn(account: GoogleSignInAccount?) {
+        // todo start next activity
     }
 }
