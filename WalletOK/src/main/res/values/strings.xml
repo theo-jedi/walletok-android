@@ -11,4 +11,6 @@
     <string name="welcome_title">Добро пожаловать\nв КошелОК </string>
     <string name="welcome_text">Тут вы сможете контролировать свои\nдоходы и расходы</string>
     <string name="sign_in">Войти с помощью Google</string>
+
+    <string name="error_sign_in">Ошибка авторизации</string>
 </resources>
