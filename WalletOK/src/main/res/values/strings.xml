@@ -8,4 +8,7 @@
     <string name="add_operation">Добавить операцию</string>
     <string name="settings">Settings</string>
     <string name="button_clicked_toast">Нажата кнопка</string>
+    <string name="welcome_title">Добро пожаловать\nв КошелОК </string>
+    <string name="welcome_text">Тут вы сможете контролировать свои\nдоходы и расходы</string>
+    <string name="sign_in">Войти с помощью Google</string>
 </resources>
