@@ -44,9 +44,12 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
+    private fun showErrorToast() {
+        Toast.makeText(this, getString(R.string.error_sign_in), Toast.LENGTH_SHORT).show()
+    }
+
     private fun getSignInIntent(): Intent {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.server_client_id))
             .requestEmail()
             .build()
 
@@ -57,10 +60,6 @@ class AuthActivity : AppCompatActivity() {
 
     private fun onSignedIn(account: GoogleSignInAccount?) {
         // todo start next activity
-    }
-
-    private fun showErrorToast() {
-        Toast.makeText(this, getString(R.string.error_sign_in), Toast.LENGTH_SHORT).show()
     }
 
 }

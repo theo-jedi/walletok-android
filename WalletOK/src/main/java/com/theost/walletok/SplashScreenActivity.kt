@@ -15,11 +15,15 @@ class SplashScreenActivity : AppCompatActivity() {
     private fun onLastSignedIn() {
         val account = AuthUtils.getLastSignedInAccount(this)
         if (account == null) {
-            val intent = AuthActivity.newIntent(this)
-            startActivity(intent)
+            startAuthActivity()
         } else {
             onSignedIn(account)
         }
+    }
+
+    private fun startAuthActivity() {
+        val intent = AuthActivity.newIntent(this)
+        startActivity(intent)
     }
 
     private fun onSignedIn(account: GoogleSignInAccount?) {
