@@ -18,9 +18,7 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(
-        savedInstanceState: Bundle?
-    ) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWalletDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -30,7 +28,8 @@ class WalletDetailsActivity : AppCompatActivity() {
             finish()
         }
         binding.addOperationBtn.setOnClickListener {
-            Toast.makeText(this, "Нажата кнопка", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.button_clicked_toast), Toast.LENGTH_SHORT)
+                .show()
         }
     }
 

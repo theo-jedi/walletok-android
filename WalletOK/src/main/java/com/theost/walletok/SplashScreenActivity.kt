@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState);
-        startActivity(MainActivity.newIntent(this))
+        startActivity(WalletDetailsActivity.newIntent(this))
         finish()
     }
 }
