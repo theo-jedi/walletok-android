@@ -51,17 +51,10 @@
         android:id="@+id/auth_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/dark_gray"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
         android:text="@string/sign_in"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:cornerRadius="8dp"
+        style="@style/BlackButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:rippleColor="@android:color/darker_gray" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
