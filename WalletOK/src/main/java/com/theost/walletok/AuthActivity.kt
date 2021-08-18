@@ -22,7 +22,7 @@ class AuthActivity : AppCompatActivity() {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 val account = task.result
 
-                onSignedIn(account)
+                onSignedIn(this, account)
             } else {
                 showErrorToast()
             }
@@ -32,6 +32,19 @@ class AuthActivity : AppCompatActivity() {
     companion object {
         fun newIntent(context: Context): Intent {
             return Intent(context, AuthActivity::class.java)
+        }
+
+        fun onLastSignedIn(context: Context): Boolean {
+            val account = GoogleSignIn.getLastSignedInAccount(context)
+            if (account != null) {
+                onSignedIn(context, account)
+                return true
+            }
+            return false
+        }
+
+        fun onSignedIn(context: Context, account: GoogleSignInAccount?) {
+            // todo start next activity
         }
     }
 
@@ -44,12 +57,6 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account != null) onSignedIn(account)
-    }
-
     private fun getSignInIntent(): Intent {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.server_client_id))
@@ -59,10 +66,6 @@ class AuthActivity : AppCompatActivity() {
         val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
         return mGoogleSignInClient.signInIntent
-    }
-
-    private fun onSignedIn(account: GoogleSignInAccount?) {
-        // todo start next activity
     }
 
     private fun showErrorToast() {
