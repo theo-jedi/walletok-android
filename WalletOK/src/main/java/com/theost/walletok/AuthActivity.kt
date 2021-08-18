@@ -19,17 +19,18 @@ class AuthActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
 
             if (result?.resultCode == RESULT_OK) {
-
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 val account = task.result
 
-                signIn(account)
+                onSignedIn(account)
+            } else {
+                showErrorToast()
             }
 
         }
 
     companion object {
-        fun newIntent(context: Context) : Intent {
+        fun newIntent(context: Context): Intent {
             return Intent(context, AuthActivity::class.java)
         }
     }
@@ -38,17 +39,18 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
-        findViewById<AppCompatButton>(R.id.auth_button).setOnClickListener { authorizationHandler.launch(getSignInIntent()) }
+        findViewById<AppCompatButton>(R.id.auth_button).setOnClickListener {
+            authorizationHandler.launch(getSignInIntent())
+        }
     }
 
     override fun onStart() {
         super.onStart()
         val account = GoogleSignIn.getLastSignedInAccount(this)
-        signIn(account)
+        if (account != null) onSignedIn(account)
     }
 
     private fun getSignInIntent(): Intent {
-
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.server_client_id))
             .requestEmail()
@@ -59,12 +61,12 @@ class AuthActivity : AppCompatActivity() {
         return mGoogleSignInClient.signInIntent
     }
 
-    private fun signIn(account: GoogleSignInAccount?) {
-        if (account != null) {
-            // Toast for debug only
-            Toast.makeText(this, "You're authorized", Toast.LENGTH_SHORT).show()
-            // start next activity
-        }
+    private fun onSignedIn(account: GoogleSignInAccount?) {
+        // todo start next activity
+    }
+
+    private fun showErrorToast() {
+        Toast.makeText(this, getString(R.string.error_sign_in), Toast.LENGTH_SHORT).show()
     }
 
 }
