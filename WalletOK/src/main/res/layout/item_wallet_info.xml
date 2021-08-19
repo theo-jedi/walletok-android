@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="15dp">
 
     <TextView
         android:id="@+id/walletNameTextView"
         style="@style/TextAppearance.MaterialComponents.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/wallet_name_textview"
         android:textColor="?attr/colorOnSurface"
         android:textSize="13sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/wallet_name_textview" />
 
     <TextView
         android:id="@+id/walletMoneyTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:text="@string/amount_of_money_textview"
         android:textColor="?attr/colorOnSurface"
         android:textSize="32sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/walletNameTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/walletNameTextView"
+        tools:text="@string/amount_of_money_textview" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardIncome"
@@ -77,13 +80,13 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/amount_of_money_textview"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/incomeTextView" />
+                app:layout_constraintTop_toBottomOf="@id/incomeTextView"
+                tools:text="@string/amount_of_money_textview" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
@@ -137,13 +140,13 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/amount_of_money_textview"
                 android:textColor="?attr/colorOnPrimary"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/expensesTextView" />
+                app:layout_constraintTop_toBottomOf="@id/expensesTextView"
+                tools:text="@string/amount_of_money_textview" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>

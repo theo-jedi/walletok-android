@@ -6,7 +6,10 @@ import android.os.Bundle
 import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
+import com.theost.walletok.delegates.*
+
 
 class WalletDetailsActivity : AppCompatActivity() {
 
@@ -18,11 +21,45 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
     }
 
+    private val data by lazy(LazyThreadSafetyMode.NONE) {
+        listOf(
+            HeaderContent(
+                walletName = getString(R.string.wallet_name_textview),
+                walletMoney = getString(R.string.amount_of_money_textview),
+                walletGain = getString(R.string.amount_of_money_textview),
+                walletLose = getString(R.string.amount_of_money_textview),
+                walletLoseLimit = getString(R.string.wallet_lose_limit_text_view)
+            ),
+            "Сегодня",
+        ).plus((0..10).map {
+            TransactionContent(
+                categoryName = getString(R.string.salary),
+                iconResId = R.drawable.ic_round_card,
+                time = getString(R.string.twelve_o_clock),
+                moneyAmount = it.toString(),
+                transactionType = getString(R.string.income_text_view)
+            )
+        })
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWalletDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+        val walletDetailsAdapter = WalletDetailsAdapter()
+        walletDetailsAdapter.apply {
+            addDelegate(WalletDetailsHeaderAdapterDelegate())
+            addDelegate(DateAdapterDelegate())
+            addDelegate(TransactionAdapterDelegate())
+            addDelegate(EmptyListAdapterDelegate())
+        }
+        walletDetailsAdapter.setData(data)
+        binding.recycler.apply {
+            adapter = walletDetailsAdapter
+            layoutManager = LinearLayoutManager(this@WalletDetailsActivity)
+            setHasFixedSize(true)
+        }
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         binding.toolbar.setNavigationOnClickListener {
             finish()

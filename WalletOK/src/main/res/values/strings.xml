@@ -11,4 +11,7 @@
     <string name="welcome_title">Добро пожаловать\nв КошелОК </string>
     <string name="welcome_text">Тут вы сможете контролировать свои\nдоходы и расходы</string>
     <string name="sign_in">Войти с помощью Google</string>
+    <string name="salary">Зарплата</string>
+    <string name="twelve_o_clock">12:00</string>
+    <string name="wallet_lose_limit_text_view">100000</string>
 </resources>
