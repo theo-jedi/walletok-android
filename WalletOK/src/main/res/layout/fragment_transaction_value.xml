@@ -28,7 +28,9 @@
             android:id="@+id/input_value"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:inputType="numberDecimal" />
+            android:inputType="numberDecimal"
+            android:maxLength="22"
+            android:text="@string/zero" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

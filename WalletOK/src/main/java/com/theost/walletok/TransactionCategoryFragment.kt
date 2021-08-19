@@ -9,8 +9,16 @@ import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
 import com.theost.walletok.utils.ViewUtils
 import com.theost.walletok.widgets.TransactionCategoryAdapter
+import com.theost.walletok.widgets.TransactionListener
+import com.theost.walletok.widgets.TransactionTypeAdapter
 
 class TransactionCategoryFragment : Fragment() {
+
+    companion object {
+        fun newFragment(): Fragment {
+            return TransactionCategoryFragment()
+        }
+    }
 
     private var _binding: FragmentTransactionCategoryBinding? = null
     private val binding get() = _binding!!
@@ -30,11 +38,15 @@ class TransactionCategoryFragment : Fragment() {
         }
 
         binding.submitButton.setOnClickListener {
-            nextFragment()
+            setCurrentCategory()
         }
 
+        var selectedCategory = ""
+        val bundle = this.arguments
+        if (bundle != null) selectedCategory = bundle.getString(TransactionActivity.TRANSACTION_DATA_KEY, "")
+
         val categories = listOf("Зарплата", "Подработка", "Капитализация") //
-        binding.listCategory.adapter = TransactionCategoryAdapter(categories) {
+        binding.listCategory.adapter = TransactionCategoryAdapter(categories, selectedCategory) {
             onItemClicked(it)
         }
 
@@ -57,11 +69,10 @@ class TransactionCategoryFragment : Fragment() {
         }
     }
 
-    private fun nextFragment() {
-        val transaction = activity?.supportFragmentManager?.beginTransaction()
-        transaction?.replace(R.id.creation_fragment_container, TransactionEditFragment())
-        transaction?.disallowAddToBackStack()
-        transaction?.commit()
+    private fun setCurrentCategory() {
+        val category = (binding.listCategory.adapter as TransactionCategoryAdapter).getItem(lastSelected)
+        (activity as TransactionListener).onSetCategory(category)
+        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
 
 }

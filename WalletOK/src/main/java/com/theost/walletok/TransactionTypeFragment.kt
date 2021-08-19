@@ -5,14 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.children
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.utils.ViewUtils
+import com.theost.walletok.widgets.TransactionListener
 import com.theost.walletok.widgets.TransactionTypeAdapter
 
 class TransactionTypeFragment : Fragment() {
+
+    companion object {
+        fun newFragment(): Fragment {
+            return TransactionTypeFragment()
+        }
+    }
 
     private var _binding: FragmentTransactionTypeBinding? = null
     private val binding get() = _binding!!
@@ -32,11 +38,15 @@ class TransactionTypeFragment : Fragment() {
         }
 
         binding.submitButton.setOnClickListener {
-            nextFragment()
+            setCurrentType()
         }
 
+        var selectedType = ""
+        val bundle = this.arguments
+        if (bundle != null) selectedType = bundle.getString(TransactionActivity.TRANSACTION_DATA_KEY, "")
+
         val types = listOf("Доходы", "Расходы")
-        binding.listTypes.adapter = TransactionTypeAdapter(types) {
+        binding.listTypes.adapter = TransactionTypeAdapter(types, selectedType) {
             onItemClicked(it)
         }
 
@@ -59,11 +69,10 @@ class TransactionTypeFragment : Fragment() {
         }
     }
 
-    private fun nextFragment() {
-        val transaction = activity?.supportFragmentManager?.beginTransaction()
-        transaction?.replace(R.id.creation_fragment_container, TransactionCategoryFragment())
-        transaction?.disallowAddToBackStack()
-        transaction?.commit()
+    private fun setCurrentType() {
+        val type = (binding.listTypes.adapter as TransactionTypeAdapter).getItem(lastSelected)
+        (activity as TransactionListener).onSetType(type)
+        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
 
 }

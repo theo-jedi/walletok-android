@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.R
 
-class TransactionTypeAdapter(private val list: List<String>, private val clickListener: (position: Int) -> Unit) :
+class TransactionTypeAdapter(private val list: List<String>, private val selectedType: String, private val clickListener: (position: Int) -> Unit) :
     RecyclerView.Adapter<TransactionTypeAdapter.TransactionTypeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionTypeViewHolder {
@@ -23,6 +23,8 @@ class TransactionTypeAdapter(private val list: List<String>, private val clickLi
     }
 
     override fun getItemCount(): Int = list.size
+
+    fun getItem(position: Int) : String = list[position]
 
     inner class TransactionTypeViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.item_list_type, parent, false)),
@@ -43,6 +45,9 @@ class TransactionTypeAdapter(private val list: List<String>, private val clickLi
         fun bind(transaction: String) {
             itemView.findViewById<ImageView>(R.id.type_check).visibility = View.INVISIBLE
             mTypeView?.text = transaction
+            if (mTypeView?.text == selectedType) {
+                itemView.callOnClick()
+            }
         }
 
     }

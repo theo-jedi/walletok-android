@@ -11,6 +11,7 @@
     <string name="welcome_text">Тут вы сможете контролировать свои\nдоходы и расходы</string>
     <string name="sign_in">Войти с помощью Google</string>
     <string name="submit">Готово</string>
+    <string name="next">Далее</string>
 
     <string name="choose_transaction_type">Выберите тип операции</string>
     <string name="choose_transaction_category">Выберите категорию</string>
@@ -18,6 +19,7 @@
     <string name="enter_value">Введите сумму</string>
     <string name="transaction_value">Сумма операции</string>
     <string name="new_transaction">Новая операция</string>
+    <string name="edit_transaction">Новая операция</string>
     
     <string name="basic">Основные</string>
     <string name="additional">Дополнительные настройки</string>
@@ -27,4 +29,7 @@
     <string name="transaction_date">Дата операции</string>
 
     <string name="error_sign_in">Ошибка авторизации</string>
+
+    <string name="zero">0</string>
+    <string name="wallet_rub">₽</string>
 </resources>
