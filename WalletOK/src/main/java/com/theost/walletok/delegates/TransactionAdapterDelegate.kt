@@ -47,5 +47,6 @@ data class TransactionContent(
     val categoryName: String,
     val transactionType: String,
     val moneyAmount: String,
-    val time: String
+    val time: String,
+    val date: String
 )

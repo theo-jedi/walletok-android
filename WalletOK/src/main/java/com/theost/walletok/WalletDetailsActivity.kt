@@ -2,6 +2,7 @@ package com.theost.walletok
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.widget.Toast
@@ -9,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class WalletDetailsActivity : AppCompatActivity() {
@@ -21,6 +24,19 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
     }
 
+    private val transactions by lazy(LazyThreadSafetyMode.NONE) {
+        (0..9).map {
+            TransactionContent(
+                categoryName = getString(R.string.salary),
+                iconResId = R.drawable.ic_round_card,
+                time = getString(R.string.twelve_o_clock),
+                date = "2021/08/1${it}",
+                moneyAmount = getString(R.string.amount_of_money_textview),
+                transactionType = getString(R.string.income_text_view)
+            )
+        }
+    }
+
     private val data by lazy(LazyThreadSafetyMode.NONE) {
         listOf(
             HeaderContent(
@@ -29,17 +45,38 @@ class WalletDetailsActivity : AppCompatActivity() {
                 walletGain = getString(R.string.amount_of_money_textview),
                 walletLose = getString(R.string.amount_of_money_textview),
                 walletLoseLimit = getString(R.string.wallet_lose_limit_text_view)
-            ),
-            "Сегодня",
-        ).plus((0..10).map {
-            TransactionContent(
-                categoryName = getString(R.string.salary),
-                iconResId = R.drawable.ic_round_card,
-                time = getString(R.string.twelve_o_clock),
-                moneyAmount = it.toString(),
-                transactionType = getString(R.string.income_text_view)
             )
-        })
+        ).plus(transactionItems(transactions))
+    }
+
+    private fun transactionItems(transactions: List<TransactionContent>): List<Any> {
+        val result = mutableListOf<Any>()
+        val currentLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            resources.configuration.locales[0]
+        } else {
+            resources.configuration.locale
+        }
+        val transactionDateFormat = SimpleDateFormat("yyyy/MM/dd", currentLocale)
+        val dateItemDateFormat = SimpleDateFormat("dd MMMM", currentLocale)
+        val calendar = Calendar.getInstance()
+        val today = transactionDateFormat.format(calendar.time)
+        calendar.add(Calendar.DATE, -1)
+        val yesterday = transactionDateFormat.format(calendar.time)
+        var lastItemDate = ""
+        transactions.sortedByDescending { it.date }.forEach {
+            if (it.date != lastItemDate) {
+                result.add(
+                    when (it.date) {
+                        today -> getString(R.string.today)
+                        yesterday -> getString(R.string.yesterday)
+                        else -> dateItemDateFormat.format(transactionDateFormat.parse(it.date)!!)
+                    }
+                )
+                lastItemDate = it.date
+            }
+            result.add(it)
+        }
+        return result
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

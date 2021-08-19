@@ -14,4 +14,6 @@
     <string name="salary">Зарплата</string>
     <string name="twelve_o_clock">12:00</string>
     <string name="wallet_lose_limit_text_view">100000</string>
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
 </resources>
