@@ -10,7 +10,6 @@ import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
 import com.theost.walletok.utils.ViewUtils
 import com.theost.walletok.widgets.TransactionCategoryAdapter
 import com.theost.walletok.widgets.TransactionListener
-import com.theost.walletok.widgets.TransactionTypeAdapter
 
 class TransactionCategoryFragment : Fragment() {
 
@@ -41,11 +40,11 @@ class TransactionCategoryFragment : Fragment() {
             setCurrentCategory()
         }
 
-        var selectedCategory = ""
-        val bundle = this.arguments
-        if (bundle != null) selectedCategory = bundle.getString(TransactionActivity.TRANSACTION_DATA_KEY, "")
+        val bundle = arguments
+        val selectedCategory = if (bundle != null)
+            bundle.getString(TransactionActivity.TRANSACTION_CATEGORY_KEY, "") else ""
 
-        val categories = listOf("Зарплата", "Подработка", "Капитализация") //
+        val categories = listOf("Зарплата", "Подработка", "Капитализация")
         binding.listCategory.adapter = TransactionCategoryAdapter(categories, selectedCategory) {
             onItemClicked(it)
         }
@@ -71,7 +70,7 @@ class TransactionCategoryFragment : Fragment() {
 
     private fun setCurrentCategory() {
         val category = (binding.listCategory.adapter as TransactionCategoryAdapter).getItem(lastSelected)
-        (activity as TransactionListener).onSetCategory(category)
+        (activity as TransactionListener).onSetTransactionData(category, TransactionActivity.TRANSACTION_CATEGORY_KEY)
         activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
 

@@ -29,12 +29,6 @@ class TransactionEditFragment : Fragment() {
         _binding = FragmentTransactionEditBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
-        val bundle = this.arguments
-        if (bundle != null) {
-            val title = bundle.getString(TransactionActivity.TRANSACTION_DATA_KEY, "")
-            if (title != "") binding.toolbar.title = title
-        }
-
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         binding.toolbar.setNavigationOnClickListener {
             activity?.onBackPressed()
@@ -44,23 +38,11 @@ class TransactionEditFragment : Fragment() {
             (activity as TransactionListener).onCreateTransaction()
         }
 
-        val value = (activity as TransactionActivity).transaction.value + " " + getString(R.string.wallet_rub)
-        binding.transactionValue.text = value
+        binding.layoutValue.setOnClickListener { updateCurrentData(TransactionActivity.TRANSACTION_VALUE_KEY) }
+        binding.layoutType.setOnClickListener { updateCurrentData(TransactionActivity.TRANSACTION_TYPE_KEY) }
+        binding.layoutCategory.setOnClickListener { updateCurrentData(TransactionActivity.TRANSACTION_CATEGORY_KEY) }
 
-        val type = (activity as TransactionActivity).transaction.type
-        binding.transactionType.text = type
-
-        val text = (activity as TransactionActivity).transaction.category
-        binding.transactionCategory.text = text
-
-        binding.layoutValue.setOnClickListener { updateCurrentValue() }
-        binding.layoutType.setOnClickListener { updateCurrentType() }
-        binding.layoutCategory.setOnClickListener { updateCurrentCategory() }
-
-        if ((activity as TransactionActivity).transaction.date == "") {
-            val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
-            binding.transactionDate.text = currentDate
-        }
+        loadTransactionData()
 
         return binding.root
     }
@@ -70,18 +52,24 @@ class TransactionEditFragment : Fragment() {
         _binding = null
     }
 
-    private fun updateCurrentValue() {
-        (activity as TransactionListener).onEditValue()
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
+    private fun loadTransactionData() {
+        val value = (activity as TransactionActivity).transaction.value + " " + getString(R.string.wallet_rub)
+        binding.transactionValue.text = value
+
+        val type = (activity as TransactionActivity).transaction.type
+        binding.transactionType.text = type
+
+        val text = (activity as TransactionActivity).transaction.category
+        binding.transactionCategory.text = text
+
+        if ((activity as TransactionActivity).transaction.date == "") {
+            val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+            binding.transactionDate.text = currentDate
+        }
     }
 
-    private fun updateCurrentType() {
-        (activity as TransactionListener).onEditType()
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
-    }
-
-    private fun updateCurrentCategory() {
-        (activity as TransactionListener).onEditCategory()
+    private fun updateCurrentData(key: String) {
+        (activity as TransactionListener).onEditTransactionData(key)
         activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
 

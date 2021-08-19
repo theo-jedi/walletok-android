@@ -45,7 +45,6 @@ class TransactionCategoryAdapter(private val list: List<String>, private val sel
         fun bind(transaction: String) {
             itemView.findViewById<ImageView>(R.id.category_check).visibility = View.INVISIBLE
             mCategoryView?.text = transaction
-            mCategoryView?.text = transaction
             if (mCategoryView?.text == selectedCategory) {
                 itemView.callOnClick()
             }

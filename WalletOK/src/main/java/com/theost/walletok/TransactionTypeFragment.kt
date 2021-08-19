@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.utils.ViewUtils
@@ -41,9 +40,9 @@ class TransactionTypeFragment : Fragment() {
             setCurrentType()
         }
 
-        var selectedType = ""
-        val bundle = this.arguments
-        if (bundle != null) selectedType = bundle.getString(TransactionActivity.TRANSACTION_DATA_KEY, "")
+        val bundle = arguments
+        val selectedType = if (bundle != null)
+            bundle.getString(TransactionActivity.TRANSACTION_TYPE_KEY, "") else ""
 
         val types = listOf("Доходы", "Расходы")
         binding.listTypes.adapter = TransactionTypeAdapter(types, selectedType) {
@@ -71,7 +70,7 @@ class TransactionTypeFragment : Fragment() {
 
     private fun setCurrentType() {
         val type = (binding.listTypes.adapter as TransactionTypeAdapter).getItem(lastSelected)
-        (activity as TransactionListener).onSetType(type)
+        (activity as TransactionListener).onSetTransactionData(type, TransactionActivity.TRANSACTION_TYPE_KEY)
         activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
 

@@ -13,7 +13,9 @@ class TransactionActivity : FragmentActivity(), TransactionListener {
     val transaction = Transaction("", "", "", "")
 
     companion object {
-        const val TRANSACTION_DATA_KEY = "transaction_data"
+        const val TRANSACTION_VALUE_KEY = "transaction_value"
+        const val TRANSACTION_TYPE_KEY = "transaction_type"
+        const val TRANSACTION_CATEGORY_KEY = "transaction_category"
 
         fun newIntent(context: Context): Intent {
             return Intent(context, TransactionActivity::class.java)
@@ -25,43 +27,8 @@ class TransactionActivity : FragmentActivity(), TransactionListener {
         setContentView(R.layout.activity_creation)
 
         if (savedInstanceState == null) {
-            startTransactionValueFragment()
+            startFragment(TransactionValueFragment.newFragment())
         }
-    }
-
-    override fun onSetValue(value: String) {
-        transaction.value = value
-        if (transaction.isFilled()) {
-            startTransactionEditFragment()
-        } else {
-            startTransactionTypeFragment()
-        }
-    }
-
-    override fun onSetType(type: String) {
-        transaction.type = type
-        if (transaction.isFilled()) {
-            startTransactionEditFragment()
-        } else {
-            startTransactionCategoryFragment()
-        }
-    }
-
-    override fun onSetCategory(category: String) {
-        transaction.category = category
-        startTransactionEditFragment()
-    }
-
-    override fun onEditValue() {
-        startTransactionValueFragment()
-    }
-
-    override fun onEditType() {
-        startTransactionTypeFragment()
-    }
-
-    override fun onEditCategory() {
-        startTransactionCategoryFragment()
     }
 
     override fun onCreateTransaction() {
@@ -72,25 +39,41 @@ class TransactionActivity : FragmentActivity(), TransactionListener {
         finish()
     }
 
-    private fun startTransactionValueFragment() {
-        startFragment(TransactionValueFragment.newFragment(), transaction.value)
+    override fun onSetTransactionData(data: String, key: String) {
+        when (key) {
+            TRANSACTION_VALUE_KEY -> transaction.value = data
+            TRANSACTION_TYPE_KEY -> transaction.type = data
+            TRANSACTION_CATEGORY_KEY -> transaction.category = data
+        }
+
+        if (!transaction.isFilled()) {
+            when (key) {
+                TRANSACTION_VALUE_KEY -> startFragment(TransactionTypeFragment.newFragment())
+                TRANSACTION_TYPE_KEY -> startFragment(TransactionCategoryFragment.newFragment())
+                TRANSACTION_CATEGORY_KEY -> startFragment(TransactionEditFragment.newFragment())
+            }
+        } else {
+            startFragment(TransactionEditFragment.newFragment())
+        }
     }
 
-    private fun startTransactionTypeFragment() {
-        startFragment(TransactionTypeFragment.newFragment(), transaction.type)
+    override fun onEditTransactionData(key: String) {
+        when (key) {
+            TRANSACTION_VALUE_KEY -> startBundleFragment(TransactionValueFragment.newFragment(), transaction.value, key)
+            TRANSACTION_TYPE_KEY -> startBundleFragment(TransactionTypeFragment.newFragment(), transaction.type, key)
+            TRANSACTION_CATEGORY_KEY -> startBundleFragment(TransactionCategoryFragment.newFragment(), transaction.category, key)
+        }
     }
 
-    private fun startTransactionCategoryFragment() {
-        startFragment(TransactionCategoryFragment.newFragment(), transaction.category)
+    private fun startFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.creation_fragment_container, fragment)
+            .commitAllowingStateLoss()
     }
 
-    private fun startTransactionEditFragment() {
-        startFragment(TransactionEditFragment.newFragment(), "")
-    }
-
-    private fun startFragment(fragment: Fragment, data: String) {
+    private fun startBundleFragment(fragment: Fragment, data: String, key: String) {
         val bundle = Bundle()
-        bundle.putString(TRANSACTION_DATA_KEY, data)
+        bundle.putString(key, data)
         fragment.arguments = bundle
         supportFragmentManager.beginTransaction()
             .replace(R.id.creation_fragment_container, fragment)
