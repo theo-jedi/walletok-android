@@ -3,6 +3,7 @@ package com.theost.walletok
 import com.theost.walletok.data.Transaction
 import com.theost.walletok.data.TransactionCategory
 import com.theost.walletok.data.TransactionCategoryType
+import com.theost.walletok.delegates.HeaderContent
 import com.theost.walletok.delegates.TransactionContent
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,7 +30,7 @@ object TransactionItemsHelper {
         )
     }.toMutableList()
 
-    fun getTransactionItems(): List<Any> {
+    private fun getTransactionItems(): List<Any> {
         val result = mutableListOf<Any>()
         val currentLocale = Locale("ru", "RU")
 
@@ -71,4 +72,15 @@ object TransactionItemsHelper {
 
         return result
     }
+
+    fun getData() =
+        listOf(
+            HeaderContent(
+                walletName = "Кошелек 1",
+                walletMoney = "0 ₽",
+                walletGain = "0 ₽",
+                walletLose = "0 ₽",
+                walletLoseLimit = "15000 ₽"
+            )
+        ).plus(getTransactionItems())
 }

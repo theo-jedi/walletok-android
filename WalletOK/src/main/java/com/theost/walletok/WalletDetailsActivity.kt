@@ -22,18 +22,6 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private val data by lazy(LazyThreadSafetyMode.NONE) {
-        listOf(
-            HeaderContent(
-                walletName = getString(R.string.wallet_name_textview),
-                walletMoney = getString(R.string.amount_of_money_textview),
-                walletGain = getString(R.string.amount_of_money_textview),
-                walletLose = getString(R.string.amount_of_money_textview),
-                walletLoseLimit = getString(R.string.wallet_lose_limit_text_view)
-            )
-        ).plus(TransactionItemsHelper.getTransactionItems())
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWalletDetailsBinding.inflate(layoutInflater)
@@ -46,7 +34,7 @@ class WalletDetailsActivity : AppCompatActivity() {
             addDelegate(TransactionAdapterDelegate { /* TODO */ })
             addDelegate(EmptyListAdapterDelegate())
         }
-        walletDetailsAdapter.setData(data)
+        walletDetailsAdapter.setData(TransactionItemsHelper.getData())
         binding.recycler.apply {
             adapter = walletDetailsAdapter
             layoutManager = LinearLayoutManager(this@WalletDetailsActivity)
