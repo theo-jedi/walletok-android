@@ -22,7 +22,7 @@
     <string name="edit_transaction">Новая операция</string>
     
     <string name="basic">Основные</string>
-    <string name="additional">Дополнительные настройки</string>
+    <string name="additional">Дополнительная информация</string>
     <string name="value">Сумма</string>
     <string name="type">Тип</string>
     <string name="category">Категория</string>

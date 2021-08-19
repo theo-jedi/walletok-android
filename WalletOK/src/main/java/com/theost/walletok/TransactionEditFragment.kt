@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
 import com.theost.walletok.widgets.TransactionListener
+import java.text.SimpleDateFormat
+import java.util.*
 
 class TransactionEditFragment : Fragment() {
 
@@ -54,6 +56,11 @@ class TransactionEditFragment : Fragment() {
         binding.layoutValue.setOnClickListener { updateCurrentValue() }
         binding.layoutType.setOnClickListener { updateCurrentType() }
         binding.layoutCategory.setOnClickListener { updateCurrentCategory() }
+
+        if ((activity as TransactionActivity).transaction.date == "") {
+            val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+            binding.transactionDate.text = currentDate
+        }
 
         return binding.root
     }

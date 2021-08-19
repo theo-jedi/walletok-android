@@ -10,7 +10,7 @@ import com.theost.walletok.widgets.TransactionListener
 
 class TransactionActivity : FragmentActivity(), TransactionListener {
 
-    val transaction = Transaction("", "", "")
+    val transaction = Transaction("", "", "", "")
 
     companion object {
         const val TRANSACTION_DATA_KEY = "transaction_data"
