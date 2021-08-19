@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 
@@ -27,9 +26,8 @@ class WalletDetailsActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
-        binding.addOperationBtn.setOnClickListener {
-            Toast.makeText(this, getString(R.string.button_clicked_toast), Toast.LENGTH_SHORT)
-                .show()
+        binding.addTransactionBtn.setOnClickListener {
+            createTransaction()
         }
     }
 
@@ -37,4 +35,10 @@ class WalletDetailsActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.options_wallet_details, menu)
         return true
     }
+
+    private fun createTransaction() {
+        val intent = TransactionActivity.newIntent(this)
+        startActivity(intent)
+    }
+
 }

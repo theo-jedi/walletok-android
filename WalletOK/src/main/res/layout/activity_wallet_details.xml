@@ -80,7 +80,8 @@
                 app:layout_constraintEnd_toStartOf="@id/incomeTextView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/incomeTextView"
-                app:srcCompat="@drawable/ic_green_dot" />
+                app:srcCompat="@drawable/ic_green_dot"
+                android:contentDescription="@string/income_text_view" />
 
             <TextView
                 android:id="@+id/incomeTextView"
@@ -140,7 +141,8 @@
                 app:layout_constraintEnd_toStartOf="@id/expensesTextView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/expensesTextView"
-                app:srcCompat="@drawable/ic_red_dot" />
+                app:srcCompat="@drawable/ic_red_dot"
+                android:contentDescription="@string/expenses_text_view" />
 
             <TextView
                 android:id="@+id/expensesTextView"
@@ -179,17 +181,17 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="23dp"
         android:text="@string/no_entries_text_view"
-        app:layout_constraintBottom_toTopOf="@id/addOperationBtn"
+        app:layout_constraintBottom_toTopOf="@id/addTransactionBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardIncome" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/addOperationBtn"
+        android:id="@+id/addTransactionBtn"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/add_operation"
+        android:text="@string/add_transaction"
         style="@style/BlackButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/guidelineRight"
