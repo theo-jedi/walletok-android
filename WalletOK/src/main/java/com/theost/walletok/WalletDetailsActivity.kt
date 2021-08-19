@@ -27,7 +27,7 @@ class WalletDetailsActivity : AppCompatActivity() {
             finish()
         }
         binding.addTransactionBtn.setOnClickListener {
-            createTransaction()
+            editTransaction(R.string.new_transaction)
         }
     }
 
@@ -36,8 +36,9 @@ class WalletDetailsActivity : AppCompatActivity() {
         return true
     }
 
-    private fun createTransaction() {
+    private fun editTransaction(mode: Int) {
         val intent = TransactionActivity.newIntent(this)
+        intent.putExtra(TransactionActivity.TRANSACTION_MODE_KEY, mode)
         startActivity(intent)
     }
 

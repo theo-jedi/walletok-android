@@ -16,6 +16,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener {
         const val TRANSACTION_VALUE_KEY = "transaction_value"
         const val TRANSACTION_TYPE_KEY = "transaction_type"
         const val TRANSACTION_CATEGORY_KEY = "transaction_category"
+        const val TRANSACTION_MODE_KEY = "transaction_edit_mode"
 
         fun newIntent(context: Context): Intent {
             return Intent(context, TransactionActivity::class.java)
@@ -26,16 +27,19 @@ class TransactionActivity : FragmentActivity(), TransactionListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_creation)
 
+        val mode = intent.getIntExtra(TRANSACTION_MODE_KEY, R.string.new_transaction)
         if (savedInstanceState == null) {
-            startFragment(TransactionValueFragment.newFragment())
+            when (mode) {
+                R.string.new_transaction -> startFragment(TransactionValueFragment.newFragment())
+                R.string.edit_transaction -> {
+                    // todo transaction edit
+                }
+            }
         }
     }
 
     override fun onCreateTransaction() {
         // todo send to main
-        println(transaction.value)
-        println(transaction.type)
-        println(transaction.category)
         finish()
     }
 
@@ -59,9 +63,21 @@ class TransactionActivity : FragmentActivity(), TransactionListener {
 
     override fun onEditTransactionData(key: String) {
         when (key) {
-            TRANSACTION_VALUE_KEY -> startBundleFragment(TransactionValueFragment.newFragment(), transaction.value, key)
-            TRANSACTION_TYPE_KEY -> startBundleFragment(TransactionTypeFragment.newFragment(), transaction.type, key)
-            TRANSACTION_CATEGORY_KEY -> startBundleFragment(TransactionCategoryFragment.newFragment(), transaction.category, key)
+            TRANSACTION_VALUE_KEY -> startBundleFragment(
+                TransactionValueFragment.newFragment(),
+                transaction.value,
+                key
+            )
+            TRANSACTION_TYPE_KEY -> startBundleFragment(
+                TransactionTypeFragment.newFragment(),
+                transaction.type,
+                key
+            )
+            TRANSACTION_CATEGORY_KEY -> startBundleFragment(
+                TransactionCategoryFragment.newFragment(),
+                transaction.category,
+                key
+            )
         }
     }
 
