@@ -1,22 +1,22 @@
 package com.theost.walletok.delegates
 
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.AdapterDelegate
 import com.theost.walletok.databinding.ItemTransactionBinding
 
-class TransactionAdapterDelegate :
+class TransactionAdapterDelegate(val listener: View.OnClickListener) :
     AdapterDelegate {
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
         val binding = ItemTransactionBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        binding.root.setOnClickListener {
-            Log.d("HELP", "onCreateViewHolder: hello")
-        }
+        binding.root.setOnClickListener(listener)
         return ViewHolder(binding)
     }
 
@@ -33,7 +33,10 @@ class TransactionAdapterDelegate :
     class ViewHolder(private val binding: ItemTransactionBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: TransactionContent) {
-            binding.transactionIconImage.setImageResource(item.iconResId)
+            when (item.image) {
+                is Int -> binding.transactionIconImage.setImageResource(item.image)
+                is Uri -> binding.transactionIconImage.setImageURI(item.image)
+            }
             binding.transactionNameTextView.text = item.categoryName
             binding.transactionTypeTextView.text = item.transactionType
             binding.transactionTimeTextView.text = item.time
@@ -43,10 +46,9 @@ class TransactionAdapterDelegate :
 }
 
 data class TransactionContent(
-    val iconResId: Int,
+    val image: Any,
     val categoryName: String,
     val transactionType: String,
     val moneyAmount: String,
-    val time: String,
-    val date: String
+    val time: String
 )
