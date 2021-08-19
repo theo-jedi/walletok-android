@@ -18,4 +18,5 @@
     <string name="wallet_lose_limit_text_view">100000</string>
     <string name="today">Сегодня</string>
     <string name="yesterday">Вчера</string>
+    <string name="error_sign_in">Ошибка авторизации</string>
 </resources>
