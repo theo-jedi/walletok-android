@@ -10,6 +10,7 @@ import androidx.core.view.children
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
 import java.util.*
@@ -53,7 +54,7 @@ class WalletDetailsActivity : AppCompatActivity() {
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
             override fun onDeleteClicked(position: Int) {
                 DeleteTransactionDialogFragment.newInstance {
-                    TransactionItemsHelper.deleteTransaction(position)
+                    TransactionsRepository.removeTransaction(position)
                     walletDetailsAdapter.setData(TransactionItemsHelper.getData())
                 }.show(supportFragmentManager, "dialog")
             }

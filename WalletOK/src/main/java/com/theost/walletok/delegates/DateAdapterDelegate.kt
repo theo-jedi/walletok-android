@@ -20,15 +20,17 @@ class DateAdapterDelegate :
         item: Any,
         position: Int
     ) {
-        (holder as ViewHolder).bind(item as String)
+        (holder as ViewHolder).bind(item as DateContent)
     }
 
-    override fun isOfViewType(item: Any) = item is String
+    override fun isOfViewType(item: Any) = item is DateContent
 
     class ViewHolder(private val binding: ItemDateBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(date: String) {
-            binding.dateTextView.text = date
+        fun bind(dateContent: DateContent) {
+            binding.dateTextView.text = dateContent.date
         }
     }
 }
+
+data class DateContent(val date: String)
