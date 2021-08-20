@@ -10,26 +10,34 @@ import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionValueBinding
 import com.theost.walletok.utils.StringUtils
 import com.theost.walletok.utils.ViewUtils
-import com.theost.walletok.widgets.TransactionListener
+import com.theost.walletok.widgets.TransactionValueListener
 
 
 class TransactionValueFragment : Fragment() {
 
     companion object {
-        fun newFragment(): Fragment {
-            return TransactionValueFragment()
+        private const val TRANSACTION_VALUE_KEY = "transaction_value"
+
+        fun newFragment(savedValue: String): Fragment {
+            val fragment = TransactionValueFragment()
+            val bundle = Bundle()
+            bundle.putString(TRANSACTION_VALUE_KEY, savedValue)
+            fragment.arguments = bundle
+            return fragment
         }
     }
 
-    private var _binding: FragmentTransactionValueBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentTransactionValueBinding
+
+    private val savedValue: String
+        get() = arguments?.getString(TRANSACTION_VALUE_KEY).orEmpty()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTransactionValueBinding.inflate(inflater, container, false)
+        binding = FragmentTransactionValueBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -38,8 +46,6 @@ class TransactionValueFragment : Fragment() {
         }
 
         binding.submitButton.setOnClickListener { setCurrentValue() }
-
-        binding.inputValue.setText("")
 
         val textWatcher: TextWatcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -54,18 +60,9 @@ class TransactionValueFragment : Fragment() {
         }
 
         binding.inputValue.addTextChangedListener(textWatcher)
-
-        val bundle = arguments
-        if (bundle != null) {
-            binding.inputValue.setText(bundle.getString(TransactionActivity.TRANSACTION_VALUE_KEY,""))
-        }
+        binding.inputValue.setText(savedValue)
 
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun onTextChanged(input: String) {
@@ -87,8 +84,7 @@ class TransactionValueFragment : Fragment() {
 
     private fun setCurrentValue() {
         val value = binding.inputValue.text.toString()
-        (activity as TransactionListener).onSetTransactionData(value, TransactionActivity.TRANSACTION_VALUE_KEY)
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
+        (activity as TransactionValueListener).onValueSubmitted(value)
     }
 
 }

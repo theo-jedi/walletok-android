@@ -2,10 +2,12 @@ package com.theost.walletok.widgets
 
 interface TransactionListener {
 
-    fun onSetTransactionData(data: String, key: String)
+    fun onTransactionSubmitted()
 
-    fun onEditTransactionData(key: String)
+    fun onValueEdit()
 
-    fun onCreateTransaction()
+    fun onTypeEdit()
+
+    fun onCategoryEdit()
 
 }

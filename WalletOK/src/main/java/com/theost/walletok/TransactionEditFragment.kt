@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
+import com.theost.walletok.models.Transaction
 import com.theost.walletok.widgets.TransactionListener
 import java.text.SimpleDateFormat
 import java.util.*
@@ -13,20 +14,28 @@ import java.util.*
 class TransactionEditFragment : Fragment() {
 
     companion object {
-        fun newFragment(): Fragment {
-            return TransactionEditFragment()
+        private const val TRANSACTION_MODEL_KEY = "transaction_model"
+
+        fun newFragment(transaction: Transaction): Fragment {
+            val fragment = TransactionEditFragment()
+            val bundle = Bundle()
+            bundle.putParcelable(TRANSACTION_MODEL_KEY, transaction)
+            fragment.arguments = bundle
+            return fragment
         }
     }
 
-    private var _binding: FragmentTransactionEditBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentTransactionEditBinding
+
+    private val transaction: Transaction?
+        get() = arguments?.getParcelable(TRANSACTION_MODEL_KEY)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTransactionEditBinding.inflate(inflater, container, false)
+        binding = FragmentTransactionEditBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -34,43 +43,32 @@ class TransactionEditFragment : Fragment() {
             activity?.onBackPressed()
         }
 
+        val transactionListener = activity as TransactionListener
+        binding.layoutValue.setOnClickListener { transactionListener.onValueEdit() }
+        binding.layoutType.setOnClickListener { transactionListener.onTypeEdit() }
+        binding.layoutCategory.setOnClickListener { transactionListener.onCategoryEdit() }
+
         binding.submitButton.setOnClickListener {
-            (activity as TransactionListener).onCreateTransaction()
+            transactionListener.onTransactionSubmitted()
         }
 
-        binding.layoutValue.setOnClickListener { updateCurrentData(TransactionActivity.TRANSACTION_VALUE_KEY) }
-        binding.layoutType.setOnClickListener { updateCurrentData(TransactionActivity.TRANSACTION_TYPE_KEY) }
-        binding.layoutCategory.setOnClickListener { updateCurrentData(TransactionActivity.TRANSACTION_CATEGORY_KEY) }
-
-        loadTransactionData()
+        if (transaction != null) loadTransactionData()
 
         return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun loadTransactionData() {
-        val value = (activity as TransactionActivity).transaction.value + " " + getString(R.string.wallet_rub)
+        val value = transaction?.value + " " + getString(R.string.wallet_rub)
         binding.transactionValue.text = value
+        binding.transactionType.text = transaction?.type
+        binding.transactionCategory.text = transaction?.category
 
-        val type = (activity as TransactionActivity).transaction.type
-        binding.transactionType.text = type
-
-        val text = (activity as TransactionActivity).transaction.category
-        binding.transactionCategory.text = text
-
-        if ((activity as TransactionActivity).transaction.date == "") {
+        if (transaction?.date == "") {
             val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
             binding.transactionDate.text = currentDate
+        } else {
+            binding.transactionDate.text = transaction?.date
         }
-    }
-
-    private fun updateCurrentData(key: String) {
-        (activity as TransactionListener).onEditTransactionData(key)
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
 
 }

@@ -9,18 +9,27 @@ import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
 import com.theost.walletok.utils.ViewUtils
 import com.theost.walletok.widgets.TransactionCategoryAdapter
-import com.theost.walletok.widgets.TransactionListener
+import com.theost.walletok.widgets.TransactionCategoryListener
 
 class TransactionCategoryFragment : Fragment() {
 
     companion object {
-        fun newFragment(): Fragment {
-            return TransactionCategoryFragment()
+        private const val TRANSACTION_CATEGORY_KEY = "transaction_category"
+
+        fun newFragment(savedCategory: String): Fragment {
+            val fragment = TransactionCategoryFragment()
+            val bundle = Bundle()
+            bundle.putString(TRANSACTION_CATEGORY_KEY, savedCategory)
+            fragment.arguments = bundle
+            return fragment
         }
     }
 
-    private var _binding: FragmentTransactionCategoryBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentTransactionCategoryBinding
+
+    private val savedCategory: String?
+        get() = arguments?.getString(TRANSACTION_CATEGORY_KEY)
+
     private var lastSelected = -1
 
     override fun onCreateView(
@@ -28,7 +37,7 @@ class TransactionCategoryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTransactionCategoryBinding.inflate(inflater, container, false)
+        binding = FragmentTransactionCategoryBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -40,21 +49,12 @@ class TransactionCategoryFragment : Fragment() {
             setCurrentCategory()
         }
 
-        val bundle = arguments
-        val selectedCategory = if (bundle != null)
-            bundle.getString(TransactionActivity.TRANSACTION_CATEGORY_KEY, "") else ""
-
         val categories = listOf("Зарплата", "Подработка", "Капитализация")
-        binding.listCategory.adapter = TransactionCategoryAdapter(categories, selectedCategory) {
+        binding.listCategory.adapter = TransactionCategoryAdapter(categories, savedCategory.orEmpty()) {
             onItemClicked(it)
         }
 
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun onItemClicked(position: Int) {
@@ -70,8 +70,7 @@ class TransactionCategoryFragment : Fragment() {
 
     private fun setCurrentCategory() {
         val category = (binding.listCategory.adapter as TransactionCategoryAdapter).getItem(lastSelected)
-        (activity as TransactionListener).onSetTransactionData(category, TransactionActivity.TRANSACTION_CATEGORY_KEY)
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
+        (activity as TransactionCategoryListener).onCategorySubmitted(category)
     }
 
 }

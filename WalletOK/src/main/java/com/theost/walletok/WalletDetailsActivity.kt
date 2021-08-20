@@ -37,8 +37,7 @@ class WalletDetailsActivity : AppCompatActivity() {
     }
 
     private fun editTransaction(mode: Int) {
-        val intent = TransactionActivity.newIntent(this)
-        intent.putExtra(TransactionActivity.TRANSACTION_MODE_KEY, mode)
+        val intent = TransactionActivity.newIntent(this, mode)
         startActivity(intent)
     }
 

@@ -6,22 +6,25 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.theost.walletok.models.Transaction
+import com.theost.walletok.widgets.TransactionCategoryListener
 import com.theost.walletok.widgets.TransactionListener
+import com.theost.walletok.widgets.TransactionTypeListener
+import com.theost.walletok.widgets.TransactionValueListener
 
-class TransactionActivity : FragmentActivity(), TransactionListener {
-
-    val transaction = Transaction("", "", "", "")
+class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener, TransactionTypeListener,
+    TransactionCategoryListener {
 
     companion object {
-        const val TRANSACTION_VALUE_KEY = "transaction_value"
-        const val TRANSACTION_TYPE_KEY = "transaction_type"
-        const val TRANSACTION_CATEGORY_KEY = "transaction_category"
-        const val TRANSACTION_MODE_KEY = "transaction_edit_mode"
+        private const val TRANSACTION_MODE_KEY = "transaction_edit_mode"
 
-        fun newIntent(context: Context): Intent {
-            return Intent(context, TransactionActivity::class.java)
+        fun newIntent(context: Context, mode: Int): Intent {
+            val intent = Intent(context, TransactionActivity::class.java)
+            intent.putExtra(TRANSACTION_MODE_KEY, mode)
+            return intent
         }
     }
+
+    private val transaction = Transaction()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +33,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener {
         val mode = intent.getIntExtra(TRANSACTION_MODE_KEY, R.string.new_transaction)
         if (savedInstanceState == null) {
             when (mode) {
-                R.string.new_transaction -> startFragment(TransactionValueFragment.newFragment())
+                R.string.new_transaction -> startFragment(TransactionValueFragment.newFragment(""))
                 R.string.edit_transaction -> {
                     // todo transaction edit
                 }
@@ -38,62 +41,50 @@ class TransactionActivity : FragmentActivity(), TransactionListener {
         }
     }
 
-    override fun onCreateTransaction() {
+    override fun onValueEdit() {
+        startFragment(TransactionValueFragment.newFragment(transaction.value))
+    }
+
+    override fun onTypeEdit() {
+        startFragment(TransactionTypeFragment.newFragment(transaction.type))
+    }
+
+    override fun onCategoryEdit() {
+        startFragment(TransactionCategoryFragment.newFragment(transaction.category))
+    }
+
+    override fun onValueSubmitted(value: String) {
+        transaction.value = value
+        if (transaction.isFilled()) {
+            startFragment(TransactionEditFragment.newFragment(transaction))
+        } else {
+            startFragment(TransactionTypeFragment.newFragment(transaction.type))
+        }
+    }
+
+    override fun onTypeSubmitted(type: String) {
+        transaction.type = type
+        if (transaction.isFilled()) {
+            startFragment(TransactionEditFragment.newFragment(transaction))
+        } else {
+            startFragment(TransactionCategoryFragment.newFragment(transaction.category))
+        }
+    }
+
+    override fun onCategorySubmitted(category: String) {
+        transaction.category = category
+        startFragment(TransactionEditFragment.newFragment(transaction))
+    }
+
+    override fun onTransactionSubmitted() {
         // todo send to main
         finish()
-    }
-
-    override fun onSetTransactionData(data: String, key: String) {
-        when (key) {
-            TRANSACTION_VALUE_KEY -> transaction.value = data
-            TRANSACTION_TYPE_KEY -> transaction.type = data
-            TRANSACTION_CATEGORY_KEY -> transaction.category = data
-        }
-
-        if (!transaction.isFilled()) {
-            when (key) {
-                TRANSACTION_VALUE_KEY -> startFragment(TransactionTypeFragment.newFragment())
-                TRANSACTION_TYPE_KEY -> startFragment(TransactionCategoryFragment.newFragment())
-                TRANSACTION_CATEGORY_KEY -> startFragment(TransactionEditFragment.newFragment())
-            }
-        } else {
-            startFragment(TransactionEditFragment.newFragment())
-        }
-    }
-
-    override fun onEditTransactionData(key: String) {
-        when (key) {
-            TRANSACTION_VALUE_KEY -> startBundleFragment(
-                TransactionValueFragment.newFragment(),
-                transaction.value,
-                key
-            )
-            TRANSACTION_TYPE_KEY -> startBundleFragment(
-                TransactionTypeFragment.newFragment(),
-                transaction.type,
-                key
-            )
-            TRANSACTION_CATEGORY_KEY -> startBundleFragment(
-                TransactionCategoryFragment.newFragment(),
-                transaction.category,
-                key
-            )
-        }
     }
 
     private fun startFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.creation_fragment_container, fragment)
-            .commitAllowingStateLoss()
-    }
-
-    private fun startBundleFragment(fragment: Fragment, data: String, key: String) {
-        val bundle = Bundle()
-        bundle.putString(key, data)
-        fragment.arguments = bundle
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.creation_fragment_container, fragment)
-            .commitAllowingStateLoss()
+            .commit()
     }
 
 }

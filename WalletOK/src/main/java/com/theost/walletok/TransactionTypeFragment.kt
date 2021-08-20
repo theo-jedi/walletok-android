@@ -8,19 +8,28 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.utils.ViewUtils
-import com.theost.walletok.widgets.TransactionListener
 import com.theost.walletok.widgets.TransactionTypeAdapter
+import com.theost.walletok.widgets.TransactionTypeListener
 
 class TransactionTypeFragment : Fragment() {
 
     companion object {
-        fun newFragment(): Fragment {
-            return TransactionTypeFragment()
+        private const val TRANSACTION_TYPE_KEY = "transaction_type"
+
+        fun newFragment(savedType: String): Fragment {
+            val fragment = TransactionTypeFragment()
+            val bundle = Bundle()
+            bundle.putString(TRANSACTION_TYPE_KEY, savedType)
+            fragment.arguments = bundle
+            return fragment
         }
     }
 
-    private var _binding: FragmentTransactionTypeBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentTransactionTypeBinding
+
+    private val savedType: String?
+        get() = arguments?.getString(TRANSACTION_TYPE_KEY)
+
     private var lastSelected = -1
 
     override fun onCreateView(
@@ -28,7 +37,7 @@ class TransactionTypeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTransactionTypeBinding.inflate(inflater, container, false)
+        binding = FragmentTransactionTypeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -40,21 +49,12 @@ class TransactionTypeFragment : Fragment() {
             setCurrentType()
         }
 
-        val bundle = arguments
-        val selectedType = if (bundle != null)
-            bundle.getString(TransactionActivity.TRANSACTION_TYPE_KEY, "") else ""
-
         val types = listOf("Доходы", "Расходы")
-        binding.listTypes.adapter = TransactionTypeAdapter(types, selectedType) {
+        binding.listTypes.adapter = TransactionTypeAdapter(types, savedType.orEmpty()) {
             onItemClicked(it)
         }
 
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun onItemClicked(position: Int) {
@@ -70,7 +70,7 @@ class TransactionTypeFragment : Fragment() {
 
     private fun setCurrentType() {
         val type = (binding.listTypes.adapter as TransactionTypeAdapter).getItem(lastSelected)
-        (activity as TransactionListener).onSetTransactionData(type, TransactionActivity.TRANSACTION_TYPE_KEY)
+        (activity as TransactionTypeListener).onTypeSubmitted(type)
         activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
 
