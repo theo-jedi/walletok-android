@@ -11,6 +11,6 @@ object TransactionsRepository {
     }
 
     fun removeTransaction(id: Int) {
-        transactions.remove(transactions.find { it.id == id })
+        transactions.removeAll { it.id == id }
     }
 }

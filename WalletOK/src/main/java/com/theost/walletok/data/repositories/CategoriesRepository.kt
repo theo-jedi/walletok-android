@@ -14,5 +14,5 @@ object CategoriesRepository {
         )
     )
 
-    fun getCategories() = categories
+    fun getCategories(): List<TransactionCategory> = categories
 }
