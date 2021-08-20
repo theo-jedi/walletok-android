@@ -1,12 +1,20 @@
 package com.theost.walletok
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
 import java.util.*
@@ -48,6 +56,34 @@ class WalletDetailsActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.button_clicked_toast), Toast.LENGTH_SHORT)
                 .show()
         }
+        val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
+            override fun onDeleteClicked(position: Int) {
+                DeleteTransactionDialogFragment.newInstance {
+                    TransactionItemsHelper.deleteTransaction(position)
+                    walletDetailsAdapter.setData(TransactionItemsHelper.getData())
+                }.show(supportFragmentManager, "dialog")
+            }
+
+            override fun onEditClicked(position: Int) {
+
+            }
+
+        })
+        ItemTouchHelper(swipeController)
+            .attachToRecyclerView(binding.recycler)
+
+        binding.recycler.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+                super.onDraw(c, parent, state)
+                parent.children.forEach { item ->
+                    val position = parent.getChildLayoutPosition(item)
+                    val viewHolderClass =
+                        (parent.adapter as BaseAdapter).getDelegateClassByPos(position)
+                    if (viewHolderClass == TransactionAdapterDelegate::class)
+                        swipeController.onDraw(c)
+                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -13,6 +13,7 @@ class BaseAdapter :
         delegates.add(delegate)
     }
 
+    fun getDelegateClassByPos(position: Int) = delegates[getItemViewType(position)]::class
 
     @SuppressLint("NotifyDataSetChanged")
     fun setData(new: List<Any>) {

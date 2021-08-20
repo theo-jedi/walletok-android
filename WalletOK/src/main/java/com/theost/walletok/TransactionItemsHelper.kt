@@ -19,8 +19,24 @@ object TransactionItemsHelper {
             type = TransactionCategoryType.INCOME
         )
     )
+    private val data = mutableListOf<Any>()
 
-    val transactions = (0..9).map {
+    private fun populateData() {
+        data.clear()
+        data.addAll(
+            listOf(
+                HeaderContent(
+                    walletName = "Кошелек 1",
+                    walletMoney = "0 ₽",
+                    walletGain = "0 ₽",
+                    walletLose = "0 ₽",
+                    walletLoseLimit = "15000 ₽"
+                )
+            ).plus(getTransactionItems())
+        )
+    }
+
+    private val transactions = (0..9).map {
         Transaction(
             categoryId = 0,
             id = it,
@@ -29,6 +45,10 @@ object TransactionItemsHelper {
             money = "100"
         )
     }.toMutableList()
+
+    init {
+        populateData()
+    }
 
     private fun getTransactionItems(): List<Any> {
         val result = mutableListOf<Any>()
@@ -60,6 +80,7 @@ object TransactionItemsHelper {
                     transactionCategories.find { category -> category.id == transaction.categoryId }!!
                 result.add(
                     TransactionContent(
+                        transactionId = transaction.id,
                         categoryName = category.name,
                         transactionType = category.type.uiName,
                         moneyAmount = "${transaction.money} ${transaction.currency}",
@@ -73,14 +94,13 @@ object TransactionItemsHelper {
         return result
     }
 
-    fun getData() =
-        listOf(
-            HeaderContent(
-                walletName = "Кошелек 1",
-                walletMoney = "0 ₽",
-                walletGain = "0 ₽",
-                walletLose = "0 ₽",
-                walletLoseLimit = "15000 ₽"
-            )
-        ).plus(getTransactionItems())
+    fun getData(): List<Any> = data
+
+    fun deleteTransaction(position: Int) {
+        val item = data[position]
+        if (item is TransactionContent) {
+            transactions.remove(transactions.find { it.id == item.transactionId })
+            populateData()
+        }
+    }
 }
