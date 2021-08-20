@@ -12,7 +12,7 @@ interface WalletOkService {
 
 
     companion object {
-        private const val BASE_URL = "http://angel7d.ru"
+        private const val BASE_URL = ""
         private var instance: WalletOkService? = null
 
         fun getInstance(): WalletOkService {
