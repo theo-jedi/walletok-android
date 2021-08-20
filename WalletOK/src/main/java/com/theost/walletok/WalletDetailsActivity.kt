@@ -1,20 +1,17 @@
 package com.theost.walletok
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
 import java.util.*
@@ -59,7 +56,7 @@ class WalletDetailsActivity : AppCompatActivity() {
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
             override fun onDeleteClicked(position: Int) {
                 DeleteTransactionDialogFragment.newInstance {
-                    TransactionItemsHelper.deleteTransaction(position)
+                    TransactionsRepository.removeTransaction(position)
                     walletDetailsAdapter.setData(TransactionItemsHelper.getData())
                 }.show(supportFragmentManager, "dialog")
             }

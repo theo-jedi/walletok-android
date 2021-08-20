@@ -54,6 +54,7 @@ object TransactionItemsHelper {
                     categories.find { category -> category.id == transaction.categoryId }!!
                 result.add(
                     TransactionContent(
+                        transactionId = transaction.id,
                         categoryName = category.name,
                         transactionType = category.type.uiName,
                         moneyAmount = "${transaction.money} ${transaction.currency}",
