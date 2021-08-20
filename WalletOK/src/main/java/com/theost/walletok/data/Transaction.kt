@@ -3,7 +3,7 @@ package com.theost.walletok.data
 data class Transaction(
     val id: Int,
     val categoryId: Int,
-    val money: String,
+    val money: Int,
     val currency: String,
     val dateTime: String
 )
