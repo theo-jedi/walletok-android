@@ -4,6 +4,8 @@
     <string name="amount_of_money_textview">0 ₽</string>
     <string name="income_text_view">Доход</string>
     <string name="expenses_text_view">Расход</string>
+    <string name="refilling">Пополнение</string>
+    <string name="spending">Траты</string>
     <string name="no_entries_text_view">У вас пока нет записей</string>
     <string name="add_operation">Добавить операцию</string>
     <string name="settings">Settings</string>
@@ -11,6 +13,10 @@
     <string name="welcome_title">Добро пожаловать\nв КошелОК </string>
     <string name="welcome_text">Тут вы сможете контролировать свои\nдоходы и расходы</string>
     <string name="sign_in">Войти с помощью Google</string>
-
+    <string name="salary">Зарплата</string>
+    <string name="twelve_o_clock">12:00</string>
+    <string name="wallet_lose_limit_text_view">100000</string>
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
     <string name="error_sign_in">Ошибка авторизации</string>
 </resources>
