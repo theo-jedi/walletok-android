@@ -2,6 +2,6 @@ package com.theost.walletok.widgets
 
 interface TransactionCategoryListener {
 
-    fun onCategorySubmitted(category: String)
+    fun onCategorySubmitted(category: Int)
 
 }

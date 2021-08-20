@@ -16,7 +16,7 @@ class TransactionTypeFragment : Fragment() {
     companion object {
         private const val TRANSACTION_TYPE_KEY = "transaction_type"
 
-        fun newFragment(savedType: String): Fragment {
+        fun newFragment(savedType: String?): Fragment {
             val fragment = TransactionTypeFragment()
             val bundle = Bundle()
             bundle.putString(TRANSACTION_TYPE_KEY, savedType)

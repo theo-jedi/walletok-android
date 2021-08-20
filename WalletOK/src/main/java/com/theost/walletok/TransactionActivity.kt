@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.theost.walletok.models.Transaction
+import com.theost.walletok.data.TransactionModel
 import com.theost.walletok.widgets.TransactionCategoryListener
 import com.theost.walletok.widgets.TransactionListener
 import com.theost.walletok.widgets.TransactionTypeListener
@@ -24,7 +24,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         }
     }
 
-    private val transaction = Transaction()
+    private val transaction = TransactionModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +71,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         }
     }
 
-    override fun onCategorySubmitted(category: String) {
+    override fun onCategorySubmitted(category: Int) {
         transaction.category = category
         startFragment(TransactionEditFragment.newFragment(transaction))
     }

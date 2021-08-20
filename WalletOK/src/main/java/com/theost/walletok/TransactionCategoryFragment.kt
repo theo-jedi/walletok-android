@@ -15,11 +15,12 @@ class TransactionCategoryFragment : Fragment() {
 
     companion object {
         private const val TRANSACTION_CATEGORY_KEY = "transaction_category"
+        private const val TRANSACTION_CATEGORY_UNSET = -1
 
-        fun newFragment(savedCategory: String): Fragment {
+        fun newFragment(savedCategory: Int?): Fragment {
             val fragment = TransactionCategoryFragment()
             val bundle = Bundle()
-            bundle.putString(TRANSACTION_CATEGORY_KEY, savedCategory)
+            bundle.putInt(TRANSACTION_CATEGORY_KEY, savedCategory ?: TRANSACTION_CATEGORY_UNSET)
             fragment.arguments = bundle
             return fragment
         }
@@ -27,8 +28,8 @@ class TransactionCategoryFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionCategoryBinding
 
-    private val savedCategory: String?
-        get() = arguments?.getString(TRANSACTION_CATEGORY_KEY)
+    private val savedCategory: Int
+        get() = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
 
     private var lastSelected = -1
 
@@ -50,7 +51,7 @@ class TransactionCategoryFragment : Fragment() {
         }
 
         val categories = listOf("Зарплата", "Подработка", "Капитализация")
-        binding.listCategory.adapter = TransactionCategoryAdapter(categories, savedCategory.orEmpty()) {
+        binding.listCategory.adapter = TransactionCategoryAdapter(categories, savedCategory) {
             onItemClicked(it)
         }
 

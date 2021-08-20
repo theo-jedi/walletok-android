@@ -5,18 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.theost.walletok.data.TransactionModel
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
-import com.theost.walletok.models.Transaction
+import com.theost.walletok.utils.DateTimeUtils
 import com.theost.walletok.widgets.TransactionListener
-import java.text.SimpleDateFormat
-import java.util.*
 
 class TransactionEditFragment : Fragment() {
 
     companion object {
         private const val TRANSACTION_MODEL_KEY = "transaction_model"
 
-        fun newFragment(transaction: Transaction): Fragment {
+        fun newFragment(transaction: TransactionModel): Fragment {
             val fragment = TransactionEditFragment()
             val bundle = Bundle()
             bundle.putParcelable(TRANSACTION_MODEL_KEY, transaction)
@@ -27,7 +26,7 @@ class TransactionEditFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionEditBinding
 
-    private val transaction: Transaction?
+    private val transaction: TransactionModel?
         get() = arguments?.getParcelable(TRANSACTION_MODEL_KEY)
 
     override fun onCreateView(
@@ -61,14 +60,8 @@ class TransactionEditFragment : Fragment() {
         val value = transaction?.value + " " + getString(R.string.wallet_rub)
         binding.transactionValue.text = value
         binding.transactionType.text = transaction?.type
-        binding.transactionCategory.text = transaction?.category
-
-        if (transaction?.date == "") {
-            val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
-            binding.transactionDate.text = currentDate
-        } else {
-            binding.transactionDate.text = transaction?.date
-        }
+        //binding.transactionCategory.text = categoriesList.getById(transaction?.category)
+        binding.transactionDate.text = DateTimeUtils.getCurrentDate()
     }
 
 }

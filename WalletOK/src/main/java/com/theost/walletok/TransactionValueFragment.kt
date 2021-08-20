@@ -18,7 +18,7 @@ class TransactionValueFragment : Fragment() {
     companion object {
         private const val TRANSACTION_VALUE_KEY = "transaction_value"
 
-        fun newFragment(savedValue: String): Fragment {
+        fun newFragment(savedValue: String?): Fragment {
             val fragment = TransactionValueFragment()
             val bundle = Bundle()
             bundle.putString(TRANSACTION_VALUE_KEY, savedValue)

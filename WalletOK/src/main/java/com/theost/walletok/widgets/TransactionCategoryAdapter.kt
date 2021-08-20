@@ -7,8 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.R
+import com.theost.walletok.data.TransactionCategory
 
-class TransactionCategoryAdapter(private val list: List<String>, private val selectedCategory: String, private val clickListener: (position: Int) -> Unit) :
+class TransactionCategoryAdapter(private val list: List<TransactionCategory>, private val selectedCategory: Int, private val clickListener: (position: Int) -> Unit) :
     RecyclerView.Adapter<TransactionCategoryAdapter.TransactionCategoryViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionCategoryViewHolder {
@@ -19,12 +20,12 @@ class TransactionCategoryAdapter(private val list: List<String>, private val sel
         holder: TransactionCategoryViewHolder,
         position: Int
     ) {
-        holder.bind(list[position])
+        holder.bind(list[position].name)
     }
 
     override fun getItemCount(): Int = list.size
 
-    fun getItem(position: Int) : String = list[position]
+    fun getItem(position: Int) : TransactionCategory = list[position]
 
     inner class TransactionCategoryViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.item_list_category, parent, false)),
@@ -45,7 +46,7 @@ class TransactionCategoryAdapter(private val list: List<String>, private val sel
         fun bind(transaction: String) {
             itemView.findViewById<ImageView>(R.id.category_check).visibility = View.INVISIBLE
             mCategoryView?.text = transaction
-            if (mCategoryView?.text == selectedCategory) {
+            if (list[adapterPosition].id == selectedCategory) {
                 itemView.callOnClick()
             }
         }
