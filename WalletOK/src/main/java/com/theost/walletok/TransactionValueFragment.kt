@@ -78,7 +78,7 @@ class TransactionValueFragment : Fragment() {
     }
 
     private fun setCurrentValue() {
-        val value = binding.inputValue.text.toString()
+        val value = StringUtils.formatNumber(binding.inputValue.text.toString())
         (activity as TransactionValueListener).onValueSubmitted(value)
     }
 

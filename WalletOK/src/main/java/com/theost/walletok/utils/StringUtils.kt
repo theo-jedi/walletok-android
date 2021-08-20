@@ -16,15 +16,19 @@ object StringUtils {
             }
             val format = DecimalFormat("###,###")
             val formattedNumber =
-                format.format(numbers[0].replace(" ", "").toDouble()).replace(",", " ")
+                format.format(formatNumber(numbers[0]).toDouble()).replace(",", " ")
             return formattedNumber + double
         }
         return ""
     }
 
+    fun formatNumber(input: String) : String {
+        return input.replace(" ", "")
+    }
+
     fun currencyToDouble(input: String): Double {
         return if (input != "" && input != ".") {
-            input.replace(" ", "").toDouble()
+            formatNumber(input).toDouble()
         } else {
             0.0
         }

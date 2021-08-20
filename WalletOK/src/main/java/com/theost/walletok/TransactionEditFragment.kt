@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.theost.walletok.data.TransactionModel
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
 import com.theost.walletok.utils.DateTimeUtils
+import com.theost.walletok.utils.StringUtils
 import com.theost.walletok.widgets.TransactionListener
 
 class TransactionEditFragment : Fragment() {
@@ -57,7 +58,7 @@ class TransactionEditFragment : Fragment() {
     }
 
     private fun loadTransactionData() {
-        val value = transaction?.value + " " + getString(R.string.wallet_rub) // todo currency
+        val value = StringUtils.formatCurrency(transaction?.value.orEmpty()) + " " + getString(R.string.wallet_rub) // todo currency
         binding.transactionValue.text = value
         binding.transactionType.text = transaction?.type
         binding.transactionCategory.text = transaction?.categoryName
