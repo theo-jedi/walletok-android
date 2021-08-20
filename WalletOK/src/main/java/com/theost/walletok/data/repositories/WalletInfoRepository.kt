@@ -1,6 +1,6 @@
 package com.theost.walletok.data.repositories
 
-import com.theost.walletok.data.WalletInfo
+import com.theost.walletok.data.models.WalletInfo
 import io.reactivex.Single
 
 object WalletInfoRepository {

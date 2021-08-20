@@ -95,7 +95,10 @@ class WalletDetailsActivity : AppCompatActivity() {
     private val transactionHandler =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
             if (result?.resultCode == RESULT_OK) {
-                walletDetailsAdapter.setData(TransactionItemsHelper.getData())
+                TransactionItemsHelper.getData()
+                    .subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+                        walletDetailsAdapter.setData(it)
+                    }.subscribe()
             } else {
                 // todo showErrorToast
             }

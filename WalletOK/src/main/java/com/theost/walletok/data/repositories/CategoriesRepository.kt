@@ -1,8 +1,8 @@
 package com.theost.walletok.data.repositories
 
 import com.theost.walletok.R
-import com.theost.walletok.data.TransactionCategory
-import com.theost.walletok.data.TransactionCategoryType
+import com.theost.walletok.data.models.TransactionCategory
+import com.theost.walletok.data.models.TransactionCategoryType
 import io.reactivex.Single
 
 object CategoriesRepository {

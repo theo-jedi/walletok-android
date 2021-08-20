@@ -1,4 +1,4 @@
-package com.theost.walletok.data
+package com.theost.walletok.data.models
 
 data class Transaction(
     val id: Int,

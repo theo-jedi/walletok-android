@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.theost.walletok.data.TransactionModel
+import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
 import com.theost.walletok.utils.DateTimeUtils
 import com.theost.walletok.utils.StringUtils
@@ -16,7 +16,7 @@ class TransactionEditFragment : Fragment() {
     companion object {
         private const val TRANSACTION_MODEL_KEY = "transaction_model"
 
-        fun newFragment(transaction: TransactionModel): Fragment {
+        fun newFragment(transaction: TransactionCreationModel): Fragment {
             val fragment = TransactionEditFragment()
             val bundle = Bundle()
             bundle.putParcelable(TRANSACTION_MODEL_KEY, transaction)
@@ -27,7 +27,7 @@ class TransactionEditFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionEditBinding
 
-    private val transaction: TransactionModel?
+    private val transaction: TransactionCreationModel?
         get() = arguments?.getParcelable(TRANSACTION_MODEL_KEY)
 
     override fun onCreateView(

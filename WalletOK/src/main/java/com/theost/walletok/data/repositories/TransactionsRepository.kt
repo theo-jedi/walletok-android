@@ -1,6 +1,7 @@
 package com.theost.walletok.data.repositories
 
-import com.theost.walletok.data.Transaction
+import com.theost.walletok.data.models.Transaction
+import com.theost.walletok.utils.DateTimeUtils
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -27,7 +28,7 @@ object TransactionsRepository {
 
     private fun simulateServerResponse(value: String, category: Int): Transaction {
         return Transaction(
-            transactions.size + 1, category, value, "₽", DateTimeUtils.getCurrentDateTime()
+            transactions.size + 1, category, value.toInt()*100, "₽", DateTimeUtils.getCurrentDateTime()
         )
     }
 

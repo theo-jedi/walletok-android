@@ -1,10 +1,10 @@
-package com.theost.walletok.data
+package com.theost.walletok.data.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class TransactionModel(var value: String?, var type: String?, var categoryId: Int?, var categoryName: String?) : Parcelable {
+class TransactionCreationModel(var value: String?, var type: String?, var categoryId: Int?, var categoryName: String?) : Parcelable {
 
     constructor() : this(null, null, null, null)
 

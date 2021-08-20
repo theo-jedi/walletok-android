@@ -1,6 +1,6 @@
 package com.theost.walletok
 
-import com.theost.walletok.data.Transaction
+import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.data.repositories.WalletInfoRepository
