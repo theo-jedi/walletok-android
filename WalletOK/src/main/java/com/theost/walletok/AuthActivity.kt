@@ -2,15 +2,15 @@ package com.theost.walletok
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 
 class AuthActivity : AppCompatActivity() {
@@ -61,6 +61,7 @@ class AuthActivity : AppCompatActivity() {
     private fun onSignedIn(account: GoogleSignInAccount?) {
         val intent = WalletDetailsActivity.newIntent(this)
         startActivity(intent)
+        finish()
     }
 
 }
