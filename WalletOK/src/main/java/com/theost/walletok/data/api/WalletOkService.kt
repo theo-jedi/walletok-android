@@ -1,5 +1,6 @@
 package com.theost.walletok.data.api
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -35,6 +36,7 @@ interface WalletOkService {
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(Json.asConverterFactory(contentType))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
                 .create(WalletOkService::class.java)
         }
