@@ -1,22 +1,18 @@
 package com.theost.walletok.delegates
 
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.AdapterDelegate
 import com.theost.walletok.databinding.ItemTransactionBinding
+import kotlin.properties.Delegates
 
-class TransactionAdapterDelegate(val listener: View.OnClickListener) :
-    AdapterDelegate {
-
+class TransactionAdapterDelegate : AdapterDelegate {
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
         val binding = ItemTransactionBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        binding.root.setOnClickListener(listener)
         return ViewHolder(binding)
     }
 
@@ -32,7 +28,9 @@ class TransactionAdapterDelegate(val listener: View.OnClickListener) :
 
     class ViewHolder(private val binding: ItemTransactionBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        var transactionId by Delegates.notNull<Int>()
         fun bind(item: TransactionContent) {
+            transactionId = item.transactionId
             when (item.image) {
                 is Int -> binding.transactionIconImage.setImageResource(item.image)
                 is Uri -> binding.transactionIconImage.setImageURI(item.image)

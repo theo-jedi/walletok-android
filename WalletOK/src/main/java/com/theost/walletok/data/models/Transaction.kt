@@ -1,9 +1,9 @@
-package com.theost.walletok.data
+package com.theost.walletok.data.models
 
 data class Transaction(
     val id: Int,
     val categoryId: Int,
-    val money: String,
+    val money: Int,
     val currency: String,
     val dateTime: String // yyyy/MM/dd hh:mm
 )

@@ -10,6 +10,7 @@ import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
 import com.theost.walletok.widgets.TransactionCategoryAdapter
 import com.theost.walletok.widgets.TransactionCategoryListener
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class TransactionCategoryFragment : Fragment() {
 
@@ -50,10 +51,13 @@ class TransactionCategoryFragment : Fragment() {
             setCurrentCategory()
         }
 
-        binding.listCategory.adapter =
-            TransactionCategoryAdapter(CategoriesRepository.getCategories(), savedCategory) {
-                onItemClicked(it)
-            }
+        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess {
+                binding.listCategory.adapter =
+                    TransactionCategoryAdapter(it, savedCategory) {
+                        onItemClicked(it)
+                    }
+            }.subscribe()
 
         return binding.root
     }

@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.theost.walletok.data.TransactionModel
+import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.widgets.TransactionCategoryListener
 import com.theost.walletok.widgets.TransactionListener
@@ -25,7 +25,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         }
     }
 
-    private val transaction = TransactionModel()
+    private val transaction = TransactionCreationModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

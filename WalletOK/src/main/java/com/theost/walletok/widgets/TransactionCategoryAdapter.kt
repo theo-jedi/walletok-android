@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.R
-import com.theost.walletok.data.TransactionCategory
+import com.theost.walletok.data.models.TransactionCategory
 
 class TransactionCategoryAdapter(private val list: List<TransactionCategory>, private val selectedCategory: Int, private val clickListener: (position: Int) -> Unit) :
     RecyclerView.Adapter<TransactionCategoryAdapter.TransactionCategoryViewHolder>() {
