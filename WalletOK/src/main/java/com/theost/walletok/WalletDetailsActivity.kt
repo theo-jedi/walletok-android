@@ -8,13 +8,13 @@ import android.view.Menu
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.children
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
+import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.*
 
 
@@ -38,10 +38,14 @@ class WalletDetailsActivity : AppCompatActivity() {
         walletDetailsAdapter.apply {
             addDelegate(WalletDetailsHeaderAdapterDelegate())
             addDelegate(DateAdapterDelegate())
-            addDelegate(TransactionAdapterDelegate { /* TODO */ })
+            addDelegate(TransactionAdapterDelegate())
             addDelegate(EmptyListAdapterDelegate())
         }
-        walletDetailsAdapter.setData(TransactionItemsHelper.getData())
+
+        TransactionItemsHelper.getData().subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+            walletDetailsAdapter.setData(it)
+        }.subscribe()
+
         binding.recycler.apply {
             adapter = walletDetailsAdapter
             layoutManager = LinearLayoutManager(this@WalletDetailsActivity)
@@ -57,8 +61,15 @@ class WalletDetailsActivity : AppCompatActivity() {
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
             override fun onDeleteClicked(position: Int) {
                 DeleteTransactionDialogFragment.newInstance {
-                    TransactionsRepository.removeTransaction(position)
-                    walletDetailsAdapter.setData(TransactionItemsHelper.getData())
+                    val viewHolder = binding.recycler.findViewHolderForAdapterPosition(position)
+                            as TransactionAdapterDelegate.ViewHolder
+                    TransactionsRepository.removeTransaction(viewHolder.transactionId)
+                        .doOnComplete {
+                            TransactionItemsHelper.getData()
+                                .subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+                                    walletDetailsAdapter.setData(it)
+                                }.subscribe()
+                        }.subscribe()
                 }.show(supportFragmentManager, "dialog")
             }
 
@@ -71,13 +82,7 @@ class WalletDetailsActivity : AppCompatActivity() {
         binding.recycler.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
                 super.onDraw(c, parent, state)
-                parent.children.forEach { item ->
-                    val position = parent.getChildLayoutPosition(item)
-                    val viewHolderClass =
-                        (parent.adapter as BaseAdapter).getDelegateClassByPos(position)
-                    if (viewHolderClass == TransactionAdapterDelegate::class)
-                        swipeController.onDraw(c)
-                }
+                swipeController.onDraw(c)
             }
         })
     }

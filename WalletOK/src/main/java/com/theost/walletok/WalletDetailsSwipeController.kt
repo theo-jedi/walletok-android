@@ -97,7 +97,7 @@ class WalletDetailsSwipeController(
     }
 
     fun onDraw(c: Canvas?) {
-        if (currentItemViewHolder != null) {
+        if (currentItemViewHolder is TransactionAdapterDelegate.ViewHolder) {
             drawButtons(c!!, currentItemViewHolder!!)
         }
     }
