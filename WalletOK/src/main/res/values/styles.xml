@@ -2,7 +2,7 @@
 <resources>
 
     <style name="SplashScreenTheme" parent="Theme.Walletokandroid">
-        <item name="android:windowBackground">@drawable/splash_screen_background</item>
+        <item name="android:windowBackground">@drawable/ic_splash</item>
     </style>
     
     <style name="BlackButton" parent="Widget.MaterialComponents.Button">
