@@ -1,21 +1,23 @@
 package com.theost.walletok
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
 import java.util.*
-import com.theost.walletok.utils.dpToPx
 
 
 class WalletDetailsActivity : AppCompatActivity() {
@@ -54,85 +56,32 @@ class WalletDetailsActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.button_clicked_toast), Toast.LENGTH_SHORT)
                 .show()
         }
-
-        val iconMargin = dpToPx(16f, applicationContext)
-        val iconSize = dpToPx(40f, applicationContext)
-
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.ACTION_STATE_IDLE,
-            ItemTouchHelper.START
-        ) {
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return true
+        val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
+            override fun onDeleteClicked(position: Int) {
+                DeleteDialogFragment.newInstance {
+                    TransactionItemsHelper.deleteTransaction(position)
+                    walletDetailsAdapter.setData(TransactionItemsHelper.getData())
+                }.show(supportFragmentManager, "dialog")
             }
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            override fun onEditClicked(position: Int) {
 
             }
 
-            override fun getSwipeDirs(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                return if (viewHolder !is TransactionAdapterDelegate.ViewHolder) 0
-                else super.getSwipeDirs(recyclerView, viewHolder)
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                val newDx = maxOf(dX, -(3 * iconMargin + 2 * iconSize).toFloat())
-                super.onChildDraw(
-                    c, recyclerView, viewHolder, newDx, dY, actionState, isCurrentlyActive
-                )
-            }
-
-        }).attachToRecyclerView(binding.recycler)
+        })
+        ItemTouchHelper(swipeController)
+            .attachToRecyclerView(binding.recycler)
 
         binding.recycler.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            val deleteButtonDrawable = VectorDrawableCompat.create(
-                applicationContext.resources,
-                R.drawable.ic_delete_button,
-                null
-            )
-            val editButtonDrawable = VectorDrawableCompat.create(
-                applicationContext.resources,
-                R.drawable.ic_edit_button,
-                null
-            )
-
             override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+                super.onDraw(c, parent, state)
                 parent.children.forEach { item ->
                     val position = parent.getChildLayoutPosition(item)
-                    val delegatesIndex = parent.adapter!!.getItemViewType(position)
                     val viewHolderClass =
-                        (parent.adapter as WalletDetailsAdapter).delegates[delegatesIndex]::class
-                    if (viewHolderClass == TransactionAdapterDelegate::class) {
-                        c.save()
-                        c.translate(
-                            (item.right - iconMargin - iconSize).toFloat(),
-                            (item.bottom - iconMargin - iconSize).toFloat()
-                        )
-                        deleteButtonDrawable?.setBounds(0, 0, iconSize, iconSize)
-                        deleteButtonDrawable?.draw(c)
-                        c.translate((-iconMargin - iconSize).toFloat(), 0f)
-                        editButtonDrawable?.setBounds(0, 0, iconSize, iconSize)
-                        editButtonDrawable?.draw(c)
-                        c.restore()
-                    }
+                        (parent.adapter as BaseAdapter).getDelegateClassByPos(position)
+                    if (viewHolderClass == TransactionAdapterDelegate::class)
+                        swipeController.onDraw(c)
                 }
-                super.onDraw(c, parent, state)
             }
         })
     }
@@ -140,5 +89,33 @@ class WalletDetailsActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_wallet_details, menu)
         return true
+    }
+
+    class DeleteDialogFragment : DialogFragment() {
+
+        private var onDeleteClick: (() -> Unit)? = null
+
+        fun setOnDeleteClick(onDelete: () -> Unit) {
+            onDeleteClick = onDelete
+        }
+
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            return AlertDialog.Builder(activity)
+                .setTitle("Уверены, что хотите удалить запись?")
+                .setNegativeButton("Отменить") { _, _ -> }
+                .setPositiveButton("Удалить") { _, _ ->
+                    onDeleteClick?.invoke()
+                }
+                .setCancelable(true)
+                .create()
+        }
+
+        companion object {
+            fun newInstance(onDelete: () -> Unit): DeleteDialogFragment {
+                val fragment = DeleteDialogFragment()
+                fragment.setOnDeleteClick(onDelete)
+                return fragment
+            }
+        }
     }
 }

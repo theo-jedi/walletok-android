@@ -4,11 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ItemTouchHelper.*
+import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE
+import androidx.recyclerview.widget.ItemTouchHelper.LEFT
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.theost.walletok.delegates.TransactionAdapterDelegate
@@ -21,8 +21,6 @@ class WalletDetailsSwipeController(
     private val buttonsActions: SwipeControllerActions
 ) : ItemTouchHelper.Callback() {
     private var swipeBack = false
-    private var wereButtonsVisible = false
-    private var oldDx = 0f
     private var currentItemViewHolder: RecyclerView.ViewHolder? = null
     private var deleteButtonShowedState = ButtonsState.GONE
     private var editButtonShowedState = ButtonsState.GONE
@@ -79,32 +77,23 @@ class WalletDetailsSwipeController(
         dX: Float, dY: Float,
         actionState: Int, isCurrentlyActive: Boolean
     ) {
-
-        Log.d("SwipeController", "onChildDraw: $wereButtonsVisible")
         if (actionState == ACTION_STATE_SWIPE) {
             if (editButtonShowedState == ButtonsState.VISIBLE) {
-                val newDx = if (!wereButtonsVisible) {
+                val newDx =
                     min(dX, -editButtonOffset)
-                } else dX
-                val newActionState =
-                    if (newDx == -editButtonOffset && !wereButtonsVisible) {
-                        wereButtonsVisible = !wereButtonsVisible
-                        ACTION_STATE_IDLE
-                    } else actionState
                 super.onChildDraw(
-                    c, recyclerView, viewHolder, newDx, dY, newActionState, isCurrentlyActive
+                    c, recyclerView, viewHolder, newDx, dY, actionState, isCurrentlyActive
                 )
-            }
-            setTouchListener(
-                c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
-            )
+            } else
+                setTouchListener(
+                    c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
+                )
         }
         drawButtons(c, viewHolder)
         if (editButtonShowedState == ButtonsState.GONE) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         }
         currentItemViewHolder = viewHolder
-        oldDx = dX
     }
 
     fun onDraw(c: Canvas?) {
@@ -156,9 +145,8 @@ class WalletDetailsSwipeController(
             swipeBack =
                 event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP
             if (swipeBack) {
-                if (dX < -editButtonOffset) editButtonShowedState = ButtonsState.VISIBLE
-                if (dX < -deleteButtonOffset) deleteButtonShowedState = ButtonsState.VISIBLE
-
+                if (dX <= -editButtonOffset) editButtonShowedState = ButtonsState.VISIBLE
+                if (dX <= -deleteButtonOffset) deleteButtonShowedState = ButtonsState.VISIBLE
                 if (deleteButtonShowedState != ButtonsState.GONE) {
                     setTouchDownListener(
                         c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
