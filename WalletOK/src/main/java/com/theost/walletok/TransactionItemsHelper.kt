@@ -4,6 +4,7 @@ import com.theost.walletok.data.Transaction
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.data.repositories.WalletInfoRepository
+import com.theost.walletok.delegates.DateContent
 import com.theost.walletok.delegates.HeaderContent
 import com.theost.walletok.delegates.TransactionContent
 import java.text.SimpleDateFormat
@@ -44,9 +45,9 @@ object TransactionItemsHelper {
                 if (transaction.dateTime != lastItemDate) {
                     result.add(
                         when (dayMonthYearFormat.format(transactionDate)) {
-                            today -> "Сегодня"
-                            yesterday -> "Вчера"
-                            else -> dayMonthFormat.format(transactionDate)
+                            today -> DateContent("Сегодня")
+                            yesterday -> DateContent("Вчера")
+                            else -> DateContent(dayMonthFormat.format(transactionDate))
                         }
                     )
                 }
