@@ -19,7 +19,7 @@
     <string name="enter_value">Введите сумму</string>
     <string name="transaction_value">Сумма операции</string>
     <string name="new_transaction">Новая операция</string>
-    <string name="edit_transaction">Новая операция</string>
+    <string name="edit_transaction">Редактирование операции</string>
     
     <string name="basic">Основные</string>
     <string name="additional">Дополнительная информация</string>
