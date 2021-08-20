@@ -5,7 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
+import com.theost.walletok.delegates.*
+import java.util.*
+
 
 class WalletDetailsActivity : AppCompatActivity() {
 
@@ -22,6 +26,19 @@ class WalletDetailsActivity : AppCompatActivity() {
         binding = ActivityWalletDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+        val walletDetailsAdapter = BaseAdapter()
+        walletDetailsAdapter.apply {
+            addDelegate(WalletDetailsHeaderAdapterDelegate())
+            addDelegate(DateAdapterDelegate())
+            addDelegate(TransactionAdapterDelegate { /* TODO */ })
+            addDelegate(EmptyListAdapterDelegate())
+        }
+        walletDetailsAdapter.setData(TransactionItemsHelper.getData())
+        binding.recycler.apply {
+            adapter = walletDetailsAdapter
+            layoutManager = LinearLayoutManager(this@WalletDetailsActivity)
+            setHasFixedSize(true)
+        }
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         binding.toolbar.setNavigationOnClickListener {
             finish()

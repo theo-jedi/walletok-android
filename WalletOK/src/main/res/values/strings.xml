@@ -4,6 +4,8 @@
     <string name="amount_of_money_textview">0 ₽</string>
     <string name="income_text_view">Доход</string>
     <string name="expenses_text_view">Расход</string>
+    <string name="refilling">Пополнение</string>
+    <string name="spending">Траты</string>
     <string name="no_entries_text_view">У вас пока нет записей</string>
     <string name="add_transaction">Добавить операцию</string>
     <string name="settings">Settings</string>
@@ -20,7 +22,7 @@
     <string name="transaction_value">Сумма операции</string>
     <string name="new_transaction">Новая операция</string>
     <string name="edit_transaction">Редактирование операции</string>
-    
+
     <string name="basic">Основные</string>
     <string name="additional">Дополнительная информация</string>
     <string name="value">Сумма</string>
@@ -28,6 +30,11 @@
     <string name="category">Категория</string>
     <string name="transaction_date">Дата операции</string>
 
+    <string name="salary">Зарплата</string>
+    <string name="twelve_o_clock">12:00</string>
+    <string name="wallet_lose_limit_text_view">100000</string>
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
     <string name="error_sign_in">Ошибка авторизации</string>
 
     <string name="zero">0</string>
