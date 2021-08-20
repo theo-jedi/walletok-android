@@ -14,7 +14,7 @@ object TransactionsRepository {
     }
 
     private fun simulateServerResponse(value: String, category: Int) : Transaction {
-        return Transaction(transactions.size + 1, category, value, "₽", DateTimeUtils.getCurrentDate())
+        return Transaction(transactions.size + 1, category, value, "₽", DateTimeUtils.getCurrentDateTime())
     }
 
     fun removeTransaction(id: Int) {
