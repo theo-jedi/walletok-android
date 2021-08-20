@@ -58,7 +58,7 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
             override fun onDeleteClicked(position: Int) {
-                DeleteDialogFragment.newInstance {
+                DeleteTransactionDialogFragment.newInstance {
                     TransactionItemsHelper.deleteTransaction(position)
                     walletDetailsAdapter.setData(TransactionItemsHelper.getData())
                 }.show(supportFragmentManager, "dialog")
@@ -89,33 +89,5 @@ class WalletDetailsActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_wallet_details, menu)
         return true
-    }
-
-    class DeleteDialogFragment : DialogFragment() {
-
-        private var onDeleteClick: (() -> Unit)? = null
-
-        fun setOnDeleteClick(onDelete: () -> Unit) {
-            onDeleteClick = onDelete
-        }
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return AlertDialog.Builder(activity)
-                .setTitle("Уверены, что хотите удалить запись?")
-                .setNegativeButton("Отменить") { _, _ -> }
-                .setPositiveButton("Удалить") { _, _ ->
-                    onDeleteClick?.invoke()
-                }
-                .setCancelable(true)
-                .create()
-        }
-
-        companion object {
-            fun newInstance(onDelete: () -> Unit): DeleteDialogFragment {
-                val fragment = DeleteDialogFragment()
-                fragment.setOnDeleteClick(onDelete)
-                return fragment
-            }
-        }
     }
 }

@@ -1,6 +1,5 @@
 package com.theost.walletok
 
-import android.util.Log
 import com.theost.walletok.data.Transaction
 import com.theost.walletok.data.TransactionCategory
 import com.theost.walletok.data.TransactionCategoryType
