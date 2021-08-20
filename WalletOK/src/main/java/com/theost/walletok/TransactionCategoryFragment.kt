@@ -8,7 +8,6 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
-import com.theost.walletok.utils.ViewUtils
 import com.theost.walletok.widgets.TransactionCategoryAdapter
 import com.theost.walletok.widgets.TransactionCategoryListener
 
@@ -61,7 +60,7 @@ class TransactionCategoryFragment : Fragment() {
 
     private fun onItemClicked(position: Int) {
         if (lastSelected != position) {
-            ViewUtils.enableSubmitButton(requireContext(), binding.submitButton)
+            binding.submitButton.isEnabled = true
             if (lastSelected != -1) {
                 binding.listCategory.layoutManager?.findViewByPosition(lastSelected)
                     ?.findViewById<ImageView>(R.id.category_check)?.visibility = View.INVISIBLE

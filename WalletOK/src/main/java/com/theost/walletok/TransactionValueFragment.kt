@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionValueBinding
 import com.theost.walletok.utils.StringUtils
-import com.theost.walletok.utils.ViewUtils
 import com.theost.walletok.widgets.TransactionValueListener
 
 
@@ -75,11 +74,7 @@ class TransactionValueFragment : Fragment() {
     }
 
     private fun updateSubmitButton(input: String) {
-        if (StringUtils.isCurrencyValueValid(input)) {
-            ViewUtils.enableSubmitButton(requireContext(), binding.submitButton)
-        } else {
-            ViewUtils.disableSubmitButton(requireContext(), binding.submitButton)
-        }
+        binding.submitButton.isEnabled = StringUtils.isCurrencyValueValid(input)
     }
 
     private fun setCurrentValue() {

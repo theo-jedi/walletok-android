@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
-import com.theost.walletok.utils.ViewUtils
 import com.theost.walletok.widgets.TransactionTypeAdapter
 import com.theost.walletok.widgets.TransactionTypeListener
 
@@ -59,7 +58,7 @@ class TransactionTypeFragment : Fragment() {
 
     private fun onItemClicked(position: Int) {
         if (lastSelected != position) {
-            ViewUtils.enableSubmitButton(requireContext(), binding.submitButton)
+            binding.submitButton.isEnabled = true
             if (lastSelected != -1) {
                 binding.listTypes.layoutManager?.findViewByPosition(lastSelected)
                     ?.findViewById<ImageView>(R.id.type_check)?.visibility = View.INVISIBLE
