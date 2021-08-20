@@ -46,6 +46,7 @@ class TransactionAdapterDelegate(val listener: View.OnClickListener) :
 }
 
 data class TransactionContent(
+    val transactionId: Int,
     val image: Any,
     val categoryName: String,
     val transactionType: String,
