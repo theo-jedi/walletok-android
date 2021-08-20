@@ -5,5 +5,5 @@
     android:layout_marginTop="48dp"
     android:gravity="center_horizontal"
     android:text="@string/no_entries_text_view"
-    android:textColor="@color/light_gray"
+    android:textColor="@color/blue_gray"
     android:textSize="13sp" />

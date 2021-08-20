@@ -50,7 +50,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onCategoryEdit() {
-        startFragment(TransactionCategoryFragment.newFragment(transaction.category))
+        startFragment(TransactionCategoryFragment.newFragment(transaction.categoryId))
     }
 
     override fun onValueSubmitted(value: String) {
@@ -67,12 +67,13 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         if (transaction.isFilled()) {
             startFragment(TransactionEditFragment.newFragment(transaction))
         } else {
-            startFragment(TransactionCategoryFragment.newFragment(transaction.category))
+            startFragment(TransactionCategoryFragment.newFragment(transaction.categoryId))
         }
     }
 
-    override fun onCategorySubmitted(category: Int) {
-        transaction.category = category
+    override fun onCategorySubmitted(categoryId: Int, categoryName: String) {
+        transaction.categoryId = categoryId
+        transaction.categoryName = categoryName
         startFragment(TransactionEditFragment.newFragment(transaction))
     }
 

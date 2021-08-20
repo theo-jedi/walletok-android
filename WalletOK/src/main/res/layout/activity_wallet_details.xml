@@ -20,19 +20,19 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@id/addOperationBtn"
+        app:layout_constraintBottom_toTopOf="@id/addTransactionBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/addOperationBtn"
+        android:id="@+id/addTransactionBtn"
         style="@style/BlackButton"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/add_operation"
+        android:text="@string/add_transaction"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

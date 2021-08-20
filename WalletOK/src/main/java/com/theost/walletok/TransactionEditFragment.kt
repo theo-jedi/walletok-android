@@ -57,10 +57,10 @@ class TransactionEditFragment : Fragment() {
     }
 
     private fun loadTransactionData() {
-        val value = transaction?.value + " " + getString(R.string.wallet_rub)
+        val value = transaction?.value + " " + getString(R.string.wallet_rub) // todo currency
         binding.transactionValue.text = value
         binding.transactionType.text = transaction?.type
-        //binding.transactionCategory.text = categoriesList.getById(transaction?.category)
+        binding.transactionCategory.text = transaction?.categoryName
         binding.transactionDate.text = DateTimeUtils.getCurrentDate()
     }
 
