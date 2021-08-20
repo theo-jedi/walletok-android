@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.theost.walletok.data.TransactionModel
+import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.widgets.TransactionCategoryListener
 import com.theost.walletok.widgets.TransactionListener
 import com.theost.walletok.widgets.TransactionTypeListener
@@ -78,7 +79,10 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onTransactionSubmitted() {
-        // todo send to main
+        if (transaction.isFilled()) {
+            TransactionsRepository.addTransaction(transaction.value!!, transaction.categoryId!!)
+            setResult(RESULT_OK)
+        }
         finish()
     }
 

@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.Menu
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -18,20 +20,21 @@ import java.util.*
 
 class WalletDetailsActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityWalletDetailsBinding
-
     companion object {
         fun newIntent(context: Context): Intent {
             return Intent(context, WalletDetailsActivity::class.java)
         }
     }
 
+    private lateinit var binding: ActivityWalletDetailsBinding
+    private lateinit var walletDetailsAdapter: BaseAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWalletDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        val walletDetailsAdapter = BaseAdapter()
+        walletDetailsAdapter = BaseAdapter()
         walletDetailsAdapter.apply {
             addDelegate(WalletDetailsHeaderAdapterDelegate())
             addDelegate(DateAdapterDelegate())
@@ -49,7 +52,7 @@ class WalletDetailsActivity : AppCompatActivity() {
             finish()
         }
         binding.addTransactionBtn.setOnClickListener {
-            editTransaction(R.string.new_transaction)
+            transactionHandler.launch(createTransaction(R.string.new_transaction))
         }
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
             override fun onDeleteClicked(position: Int) {
@@ -59,9 +62,7 @@ class WalletDetailsActivity : AppCompatActivity() {
                 }.show(supportFragmentManager, "dialog")
             }
 
-            override fun onEditClicked(position: Int) {
-
-            }
+            override fun onEditClicked(position: Int) {}
 
         })
         ItemTouchHelper(swipeController)
@@ -86,9 +87,17 @@ class WalletDetailsActivity : AppCompatActivity() {
         return true
     }
 
-    private fun editTransaction(mode: Int) {
-        val intent = TransactionActivity.newIntent(this, mode)
-        startActivity(intent)
+    private val transactionHandler =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
+            if (result?.resultCode == RESULT_OK) {
+                walletDetailsAdapter.setData(TransactionItemsHelper.getData())
+            } else {
+                // todo showErrorToast
+            }
+        }
+
+    private fun createTransaction(mode: Int) : Intent {
+        return TransactionActivity.newIntent(this, mode)
     }
 
 }

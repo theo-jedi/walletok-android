@@ -6,8 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import com.theost.walletok.data.TransactionCategory
-import com.theost.walletok.data.TransactionCategoryType
+import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
 import com.theost.walletok.utils.ViewUtils
 import com.theost.walletok.widgets.TransactionCategoryAdapter
@@ -52,15 +51,10 @@ class TransactionCategoryFragment : Fragment() {
             setCurrentCategory()
         }
 
-        val categories = listOf(TransactionCategory(
-            id = 0,
-            image = R.drawable.ic_category_card,
-            name = "Зарплата",
-            type = TransactionCategoryType.INCOME
-        ))
-        binding.listCategory.adapter = TransactionCategoryAdapter(categories, savedCategory) {
-            onItemClicked(it)
-        }
+        binding.listCategory.adapter =
+            TransactionCategoryAdapter(CategoriesRepository.getCategories(), savedCategory) {
+                onItemClicked(it)
+            }
 
         return binding.root
     }
@@ -77,7 +71,8 @@ class TransactionCategoryFragment : Fragment() {
     }
 
     private fun setCurrentCategory() {
-        val category = (binding.listCategory.adapter as TransactionCategoryAdapter).getItem(lastSelected)
+        val category =
+            (binding.listCategory.adapter as TransactionCategoryAdapter).getItem(lastSelected)
         (activity as TransactionCategoryListener).onCategorySubmitted(category.id, category.name)
     }
 

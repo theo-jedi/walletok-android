@@ -11,6 +11,24 @@ object CategoriesRepository {
             image = R.drawable.ic_category_card,
             name = "Зарплата",
             type = TransactionCategoryType.INCOME
+        ),
+        TransactionCategory(
+            id = 1,
+            image = R.drawable.ic_category_card,
+            name = "Подработка",
+            type = TransactionCategoryType.INCOME
+        ),
+        TransactionCategory(
+            id = 2,
+            image = R.drawable.ic_category_gift,
+            name = "Подарок",
+            type = TransactionCategoryType.INCOME
+        ),
+        TransactionCategory(
+            id = 3,
+            image = R.drawable.ic_category_percent,
+            name = "Капитализация",
+            type = TransactionCategoryType.INCOME
         )
     )
 

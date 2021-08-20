@@ -5,7 +5,7 @@ data class Transaction(
     val categoryId: Int,
     val money: String,
     val currency: String,
-    val dateTime: String
+    val dateTime: String // yyyy/MM/dd hh:mm
 )
 
 data class TransactionCategory(

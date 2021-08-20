@@ -20,7 +20,7 @@ class TransactionCategoryAdapter(private val list: List<TransactionCategory>, pr
         holder: TransactionCategoryViewHolder,
         position: Int
     ) {
-        holder.bind(list[position].name)
+        holder.bind(list[position])
     }
 
     override fun getItemCount(): Int = list.size
@@ -32,9 +32,11 @@ class TransactionCategoryAdapter(private val list: List<TransactionCategory>, pr
         View.OnClickListener {
 
         private var mCategoryView: TextView? = null
+        private var mIconView: ImageView? = null
 
         init {
             mCategoryView = itemView.findViewById(R.id.category_title)
+            mIconView = itemView.findViewById(R.id.category_icon)
             itemView.setOnClickListener(this)
         }
 
@@ -43,9 +45,10 @@ class TransactionCategoryAdapter(private val list: List<TransactionCategory>, pr
             clickListener.invoke(adapterPosition)
         }
 
-        fun bind(transaction: String) {
+        fun bind(transaction: TransactionCategory) {
             itemView.findViewById<ImageView>(R.id.category_check).visibility = View.INVISIBLE
-            mCategoryView?.text = transaction
+            mCategoryView?.text = transaction.name
+            mIconView?.setImageResource(transaction.image as Int)
             if (list[adapterPosition].id == selectedCategory) {
                 itemView.callOnClick()
             }
