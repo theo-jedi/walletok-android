@@ -4,10 +4,14 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class TransactionCreationModel(var value: String?, var type: String?, var categoryId: Int?, var categoryName: String?) : Parcelable {
+class TransactionCreationModel(
+    var value: Int? = null,
+    var type: String? = null,
+    var categoryId: Int? = null,
+    var categoryName: String? = null
+) : Parcelable {
 
-    constructor() : this(null, null, null, null)
-
-    fun isFilled() : Boolean = (value != null && type != null && categoryId != null && categoryName != null)
+    fun isFilled(): Boolean =
+        (value != null && type != null && categoryId != null && categoryName != null)
 
 }
