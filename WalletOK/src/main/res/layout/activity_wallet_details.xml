@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".WalletDetailsActivity">
 
+    <include
+        android:id="@+id/errorWidget"
+        layout="@layout/widget_error"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

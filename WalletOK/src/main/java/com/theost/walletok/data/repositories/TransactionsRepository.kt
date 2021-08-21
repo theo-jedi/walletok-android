@@ -16,24 +16,30 @@ object TransactionsRepository {
         )
     }.toMutableList()
 
-    fun getTransactions(): Single<List<Transaction>> {
+    fun getTransactions(walletId: Int): Single<List<Transaction>> {
         return Single.just(transactions)
     }
 
     fun addTransaction(value: String, category: Int): Completable {
-        val transaction = simulateServerResponse(value, category)
-        transactions.add(transaction)
-        return Completable.complete()
+        return Completable.fromAction {
+            val transaction = simulateServerResponse(value, category)
+            transactions.add(transaction)
+        }
     }
 
     private fun simulateServerResponse(value: String, category: Int): Transaction {
         return Transaction(
-            transactions.size + 1, category, value.toInt()*100, "₽", DateTimeUtils.getCurrentDateTime()
+            transactions.size + 1,
+            category,
+            value.toInt() * 100,
+            "₽",
+            DateTimeUtils.getCurrentDateTime()
         )
     }
 
     fun removeTransaction(id: Int): Completable {
-        transactions.removeAll { it.id == id }
-        return Completable.complete()
+        return Completable.fromAction {
+            transactions.removeAll { it.id == id }
+        }
     }
 }

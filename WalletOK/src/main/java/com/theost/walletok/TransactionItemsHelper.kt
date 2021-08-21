@@ -16,8 +16,8 @@ object TransactionItemsHelper {
 
     fun getData(): Single<List<Any>> {
         val categoriesSingle = CategoriesRepository.getCategories()
-        val transactionsSingle = TransactionsRepository.getTransactions()
-        val walletInfoSingle = WalletInfoRepository.getWalletInfo()
+        val transactionsSingle = TransactionsRepository.getTransactions(walletId = 0)
+        val walletInfoSingle = WalletInfoRepository.getWalletInfo(id = 0)
         return Single.zip(
             categoriesSingle,
             transactionsSingle,
