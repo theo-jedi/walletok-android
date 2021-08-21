@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.widgets.TransactionTypeAdapter
 import com.theost.walletok.widgets.TransactionTypeListener
@@ -48,8 +49,7 @@ class TransactionTypeFragment : Fragment() {
             setCurrentType()
         }
 
-        val types = listOf("Доходы", "Расходы")
-        binding.listTypes.adapter = TransactionTypeAdapter(types, savedType.orEmpty()) {
+        binding.listTypes.adapter = TransactionTypeAdapter(TransactionCategoryType.values(), savedType.orEmpty()) {
             onItemClicked(it)
         }
 

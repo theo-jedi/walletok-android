@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
@@ -55,15 +56,11 @@ class WalletDetailsActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
-        binding.addTransactionBtn.setOnClickListener {
-            transactionHandler.launch(createTransaction(R.string.new_transaction))
-        }
+        binding.addTransactionBtn.setOnClickListener { createTransaction() }
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
-            override fun onDeleteClicked(position: Int) {
+            override fun onDeleteClicked(viewHolder: RecyclerView.ViewHolder) {
                 DeleteTransactionDialogFragment.newInstance {
-                    val viewHolder = binding.recycler.findViewHolderForAdapterPosition(position)
-                            as TransactionAdapterDelegate.ViewHolder
-                    TransactionsRepository.removeTransaction(viewHolder.transactionId)
+                    TransactionsRepository.removeTransaction((viewHolder as TransactionAdapterDelegate.ViewHolder).transactionId)
                         .doOnComplete {
                             TransactionItemsHelper.getData()
                                 .subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess {
@@ -73,7 +70,14 @@ class WalletDetailsActivity : AppCompatActivity() {
                 }.show(supportFragmentManager, "dialog")
             }
 
-            override fun onEditClicked(position: Int) {}
+            override fun onEditClicked(viewHolder: RecyclerView.ViewHolder) {
+                val transactionId = (viewHolder as TransactionAdapterDelegate.ViewHolder).transactionId
+                TransactionsRepository.getTransactions()
+                    .subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess { it ->
+                        val transaction = it.find { it.id == transactionId }
+                        if (transaction != null) editTransaction(transaction)
+                    }.subscribe()
+            }
 
         })
         ItemTouchHelper(swipeController)
@@ -99,13 +103,15 @@ class WalletDetailsActivity : AppCompatActivity() {
                     .subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess {
                         walletDetailsAdapter.setData(it)
                     }.subscribe()
-            } else {
-                // todo showErrorToast
             }
         }
 
-    private fun createTransaction(mode: Int) : Intent {
-        return TransactionActivity.newIntent(this, mode)
+    private fun createTransaction() {
+        transactionHandler.launch(TransactionActivity.newIntent(this, null))
+    }
+
+    private fun editTransaction(transaction: Transaction) {
+        transactionHandler.launch(TransactionActivity.newIntent(this, transaction))
     }
 
 }

@@ -21,14 +21,40 @@ object TransactionsRepository {
     }
 
     fun addTransaction(value: Int, category: Int): Completable {
-        val transaction = simulateServerResponse(value, category)
+        val transaction = simulateCreation(value, category)
         transactions.add(transaction)
         return Completable.complete()
     }
 
-    private fun simulateServerResponse(value: Int, category: Int): Transaction {
+    fun editTransaction(id: Int, value: Int, category: Int): Completable {
+        val transaction = simulateEditing(id, value, category)
+        removeTransaction(id)
+        transactions.add(transaction)
+        return Completable.complete()
+    }
+
+    private fun simulateCreation(value: Int, category: Int): Transaction {
         return Transaction(
             transactions.size + 1, category, value, "₽", DateTimeUtils.getCurrentDateTime()
+        )
+    }
+
+    private fun simulateEditing(id: Int, value: Int, category: Int): Transaction {
+        var currency = ""
+        var dateTime = ""
+        transactions.forEach {
+            if (it.id == id) {
+                currency = it.currency
+                dateTime = it.dateTime
+                return@forEach
+            }
+        }
+        return Transaction(
+            id,
+            category,
+            value,
+            currency,
+            dateTime
         )
     }
 

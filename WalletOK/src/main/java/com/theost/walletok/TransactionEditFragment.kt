@@ -62,11 +62,11 @@ class TransactionEditFragment : Fragment() {
             StringUtils.convertMoneyForDisplay(
                 transaction?.value ?: 0
             )
-        ) + " " + getString(R.string.wallet_rub) // todo currency
+        ) + " " + (transaction?.currency ?: getString(R.string.wallet_rub))
         binding.transactionValue.text = value
         binding.transactionType.text = transaction?.type
         binding.transactionCategory.text = transaction?.categoryName
-        binding.transactionDate.text = DateTimeUtils.getCurrentDate()
+        binding.transactionDate.text = transaction?.dateTime ?: DateTimeUtils.getCurrentDate()
     }
 
 }
