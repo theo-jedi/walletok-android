@@ -59,7 +59,12 @@ class TransactionValueFragment : Fragment() {
         }
 
         binding.inputValue.addTextChangedListener(textWatcher)
-        //binding.inputValue.setText(if (savedValue != 0) StringUtils.convertMoneyForDisplay(savedValue ?: ""))
+
+        binding.inputValue.setText(
+            if (savedValue != null && savedValue != 0) StringUtils.convertMoneyForDisplay(
+                savedValue!!
+            ) else ""
+        )
 
         return binding.root
     }
