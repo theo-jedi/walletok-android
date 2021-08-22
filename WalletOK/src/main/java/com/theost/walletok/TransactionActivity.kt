@@ -19,7 +19,8 @@ import com.theost.walletok.widgets.TransactionTypeListener
 import com.theost.walletok.widgets.TransactionValueListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 
-class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener, TransactionTypeListener,
+class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener,
+    TransactionTypeListener,
     TransactionCategoryListener {
 
     companion object {
@@ -51,10 +52,12 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onBackPressed() {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
+        val currentFragment =
+            supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
         if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
             startFragment(TransactionEditFragment.newFragment(transaction))
-        } else if (currentFragment  is TransactionCategoryFragment) {
+        } else if (currentFragment is TransactionCategoryFragment) {
+            repeat(2) { supportFragmentManager.popBackStack() }
             startFragment(TransactionTypeFragment.newFragment(transaction.type))
         } else {
             if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {
@@ -75,7 +78,10 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
             }.subscribe()
     }
 
-    private fun loadSavedTransaction(savedTransaction: Transaction, savedCategory: TransactionCategory) {
+    private fun loadSavedTransaction(
+        savedTransaction: Transaction,
+        savedCategory: TransactionCategory
+    ) {
         transaction.id = savedTransaction.id
         transaction.value = savedTransaction.money
         transaction.type = savedCategory.type.uiName
@@ -93,7 +99,12 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onCategoryEdit() {
-        startFragment(TransactionCategoryFragment.newFragment(transaction.category, transaction.type))
+        startFragment(
+            TransactionCategoryFragment.newFragment(
+                transaction.category,
+                transaction.type
+            )
+        )
     }
 
     override fun onValueSubmitted(value: Int) {
@@ -111,7 +122,12 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         } else {
             transaction.type = type
             transaction.category = null
-            startFragment(TransactionCategoryFragment.newFragment(transaction.category, transaction.type))
+            startFragment(
+                TransactionCategoryFragment.newFragment(
+                    transaction.category,
+                    transaction.type
+                )
+            )
         }
     }
 
@@ -123,7 +139,11 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     override fun onTransactionSubmitted() {
         if (transaction.isFilled()) {
             if (transaction.id != null) {
-                TransactionsRepository.editTransaction(transaction.id!!, transaction.value!!, transaction.category!!)
+                TransactionsRepository.editTransaction(
+                    transaction.id!!,
+                    transaction.value!!,
+                    transaction.category!!
+                )
             } else {
                 TransactionsRepository.addTransaction(transaction.value!!, transaction.category!!)
             }
