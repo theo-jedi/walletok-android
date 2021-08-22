@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCreationModel
@@ -46,6 +47,18 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
             } else {
                 startFragment(TransactionValueFragment.newFragment(null))
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
+        if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
+            startFragment(TransactionEditFragment.newFragment(transaction))
+        } else {
+            if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {
+                supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            }
+            super.onBackPressed()
         }
     }
 
@@ -120,6 +133,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     private fun startFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.creation_fragment_container, fragment)
+            .addToBackStack(null)
             .commit()
     }
 
