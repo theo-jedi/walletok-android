@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.theost.walletok.data.models.TransactionCreationModel
+import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
 import com.theost.walletok.utils.DateTimeUtils
 import com.theost.walletok.utils.StringUtils
 import com.theost.walletok.widgets.TransactionListener
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class TransactionEditFragment : Fragment() {
 
@@ -26,6 +28,7 @@ class TransactionEditFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionEditBinding
+    private var categoryName: String? = null
 
     private val transaction: TransactionCreationModel?
         get() = arguments?.getParcelable(TRANSACTION_MODEL_KEY)
@@ -52,21 +55,27 @@ class TransactionEditFragment : Fragment() {
             transactionListener.onTransactionSubmitted()
         }
 
-        if (transaction != null) loadTransactionData()
+        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess { list ->
+                categoryName = list.find { item -> item.id == transaction?.category }?.name
+                loadTransactionData()
+            }.subscribe()
 
         return binding.root
     }
 
     private fun loadTransactionData() {
-        val value = StringUtils.formatMoney(
-            StringUtils.convertMoneyForDisplay(
-                transaction?.value ?: 0
-            )
-        ) + " " + (transaction?.currency ?: getString(R.string.wallet_rub))
-        binding.transactionValue.text = value
-        binding.transactionType.text = transaction?.type
-        binding.transactionCategory.text = transaction?.categoryName
-        binding.transactionDate.text = transaction?.dateTime ?: DateTimeUtils.getCurrentDate()
+        if (transaction != null) {
+            val value = StringUtils.formatMoney(
+                StringUtils.convertMoneyForDisplay(
+                    transaction?.value ?: 0
+                )
+            ) + " " + (transaction?.currency ?: getString(R.string.wallet_rub))
+            binding.transactionValue.text = value
+            binding.transactionType.text = transaction?.type ?: ""
+            binding.transactionCategory.text = categoryName ?: ""
+            binding.transactionDate.text = transaction?.dateTime ?: DateTimeUtils.getCurrentDate()
+        }
     }
 
 }

@@ -64,8 +64,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         transaction.id = savedTransaction.id
         transaction.value = savedTransaction.money
         transaction.type = savedCategory.type.uiName
-        transaction.categoryId = savedTransaction.categoryId
-        transaction.categoryName = savedCategory.name
+        transaction.category = savedTransaction.categoryId
         transaction.currency = savedTransaction.currency
         transaction.dateTime = savedTransaction.dateTime
     }
@@ -79,7 +78,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onCategoryEdit() {
-        startFragment(TransactionCategoryFragment.newFragment(transaction.categoryId))
+        startFragment(TransactionCategoryFragment.newFragment(transaction.category))
     }
 
     override fun onValueSubmitted(value: Int) {
@@ -96,23 +95,22 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
             startFragment(TransactionEditFragment.newFragment(transaction))
         } else {
             transaction.type = type
-            transaction.categoryId = null
-            startFragment(TransactionCategoryFragment.newFragment(transaction.categoryId))
+            transaction.category = null
+            startFragment(TransactionCategoryFragment.newFragment(transaction.category))
         }
     }
 
-    override fun onCategorySubmitted(categoryId: Int, categoryName: String) {
-        transaction.categoryId = categoryId
-        transaction.categoryName = categoryName
+    override fun onCategorySubmitted(category: Int) {
+        transaction.category = category
         startFragment(TransactionEditFragment.newFragment(transaction))
     }
 
     override fun onTransactionSubmitted() {
         if (transaction.isFilled()) {
             if (transaction.id != null) {
-                TransactionsRepository.editTransaction(transaction.id!!, transaction.value!!, transaction.categoryId!!)
+                TransactionsRepository.editTransaction(transaction.id!!, transaction.value!!, transaction.category!!)
             } else {
-                TransactionsRepository.addTransaction(transaction.value!!, transaction.categoryId!!)
+                TransactionsRepository.addTransaction(transaction.value!!, transaction.category!!)
             }
             setResult(RESULT_OK)
         }

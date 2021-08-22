@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
-import com.theost.walletok.widgets.TransactionCategoryAdapter
+import com.theost.walletok.delegates.CategoryAdapterDelegate
+import com.theost.walletok.delegates.CategoryItem
 import com.theost.walletok.widgets.TransactionCategoryListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 
@@ -28,11 +28,9 @@ class TransactionCategoryFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionCategoryBinding
+    private lateinit var categoryItems: List<CategoryItem>
 
-    private val savedCategory: Int
-        get() = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
-
-    private var lastSelected = -1
+    private var savedCategory: Int = TRANSACTION_CATEGORY_UNSET
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,36 +45,43 @@ class TransactionCategoryFragment : Fragment() {
             activity?.onBackPressed()
         }
 
+        savedCategory = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
+        if (savedCategory != TRANSACTION_CATEGORY_UNSET) binding.submitButton.isEnabled = true
+
+        binding.listCategory.setHasFixedSize(true)
+        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess { list ->
+                categoryItems = list.map { item ->
+                    CategoryItem(
+                        id = item.id,
+                        name = item.name,
+                        icon = item.image as Int,
+                        isSelected = savedCategory == item.id
+                    )
+                }
+                val adapter = BaseAdapter()
+                adapter.addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
+                binding.listCategory.adapter = adapter
+                adapter.setData(categoryItems)
+            }.subscribe()
+
         binding.submitButton.setOnClickListener {
             setCurrentCategory()
         }
-
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess {
-                binding.listCategory.adapter =
-                    TransactionCategoryAdapter(it, savedCategory) {
-                        onItemClicked(it)
-                    }
-            }.subscribe()
 
         return binding.root
     }
 
     private fun onItemClicked(position: Int) {
-        if (lastSelected != position) {
+        val category = categoryItems[position]
+        savedCategory = category.id
+        if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
             binding.submitButton.isEnabled = true
-            if (lastSelected != -1) {
-                binding.listCategory.layoutManager?.findViewByPosition(lastSelected)
-                    ?.findViewById<ImageView>(R.id.category_check)?.visibility = View.INVISIBLE
-            }
-            lastSelected = position
         }
     }
 
     private fun setCurrentCategory() {
-        val category =
-            (binding.listCategory.adapter as TransactionCategoryAdapter).getItem(lastSelected)
-        (activity as TransactionCategoryListener).onCategorySubmitted(category.id, category.name)
+        (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
     }
 
 }
