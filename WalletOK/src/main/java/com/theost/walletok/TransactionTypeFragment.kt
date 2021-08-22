@@ -50,10 +50,10 @@ class TransactionTypeFragment : Fragment() {
         binding.listTypes.setHasFixedSize(true)
         binding.listTypes.adapter = adapter
 
-        val typeItems = TransactionCategoryType.values().map { item ->
+        val typeItems = TransactionCategoryType.values().map { type ->
             TypeItem(
-                name = item.uiName,
-                isSelected = savedType == item.uiName
+                name = type.uiName,
+                isSelected = savedType == type.uiName
             )
         }
         adapter.setData(typeItems)

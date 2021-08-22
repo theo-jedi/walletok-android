@@ -16,12 +16,14 @@ class TransactionCategoryFragment : Fragment() {
 
     companion object {
         private const val TRANSACTION_CATEGORY_KEY = "transaction_category"
+        private const val TRANSACTION_TYPE_KEY = "transaction_type"
         private const val TRANSACTION_CATEGORY_UNSET = -1
 
-        fun newFragment(savedCategory: Int?): Fragment {
+        fun newFragment(savedCategory: Int?, savedType: String?): Fragment {
             val fragment = TransactionCategoryFragment()
             val bundle = Bundle()
             bundle.putInt(TRANSACTION_CATEGORY_KEY, savedCategory ?: TRANSACTION_CATEGORY_UNSET)
+            bundle.putString(TRANSACTION_TYPE_KEY, savedType ?: "")
             fragment.arguments = bundle
             return fragment
         }
@@ -31,6 +33,7 @@ class TransactionCategoryFragment : Fragment() {
     private lateinit var categoryItems: List<CategoryItem>
 
     private var savedCategory: Int = TRANSACTION_CATEGORY_UNSET
+    private var savedType: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,20 +48,22 @@ class TransactionCategoryFragment : Fragment() {
             activity?.onBackPressed()
         }
 
+        savedType = arguments?.getString(TRANSACTION_TYPE_KEY) ?: ""
         savedCategory = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
         if (savedCategory != TRANSACTION_CATEGORY_UNSET) binding.submitButton.isEnabled = true
 
         binding.listCategory.setHasFixedSize(true)
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .doOnSuccess { list ->
-                categoryItems = list.map { item ->
-                    CategoryItem(
-                        id = item.id,
-                        name = item.name,
-                        icon = item.image as Int,
-                        isSelected = savedCategory == item.id
-                    )
-                }
+                categoryItems =
+                    list.filter { category -> category.type.uiName == savedType }.map { category ->
+                        CategoryItem(
+                            id = category.id,
+                            name = category.name,
+                            icon = category.image as Int,
+                            isSelected = savedCategory == category.id
+                        )
+                    }
                 val adapter = BaseAdapter()
                 adapter.addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
                 binding.listCategory.adapter = adapter
