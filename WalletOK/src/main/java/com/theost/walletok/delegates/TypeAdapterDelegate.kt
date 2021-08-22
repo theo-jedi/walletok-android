@@ -8,7 +8,7 @@ import com.theost.walletok.AdapterDelegate
 import com.theost.walletok.databinding.ItemListTypeBinding
 
 class TypeAdapterDelegate(
-    private val clickListener: (position: String) -> Unit
+    private val clickListener: (type: String) -> Unit
 ) : AdapterDelegate {
 
     private var lastSelected: ItemListTypeBinding? = null

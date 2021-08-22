@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
+import com.theost.walletok.delegates.*
 import com.theost.walletok.utils.DateTimeUtils
 import com.theost.walletok.utils.StringUtils
 import com.theost.walletok.widgets.TransactionListener
@@ -27,6 +28,7 @@ class TransactionEditFragment : Fragment() {
         }
     }
 
+    private lateinit var transactionListener: TransactionListener
     private lateinit var binding: FragmentTransactionEditBinding
     private var categoryName: String? = null
 
@@ -46,36 +48,67 @@ class TransactionEditFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        val transactionListener = activity as TransactionListener
-        binding.layoutValue.setOnClickListener { transactionListener.onValueEdit() }
-        binding.layoutType.setOnClickListener { transactionListener.onTypeEdit() }
-        binding.layoutCategory.setOnClickListener { transactionListener.onCategoryEdit() }
+        transactionListener = activity as TransactionListener
+
+        binding.listPreferences.setHasFixedSize(true)
+
+        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess { list ->
+                categoryName = list.find { item -> item.id == transaction?.category }?.name
+                val adapter = BaseAdapter()
+                adapter.apply {
+                    addDelegate(PreferenceAdapterDelegate { onPreferenceClicked(it) })
+                    addDelegate(TitleAdapterDelegate())
+                }
+                binding.listPreferences.adapter = adapter
+                adapter.setData(getPreferencesList())
+            }.subscribe()
 
         binding.submitButton.setOnClickListener {
             transactionListener.onTransactionSubmitted()
         }
 
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { list ->
-                categoryName = list.find { item -> item.id == transaction?.category }?.name
-                loadTransactionData()
-            }.subscribe()
-
         return binding.root
     }
 
-    private fun loadTransactionData() {
-        if (transaction != null) {
-            val value = StringUtils.formatMoney(
-                StringUtils.convertMoneyForDisplay(
-                    transaction?.value ?: 0
-                )
-            ) + " " + (transaction?.currency ?: getString(R.string.wallet_rub))
-            binding.transactionValue.text = value
-            binding.transactionType.text = transaction?.type ?: ""
-            binding.transactionCategory.text = categoryName ?: ""
-            binding.transactionDate.text = transaction?.dateTime ?: DateTimeUtils.getCurrentDate()
+    private fun onPreferenceClicked(preferenceName: String) {
+        when (preferenceName) {
+            TransactionPreferenceType.VALUE.uiName -> transactionListener.onValueEdit()
+            TransactionPreferenceType.TYPE.uiName -> transactionListener.onTypeEdit()
+            TransactionPreferenceType.CATEGORY.uiName -> transactionListener.onCategoryEdit()
         }
+    }
+
+    private fun getPreferencesList(): List<Any> {
+        val value = StringUtils.formatMoney(
+            StringUtils.convertMoneyForDisplay(
+                transaction?.value ?: 0
+            )
+        ) + " " + (transaction?.currency ?: getString(R.string.wallet_rub))
+        return listOf(
+            ListTitle(getString(R.string.basic)),
+            TransactionPreference(
+                TransactionPreferenceType.VALUE,
+                value,
+                true
+            ),
+            TransactionPreference(
+                TransactionPreferenceType.TYPE,
+                transaction?.type ?: "",
+                true
+            ),
+            TransactionPreference(
+                TransactionPreferenceType.CATEGORY,
+                categoryName ?: "",
+                true
+            ),
+            ListTitle(getString(R.string.additional)),
+            TransactionPreference(
+                TransactionPreferenceType.DATE,
+                transaction?.dateTime ?: DateTimeUtils.getCurrentDate(),
+                false
+            )
+        )
     }
 
 }
