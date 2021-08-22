@@ -18,11 +18,13 @@ class TransactionEditFragment : Fragment() {
 
     companion object {
         private const val TRANSACTION_MODEL_KEY = "transaction_model"
+        private const val TRANSACTION_TITLE_KEY = "transaction_title"
 
-        fun newFragment(transaction: TransactionCreationModel): Fragment {
+        fun newFragment(transaction: TransactionCreationModel, title: Int): Fragment {
             val fragment = TransactionEditFragment()
             val bundle = Bundle()
             bundle.putParcelable(TRANSACTION_MODEL_KEY, transaction)
+            bundle.putInt(TRANSACTION_TITLE_KEY, title)
             fragment.arguments = bundle
             return fragment
         }
@@ -34,6 +36,8 @@ class TransactionEditFragment : Fragment() {
 
     private val transaction: TransactionCreationModel?
         get() = arguments?.getParcelable(TRANSACTION_MODEL_KEY)
+    private val title: Int
+        get() = arguments?.getInt(TRANSACTION_TITLE_KEY) ?: R.string.new_transaction
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +47,7 @@ class TransactionEditFragment : Fragment() {
         binding = FragmentTransactionEditBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
+        binding.toolbar.title = getString(title)
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         binding.toolbar.setNavigationOnClickListener {
             activity?.onBackPressed()

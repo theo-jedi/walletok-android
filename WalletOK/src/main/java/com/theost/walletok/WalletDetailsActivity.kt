@@ -107,11 +107,11 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
 
     private fun createTransaction() {
-        transactionHandler.launch(TransactionActivity.newIntent(this, null))
+        transactionHandler.launch(TransactionActivity.newIntent(this, null, R.string.new_transaction))
     }
 
     private fun editTransaction(transaction: Transaction) {
-        transactionHandler.launch(TransactionActivity.newIntent(this, transaction))
+        transactionHandler.launch(TransactionActivity.newIntent(this, transaction, R.string.edit_transaction))
     }
 
 }
