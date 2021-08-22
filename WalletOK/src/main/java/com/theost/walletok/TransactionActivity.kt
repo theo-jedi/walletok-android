@@ -54,6 +54,8 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         val currentFragment = supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
         if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
             startFragment(TransactionEditFragment.newFragment(transaction))
+        } else if (currentFragment  is TransactionCategoryFragment) {
+            startFragment(TransactionTypeFragment.newFragment(transaction.type))
         } else {
             if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {
                 supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
