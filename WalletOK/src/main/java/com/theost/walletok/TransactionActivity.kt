@@ -55,8 +55,9 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
             startFragment(TransactionEditFragment.newFragment(transaction))
         } else if (currentFragment is TransactionCategoryFragment) {
+            // Remove TransactionCategoryFragment (current) and TransactionTypeFragment (without data)
             repeat(2) { supportFragmentManager.popBackStack() }
-            supportFragmentManager.popBackStack()
+            // Load TransactionTypeFragment with data
             startFragment(TransactionTypeFragment.newFragment(transaction.type))
         } else {
             if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {
