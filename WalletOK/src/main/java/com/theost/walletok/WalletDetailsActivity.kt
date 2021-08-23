@@ -76,10 +76,14 @@ class WalletDetailsActivity : AppCompatActivity() {
             override fun onEditClicked(viewHolder: RecyclerView.ViewHolder) {
                 val transactionId = (viewHolder as TransactionAdapterDelegate.ViewHolder).transactionId
                 TransactionsRepository.getTransactions(0) // todo add walletId after Samuel pr merged
-                    .subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess { it ->
-                        val transaction = it.find { it.id == transactionId }
+                    .subscribeOn(AndroidSchedulers.mainThread()).subscribe({ list ->
+                        val transaction = list.find { it.id == transactionId }
                         if (transaction != null) editTransaction(transaction)
-                    }.subscribe()
+                    }, {
+                        ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                            onEditClicked(viewHolder)
+                        }
+                    }).addTo(compositeDisposable)
             }
 
         })
