@@ -15,8 +15,9 @@ class TransactionTypeFragment : Fragment() {
 
     companion object {
         private const val TRANSACTION_TYPE_KEY = "transaction_type"
+        private const val TRANSACTION_TYPE_UNSET = -1
 
-        fun newFragment(savedType: String?): Fragment {
+        fun newFragment(savedType: String? = ""): Fragment {
             val fragment = TransactionTypeFragment()
             val bundle = Bundle()
             bundle.putString(TRANSACTION_TYPE_KEY, savedType)
@@ -26,7 +27,10 @@ class TransactionTypeFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionTypeBinding
+    private lateinit var typeItems: List<TypeItem>
     private lateinit var savedType: String
+    private var lastSelected: Int = TRANSACTION_TYPE_UNSET
+    private val adapter = BaseAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,19 +48,21 @@ class TransactionTypeFragment : Fragment() {
 
         if (savedType != "") binding.submitButton.isEnabled = true
 
-        val adapter = BaseAdapter()
-        adapter.addDelegate(TypeAdapterDelegate { onItemClicked(it) })
+        adapter.addDelegate(TypeAdapterDelegate { position ->
+            onItemClicked(position)
+        })
 
         binding.listTypes.setHasFixedSize(true)
         binding.listTypes.adapter = adapter
 
-        val typeItems = TransactionCategoryType.values().map { type ->
+        typeItems = TransactionCategoryType.values().map { type ->
             TypeItem(
                 name = type.uiName,
                 isSelected = savedType == type.uiName
             )
         }
         adapter.setData(typeItems)
+        lastSelected = typeItems.indexOfFirst { it.name == savedType }
 
         binding.submitButton.setOnClickListener {
             setCurrentType()
@@ -80,8 +86,14 @@ class TransactionTypeFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    private fun onItemClicked(type: String) {
-        savedType = type
+    private fun onItemClicked(position: Int) {
+        if (lastSelected != TRANSACTION_TYPE_UNSET) typeItems[lastSelected].isSelected = false
+        typeItems[position].isSelected = true
+        adapter.setData(typeItems)
+
+        savedType = typeItems[position].name
+        lastSelected =  position
+
         if (savedType != "") {
             binding.submitButton.isEnabled = true
         }

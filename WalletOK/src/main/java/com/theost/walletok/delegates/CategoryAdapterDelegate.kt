@@ -11,13 +11,11 @@ class CategoryAdapterDelegate(
     private val clickListener: (position: Int) -> Unit
 ) : AdapterDelegate {
 
-    private var lastSelected: ItemListCategoryBinding? = null
-
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
         val binding = ItemListCategoryBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return ViewHolder(binding)
+        return ViewHolder(binding, clickListener)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: Any, position: Int) {
@@ -26,31 +24,15 @@ class CategoryAdapterDelegate(
 
     override fun isOfViewType(item: Any): Boolean = item is CategoryItem
 
-    inner class ViewHolder(private val binding: ItemListCategoryBinding) :
-        RecyclerView.ViewHolder(binding.root),
-        View.OnClickListener {
-
-        init {
-            binding.root.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View?) {
-            if (binding != lastSelected) {
-                if (lastSelected != null) lastSelected!!.categoryCheck.visibility = View.INVISIBLE
-                binding.categoryCheck.visibility = View.VISIBLE
-                lastSelected = binding
-
-                clickListener(adapterPosition)
-            }
-        }
+    class ViewHolder(private val binding: ItemListCategoryBinding, private val clickListener: (position: Int) -> Unit) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: CategoryItem) {
+            binding.root.setOnClickListener { clickListener(adapterPosition) }
             binding.categoryTitle.text = category.name
             binding.categoryIcon.setImageResource(category.icon)
-            if (category.isSelected) {
-                binding.categoryCheck.visibility = View.VISIBLE
-                lastSelected = binding
-            }
+            binding.categoryCheck.visibility = View.INVISIBLE
+            if (category.isSelected) { binding.categoryCheck.visibility = View.VISIBLE }
         }
 
     }
@@ -61,5 +43,5 @@ data class CategoryItem(
     val id: Int,
     val name: String,
     val icon: Int,
-    val isSelected: Boolean
+    var isSelected: Boolean
 )

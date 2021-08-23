@@ -15,12 +15,12 @@ class TitleAdapterDelegate : AdapterDelegate {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: Any, position: Int) {
-        (holder as TitleAdapterDelegate.ViewHolder).bind(item as ListTitle)
+        (holder as ViewHolder).bind(item as ListTitle)
     }
 
     override fun isOfViewType(item: Any): Boolean = item is ListTitle
 
-    inner class ViewHolder(private val binding: ItemListTitleBinding) :
+    class ViewHolder(private val binding: ItemListTitleBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(title: ListTitle) {

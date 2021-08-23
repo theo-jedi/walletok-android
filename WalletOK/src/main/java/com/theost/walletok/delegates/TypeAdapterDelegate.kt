@@ -8,16 +8,14 @@ import com.theost.walletok.AdapterDelegate
 import com.theost.walletok.databinding.ItemListTypeBinding
 
 class TypeAdapterDelegate(
-    private val clickListener: (type: String) -> Unit
+    private val clickListener: (position: Int) -> Unit
 ) : AdapterDelegate {
-
-    private var lastSelected: ItemListTypeBinding? = null
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
         val binding = ItemListTypeBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return ViewHolder(binding)
+        return ViewHolder(binding, clickListener)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: Any, position: Int) {
@@ -26,30 +24,14 @@ class TypeAdapterDelegate(
 
     override fun isOfViewType(item: Any): Boolean = item is TypeItem
 
-    inner class ViewHolder(private val binding: ItemListTypeBinding) :
-        RecyclerView.ViewHolder(binding.root),
-        View.OnClickListener {
-
-        init {
-            binding.root.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View?) {
-            if (binding != lastSelected) {
-                if (lastSelected != null) lastSelected!!.typeCheck.visibility = View.INVISIBLE
-                binding.typeCheck.visibility = View.VISIBLE
-                lastSelected = binding
-
-                clickListener(binding.typeTitle.text.toString())
-            }
-        }
+    class ViewHolder(private val binding: ItemListTypeBinding, private val clickListener: (position: Int) -> Unit) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(type: TypeItem) {
+            binding.root.setOnClickListener { clickListener(adapterPosition) }
             binding.typeTitle.text = type.name
-            if (type.isSelected) {
-                binding.typeCheck.visibility = View.VISIBLE
-                lastSelected = binding
-            }
+            binding.typeCheck.visibility = View.INVISIBLE
+            if (type.isSelected) { binding.typeCheck.visibility = View.VISIBLE }
         }
 
     }
@@ -58,5 +40,5 @@ class TypeAdapterDelegate(
 
 data class TypeItem(
     val name: String,
-    val isSelected: Boolean
+    var isSelected: Boolean
 )

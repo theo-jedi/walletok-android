@@ -17,10 +17,10 @@ class TransactionValueFragment : Fragment() {
     companion object {
         private const val TRANSACTION_VALUE_KEY = "transaction_value"
 
-        fun newFragment(savedValue: Int?): Fragment {
+        fun newFragment(savedValue: Int = 0): Fragment {
             val fragment = TransactionValueFragment()
             val bundle = Bundle()
-            bundle.putInt(TRANSACTION_VALUE_KEY, savedValue ?: 0)
+            bundle.putInt(TRANSACTION_VALUE_KEY, savedValue)
             fragment.arguments = bundle
             return fragment
         }
@@ -28,8 +28,8 @@ class TransactionValueFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionValueBinding
 
-    private val savedValue: Int?
-        get() = arguments?.getInt(TRANSACTION_VALUE_KEY)
+    private val savedValue: Int
+        get() = arguments?.getInt(TRANSACTION_VALUE_KEY)!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,12 +59,7 @@ class TransactionValueFragment : Fragment() {
         }
 
         binding.inputValue.addTextChangedListener(textWatcher)
-
-        binding.inputValue.setText(
-            if (savedValue != null && savedValue != 0) StringUtils.convertMoneyForDisplay(
-                savedValue!!
-            ) else ""
-        )
+        binding.inputValue.setText(if (savedValue != 0) savedValue.toString() else "")
 
         return binding.root
     }
@@ -72,8 +67,9 @@ class TransactionValueFragment : Fragment() {
     private fun onTextChanged(input: String) {
         val value = StringUtils.formatMoney(input)
 
+        val selection = binding.inputValue.selectionEnd + (value.length - input.length)
         binding.inputValue.setText(value)
-        binding.inputValue.setSelection(binding.inputValue.length())
+        binding.inputValue.setSelection(selection)
 
         updateSubmitButton(input)
     }

@@ -1,5 +1,6 @@
 package com.theost.walletok
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +20,11 @@ class TransactionCategoryFragment : Fragment() {
         private const val TRANSACTION_TYPE_KEY = "transaction_type"
         private const val TRANSACTION_CATEGORY_UNSET = -1
 
-        fun newFragment(savedCategory: Int?, savedType: String?): Fragment {
+        fun newFragment(savedCategory: Int? = TRANSACTION_CATEGORY_UNSET, savedType: String? = ""): Fragment {
             val fragment = TransactionCategoryFragment()
             val bundle = Bundle()
             bundle.putInt(TRANSACTION_CATEGORY_KEY, savedCategory ?: TRANSACTION_CATEGORY_UNSET)
-            bundle.putString(TRANSACTION_TYPE_KEY, savedType ?: "")
+            bundle.putString(TRANSACTION_TYPE_KEY, savedType)
             fragment.arguments = bundle
             return fragment
         }
@@ -33,7 +34,9 @@ class TransactionCategoryFragment : Fragment() {
     private lateinit var categoryItems: List<CategoryItem>
 
     private var savedCategory: Int = TRANSACTION_CATEGORY_UNSET
+    private var lastSelected: Int = TRANSACTION_CATEGORY_UNSET
     private var savedType: String = ""
+    private val adapter = BaseAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,11 +51,15 @@ class TransactionCategoryFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        savedType = arguments?.getString(TRANSACTION_TYPE_KEY) ?: ""
-        savedCategory = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
-        if (savedCategory != TRANSACTION_CATEGORY_UNSET) binding.submitButton.isEnabled = true
+        if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
+            binding.submitButton.isEnabled = true
+        }
 
+        adapter.addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
+
+        binding.listCategory.adapter = adapter
         binding.listCategory.setHasFixedSize(true)
+
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .doOnSuccess { list ->
                 categoryItems =
@@ -64,9 +71,7 @@ class TransactionCategoryFragment : Fragment() {
                             isSelected = savedCategory == category.id
                         )
                     }
-                val adapter = BaseAdapter()
-                adapter.addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
-                binding.listCategory.adapter = adapter
+                lastSelected = categoryItems.indexOfFirst { it.id == savedCategory }
                 adapter.setData(categoryItems)
             }.subscribe()
 
@@ -77,9 +82,33 @@ class TransactionCategoryFragment : Fragment() {
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (savedInstanceState == null) {
+            savedCategory = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
+            savedType = arguments?.getString(TRANSACTION_TYPE_KEY) ?: ""
+        } else {
+            savedCategory = savedInstanceState.getInt(TRANSACTION_CATEGORY_KEY, TRANSACTION_CATEGORY_UNSET)
+            savedType = savedInstanceState.getString(TRANSACTION_TYPE_KEY) ?: ""
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(TRANSACTION_CATEGORY_KEY, savedCategory)
+        outState.putString(TRANSACTION_TYPE_KEY, savedType)
+        super.onSaveInstanceState(outState)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun onItemClicked(position: Int) {
-        val category = categoryItems[position]
-        savedCategory = category.id
+        if (lastSelected != TRANSACTION_CATEGORY_UNSET) categoryItems[lastSelected].isSelected = false
+        categoryItems[position].isSelected = true
+        adapter.setData(categoryItems)
+
+        savedCategory = categoryItems[position].id
+        lastSelected = position
+
         if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
             binding.submitButton.isEnabled = true
         }
