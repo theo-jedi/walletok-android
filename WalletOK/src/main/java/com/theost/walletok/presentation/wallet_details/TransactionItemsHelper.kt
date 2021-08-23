@@ -1,6 +1,6 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details
 
-import com.theost.walletok.base.PaginationStatus
+import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.Wallet

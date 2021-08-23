@@ -4,7 +4,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.base.AdapterDelegate
+import com.theost.walletok.presentation.base.AdapterDelegate
 import com.theost.walletok.databinding.ItemTransactionBinding
 import kotlin.properties.Delegates
 

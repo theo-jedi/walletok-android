@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details
 
 import android.app.AlertDialog
 import android.app.Dialog

@@ -1,4 +1,4 @@
-package com.theost.walletok.base
+package com.theost.walletok.presentation.base
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup

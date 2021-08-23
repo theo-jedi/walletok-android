@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WalletDetailsActivity">
+    tools:context=".presentation.wallet_details.WalletDetailsActivity">
 
     <include
         android:id="@+id/errorWidget"

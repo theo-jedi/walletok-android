@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details.transaction
 
 import android.os.Bundle
 import android.text.Editable
@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentTransactionValueBinding
 import com.theost.walletok.utils.StringUtils
 import com.theost.walletok.widgets.TransactionValueListener

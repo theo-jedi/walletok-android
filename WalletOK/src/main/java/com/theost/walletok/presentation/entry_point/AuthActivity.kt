@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.entry_point
 
 import android.content.Context
 import android.content.Intent
@@ -11,6 +11,8 @@ import androidx.appcompat.widget.AppCompatButton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.theost.walletok.R
+import com.theost.walletok.presentation.wallet_details.WalletDetailsActivity
 
 
 class AuthActivity : AppCompatActivity() {

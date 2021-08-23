@@ -9,7 +9,7 @@
     android:paddingTop="26dp"
     android:paddingEnd="16dp"
     android:paddingBottom="16dp"
-    tools:context=".AuthActivity">
+    tools:context=".presentation.entry_point.AuthActivity">
 
     <ImageView
         android:id="@+id/auth_image"

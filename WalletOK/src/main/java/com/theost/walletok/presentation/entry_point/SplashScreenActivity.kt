@@ -1,9 +1,10 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.entry_point
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.theost.walletok.utils.AuthUtils
+import com.theost.walletok.presentation.wallet_details.WalletDetailsActivity
 
 
 class SplashScreenActivity : AppCompatActivity() {

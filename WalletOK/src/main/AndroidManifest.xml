@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Walletokandroid"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".SplashScreenActivity"
+            android:name=".presentation.entry_point.SplashScreenActivity"
             android:exported="true"
             android:theme="@style/SplashScreenTheme">
             <intent-filter>
@@ -21,9 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".WalletDetailsActivity" />
-        <activity android:name=".AuthActivity" />
-        <activity android:name=".TransactionActivity"
+        <activity android:name="com.theost.walletok.presentation.wallet_details.WalletDetailsActivity" />
+        <activity android:name=".presentation.entry_point.AuthActivity" />
+        <activity android:name="com.theost.walletok.presentation.wallet_details.transaction.TransactionActivity"
             android:windowSoftInputMode="adjustResize" />
 
     </application>

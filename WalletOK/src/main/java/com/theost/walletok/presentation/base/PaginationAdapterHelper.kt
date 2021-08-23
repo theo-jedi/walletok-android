@@ -1,4 +1,4 @@
-package com.theost.walletok.base
+package com.theost.walletok.presentation.base
 
 class PaginationAdapterHelper(
     private val onLoadMoreCallback: (offset: Int) -> Unit

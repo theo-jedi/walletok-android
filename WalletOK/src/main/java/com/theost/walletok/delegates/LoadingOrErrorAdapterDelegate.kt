@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.base.AdapterDelegate
-import com.theost.walletok.base.PaginationStatus
+import com.theost.walletok.presentation.base.AdapterDelegate
+import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.databinding.ItemLoadingOrErrorBinding
 
 class LoadingOrErrorAdapterDelegate(private val listener: View.OnClickListener) : AdapterDelegate {
