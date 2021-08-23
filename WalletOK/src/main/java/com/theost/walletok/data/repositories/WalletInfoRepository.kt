@@ -1,10 +1,11 @@
 package com.theost.walletok.data.repositories
 
-import com.theost.walletok.data.models.WalletInfo
+import com.theost.walletok.data.models.Wallet
 import io.reactivex.Single
 
 object WalletInfoRepository {
-    private val walletInfo = WalletInfo(
+    private val walletInfo = Wallet(
+        id = 0,
         name = "Кошелек 1",
         currency = "rub",
         amountOfMoney = 0,
@@ -13,7 +14,7 @@ object WalletInfoRepository {
         loseLimit = 0
     )
 
-    fun getWalletInfo(): Single<WalletInfo> {
+    fun getWalletInfo(id: Int): Single<Wallet> {
         return Single.just(walletInfo)
     }
 }

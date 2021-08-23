@@ -20,11 +20,11 @@ class TransactionEditFragment : Fragment() {
         private const val TRANSACTION_MODEL_KEY = "transaction_model"
         private const val TRANSACTION_TITLE_KEY = "transaction_title"
 
-        fun newFragment(transaction: TransactionCreationModel, title: Int): Fragment {
+        fun newFragment(transaction: TransactionCreationModel, titleRes: Int): Fragment {
             val fragment = TransactionEditFragment()
             val bundle = Bundle()
             bundle.putParcelable(TRANSACTION_MODEL_KEY, transaction)
-            bundle.putInt(TRANSACTION_TITLE_KEY, title)
+            bundle.putInt(TRANSACTION_TITLE_KEY, titleRes)
             fragment.arguments = bundle
             return fragment
         }
@@ -34,10 +34,9 @@ class TransactionEditFragment : Fragment() {
     private lateinit var binding: FragmentTransactionEditBinding
     private var categoryName: String? = null
 
-    private val transaction: TransactionCreationModel?
-        get() = arguments?.getParcelable(TRANSACTION_MODEL_KEY)
-    private val title: Int
-        get() = arguments?.getInt(TRANSACTION_TITLE_KEY) ?: R.string.new_transaction
+    private var transaction: TransactionCreationModel? = null
+    private val titleRes: Int
+        get() = arguments?.getInt(TRANSACTION_TITLE_KEY)!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +46,7 @@ class TransactionEditFragment : Fragment() {
         binding = FragmentTransactionEditBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
-        binding.toolbar.title = getString(title)
+        binding.toolbar.title = getString(titleRes)
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         binding.toolbar.setNavigationOnClickListener {
             activity?.onBackPressed()
@@ -55,17 +54,18 @@ class TransactionEditFragment : Fragment() {
 
         transactionListener = activity as TransactionListener
 
+        val adapter = BaseAdapter()
+        adapter.apply {
+            addDelegate(PreferenceAdapterDelegate { onPreferenceClicked(it) })
+            addDelegate(TitleAdapterDelegate())
+        }
+
         binding.listPreferences.setHasFixedSize(true)
+        binding.listPreferences.adapter = adapter
 
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .doOnSuccess { list ->
                 categoryName = list.find { item -> item.id == transaction?.category }?.name
-                val adapter = BaseAdapter()
-                adapter.apply {
-                    addDelegate(PreferenceAdapterDelegate { onPreferenceClicked(it) })
-                    addDelegate(TitleAdapterDelegate())
-                }
-                binding.listPreferences.adapter = adapter
                 adapter.setData(getPreferencesList())
             }.subscribe()
 
@@ -74,6 +74,21 @@ class TransactionEditFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        transaction = if (savedInstanceState == null) {
+            arguments?.getParcelable(TRANSACTION_MODEL_KEY)
+        } else {
+            savedInstanceState.getParcelable(TRANSACTION_MODEL_KEY)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(TRANSACTION_MODEL_KEY, transaction)
+        super.onSaveInstanceState(outState)
     }
 
     private fun onPreferenceClicked(preferenceName: String) {

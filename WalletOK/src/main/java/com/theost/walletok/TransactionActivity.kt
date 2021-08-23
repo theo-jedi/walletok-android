@@ -24,34 +24,35 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
     companion object {
         private const val TRANSACTION_KEY = "transaction"
-        private const val TRANSACTION_TITLE_KEY = "transaction_title"
+        private const val TRANSACTION_TITLE_KEY = "transaction_titleRes"
 
-        fun newIntent(context: Context, transaction: Transaction?, title: Int): Intent {
+        fun newIntent(context: Context, transaction: Transaction?, titleRes: Int): Intent {
             val intent = Intent(context, TransactionActivity::class.java)
             intent.putExtra(TRANSACTION_KEY, transaction)
-            intent.putExtra(TRANSACTION_TITLE_KEY, title)
+            intent.putExtra(TRANSACTION_TITLE_KEY, titleRes)
             return intent
         }
     }
 
     private lateinit var binding: ActivityTransactionBinding
 
+    private val savedTransaction: Transaction?
+        get() = intent.getParcelableExtra(TRANSACTION_KEY)
+    private val titleRes: Int
+        get() = intent.getIntExtra(TRANSACTION_TITLE_KEY, R.string.new_transaction)
+
     private val transaction = TransactionCreationModel()
-    private var title: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTransactionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        title = intent.getIntExtra(TRANSACTION_TITLE_KEY, R.string.new_transaction)
-
-        val savedTransaction = intent.getParcelableExtra<Transaction>(TRANSACTION_KEY)
         if (savedInstanceState == null) {
             if (savedTransaction != null) {
-                restoreSavedTransaction(savedTransaction)
+                restoreSavedTransaction(savedTransaction!!)
             } else {
-                startFragment(TransactionValueFragment.newFragment(null))
+                startFragment(TransactionValueFragment.newFragment())
             }
         }
     }
@@ -59,7 +60,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     override fun onBackPressed() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
         if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
-            startFragment(TransactionEditFragment.newFragment(transaction, title!!))
+            startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
         } else {
             if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {
                 supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -75,7 +76,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
                 val category = it.find { it.id == savedTransaction.categoryId }!!
                 loadSavedTransaction(savedTransaction, category)
                 binding.transactionProgress.visibility = View.GONE
-                startFragment(TransactionEditFragment.newFragment(transaction, title!!))
+                startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
             }.subscribe()
     }
 
@@ -89,7 +90,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onValueEdit() {
-        startFragment(TransactionValueFragment.newFragment(transaction.value))
+        startFragment(TransactionValueFragment.newFragment(transaction.value ?: 0))
     }
 
     override fun onTypeEdit() {
@@ -103,7 +104,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     override fun onValueSubmitted(value: Int) {
         transaction.value = value
         if (transaction.isFilled()) {
-            startFragment(TransactionEditFragment.newFragment(transaction, title!!))
+            startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
         } else {
             startFragment(TransactionTypeFragment.newFragment(transaction.type))
         }
@@ -111,7 +112,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
     override fun onTypeSubmitted(type: String) {
         if (transaction.isFilled() && transaction.type == type) {
-            startFragment(TransactionEditFragment.newFragment(transaction, title!!))
+            startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
         } else {
             transaction.type = type
             transaction.category = null
@@ -121,7 +122,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
     override fun onCategorySubmitted(category: Int) {
         transaction.category = category
-        startFragment(TransactionEditFragment.newFragment(transaction, title!!))
+        startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
     }
 
     override fun onTransactionSubmitted() {

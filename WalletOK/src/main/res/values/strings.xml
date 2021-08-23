@@ -39,4 +39,6 @@
 
     <string name="zero">0</string>
     <string name="wallet_rub">₽</string>
+    <string name="retry">Повторить</string>
+    <string name="default_error_message">Что-то пошло не так</string>
 </resources>

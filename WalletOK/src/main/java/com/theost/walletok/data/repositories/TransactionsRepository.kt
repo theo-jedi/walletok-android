@@ -16,7 +16,7 @@ object TransactionsRepository {
         )
     }.toMutableList()
 
-    fun getTransactions(): Single<List<Transaction>> {
+    fun getTransactions(walletId: Int): Single<List<Transaction>> {
         return Single.just(transactions)
     }
 
@@ -59,7 +59,8 @@ object TransactionsRepository {
     }
 
     fun removeTransaction(id: Int): Completable {
-        transactions.removeAll { it.id == id }
-        return Completable.complete()
+        return Completable.fromAction {
+            transactions.removeAll { it.id == id }
+        }
     }
 }

@@ -14,28 +14,20 @@ class PreferenceAdapterDelegate(
         val binding = ItemListPreferenceBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return ViewHolder(binding)
+        return ViewHolder(binding, clickListener)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: Any, position: Int) {
-        (holder as PreferenceAdapterDelegate.ViewHolder).bind(item as TransactionPreference)
+        (holder as ViewHolder).bind(item as TransactionPreference)
     }
 
     override fun isOfViewType(item: Any): Boolean = item is TransactionPreference
 
-    inner class ViewHolder(private val binding: ItemListPreferenceBinding) :
-        RecyclerView.ViewHolder(binding.root),
-        View.OnClickListener {
-
-        init {
-            binding.root.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View?) {
-            clickListener(binding.preferenceName.text.toString())
-        }
+    class ViewHolder(private val binding: ItemListPreferenceBinding, private val clickListener: (preferenceName: String) -> Unit) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(preference: TransactionPreference) {
+            binding.root.setOnClickListener { clickListener(preference.type.uiName) }
             binding.preferenceName.text = preference.type.uiName
             binding.preferenceValue.text = preference.value
             binding.root.isClickable = preference.isClickable
