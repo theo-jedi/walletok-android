@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentTransactionValueBinding
 import com.theost.walletok.utils.StringUtils
-import com.theost.walletok.widgets.TransactionValueListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionValueListener
 
 
 class TransactionValueFragment : Fragment() {

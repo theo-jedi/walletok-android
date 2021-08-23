@@ -1,4 +1,4 @@
-package com.theost.walletok.widgets
+package com.theost.walletok.presentation.wallet_details.transaction.widgets
 
 interface TransactionListener {
 
