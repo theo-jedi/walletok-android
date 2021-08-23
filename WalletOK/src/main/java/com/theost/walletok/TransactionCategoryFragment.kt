@@ -1,6 +1,5 @@
 package com.theost.walletok
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,10 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
-import com.theost.walletok.delegates.CategoryAdapterDelegate
 import com.theost.walletok.delegates.CategoryItem
+import com.theost.walletok.utils.addTo
+import com.theost.walletok.widgets.TransactionCategoryAdapter
 import com.theost.walletok.widgets.TransactionCategoryListener
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 
 class TransactionCategoryFragment : Fragment() {
 
@@ -33,6 +34,7 @@ class TransactionCategoryFragment : Fragment() {
     private lateinit var binding: FragmentTransactionCategoryBinding
     private lateinit var categoryItems: List<CategoryItem>
 
+    private val compositeDisposable = CompositeDisposable()
     private var savedCategory: Int = TRANSACTION_CATEGORY_UNSET
     private var lastSelected: Int = TRANSACTION_CATEGORY_UNSET
     private var savedType: String = ""
@@ -79,6 +81,8 @@ class TransactionCategoryFragment : Fragment() {
             setCurrentCategory()
         }
 
+        loadCategories()
+
         return binding.root
     }
 
@@ -118,4 +122,29 @@ class TransactionCategoryFragment : Fragment() {
         (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
     }
 
+    private fun loadCategories() {
+        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                categoryItems =
+                    list.filter { category -> category.type.uiName == savedType }.map { category ->
+                        CategoryItem(
+                            id = category.id,
+                            name = category.name,
+                            icon = category.image as Int,
+                            isSelected = savedCategory == category.id
+                        )
+                    }
+                lastSelected = categoryItems.indexOfFirst { it.id == savedCategory }
+                adapter.setData(categoryItems)
+            }, {
+                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                    loadCategories()
+                }
+            }).addTo(compositeDisposable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
+    }
 }

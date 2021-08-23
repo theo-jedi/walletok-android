@@ -1,6 +1,7 @@
 package com.theost.walletok.data.models
 
-data class WalletInfo(
+data class Wallet(
+    val id: Int,
     val name: String,
     val currency: String,
     val amountOfMoney: Int,

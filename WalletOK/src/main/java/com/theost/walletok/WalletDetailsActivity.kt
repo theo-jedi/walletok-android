@@ -15,7 +15,8 @@ import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.theost.walletok.utils.addTo
+import io.reactivex.disposables.CompositeDisposable
 import java.util.*
 
 
@@ -27,6 +28,7 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
     }
 
+    private val compositeDisposable = CompositeDisposable()
     private lateinit var binding: ActivityWalletDetailsBinding
     private lateinit var walletDetailsAdapter: BaseAdapter
 
@@ -43,9 +45,7 @@ class WalletDetailsActivity : AppCompatActivity() {
             addDelegate(EmptyListAdapterDelegate())
         }
 
-        TransactionItemsHelper.getData().subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-            walletDetailsAdapter.setData(it)
-        }.subscribe()
+        updateTransactionsList()
 
         binding.recycler.apply {
             adapter = walletDetailsAdapter
@@ -58,15 +58,18 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
         binding.addTransactionBtn.setOnClickListener { createTransaction() }
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
-            override fun onDeleteClicked(viewHolder: RecyclerView.ViewHolder) {
+            override fun onDeleteClicked(position: Int) {
                 DeleteTransactionDialogFragment.newInstance {
-                    TransactionsRepository.removeTransaction((viewHolder as TransactionAdapterDelegate.ViewHolder).transactionId)
-                        .doOnComplete {
-                            TransactionItemsHelper.getData()
-                                .subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-                                    walletDetailsAdapter.setData(it)
-                                }.subscribe()
-                        }.subscribe()
+                    val viewHolder = binding.recycler.findViewHolderForAdapterPosition(position)
+                            as TransactionAdapterDelegate.ViewHolder
+                    TransactionsRepository.removeTransaction(viewHolder.transactionId)
+                        .subscribe(
+                            { updateTransactionsList() },
+                            {
+                                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                                    onDeleteClicked(position)
+                                }
+                            }).addTo(compositeDisposable)
                 }.show(supportFragmentManager, "dialog")
             }
 
@@ -99,12 +102,25 @@ class WalletDetailsActivity : AppCompatActivity() {
     private val transactionHandler =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
             if (result?.resultCode == RESULT_OK) {
-                TransactionItemsHelper.getData()
-                    .subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-                        walletDetailsAdapter.setData(it)
-                    }.subscribe()
+                updateTransactionsList()
             }
         }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
+    }
+
+    private fun updateTransactionsList() {
+        TransactionItemsHelper.getData()
+            .subscribe({
+                walletDetailsAdapter.setData(it)
+            }, {
+                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                    updateTransactionsList()
+                }
+            }).addTo(compositeDisposable)
+    }
 
     private fun createTransaction() {
         transactionHandler.launch(TransactionActivity.newIntent(this, null, R.string.new_transaction))
