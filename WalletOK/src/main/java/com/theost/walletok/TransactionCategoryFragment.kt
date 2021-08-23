@@ -8,9 +8,11 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
+import com.theost.walletok.utils.addTo
 import com.theost.walletok.widgets.TransactionCategoryAdapter
 import com.theost.walletok.widgets.TransactionCategoryListener
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 
 class TransactionCategoryFragment : Fragment() {
 
@@ -33,6 +35,7 @@ class TransactionCategoryFragment : Fragment() {
         get() = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
 
     private var lastSelected = -1
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,13 +54,7 @@ class TransactionCategoryFragment : Fragment() {
             setCurrentCategory()
         }
 
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess {
-                binding.listCategory.adapter =
-                    TransactionCategoryAdapter(it, savedCategory) {
-                        onItemClicked(it)
-                    }
-            }.subscribe()
+        loadCategories()
 
         return binding.root
     }
@@ -79,4 +76,22 @@ class TransactionCategoryFragment : Fragment() {
         (activity as TransactionCategoryListener).onCategorySubmitted(category.id, category.name)
     }
 
+    private fun loadCategories() {
+        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                binding.listCategory.adapter =
+                    TransactionCategoryAdapter(it, savedCategory) {
+                        onItemClicked(it)
+                    }
+            }, {
+                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                    loadCategories()
+                }
+            }).addTo(compositeDisposable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
+    }
 }

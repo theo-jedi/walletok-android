@@ -10,7 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
 interface WalletOkService {
-
+    // Запросы будут здесь
 
     companion object {
         private const val BASE_URL = ""
@@ -22,7 +22,6 @@ interface WalletOkService {
             return instance as WalletOkService
         }
 
-        @OptIn(ExperimentalSerializationApi::class)
         private fun create(): WalletOkService {
             val logger =
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
@@ -35,7 +34,10 @@ interface WalletOkService {
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)
-                .addConverterFactory(Json.asConverterFactory(contentType))
+                .addConverterFactory(
+                    @OptIn(ExperimentalSerializationApi::class)
+                    Json.asConverterFactory(contentType)
+                )
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
                 .create(WalletOkService::class.java)
