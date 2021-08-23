@@ -1,15 +1,16 @@
 package com.theost.walletok
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
+import com.theost.walletok.delegates.CategoryAdapterDelegate
+import com.theost.walletok.delegates.CategoryItem
 import com.theost.walletok.utils.addTo
-import com.theost.walletok.widgets.TransactionCategoryAdapter
 import com.theost.walletok.widgets.TransactionCategoryListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -18,24 +19,27 @@ class TransactionCategoryFragment : Fragment() {
 
     companion object {
         private const val TRANSACTION_CATEGORY_KEY = "transaction_category"
+        private const val TRANSACTION_TYPE_KEY = "transaction_type"
         private const val TRANSACTION_CATEGORY_UNSET = -1
 
-        fun newFragment(savedCategory: Int?): Fragment {
+        fun newFragment(savedCategory: Int? = TRANSACTION_CATEGORY_UNSET, savedType: String? = ""): Fragment {
             val fragment = TransactionCategoryFragment()
             val bundle = Bundle()
             bundle.putInt(TRANSACTION_CATEGORY_KEY, savedCategory ?: TRANSACTION_CATEGORY_UNSET)
+            bundle.putString(TRANSACTION_TYPE_KEY, savedType)
             fragment.arguments = bundle
             return fragment
         }
     }
 
     private lateinit var binding: FragmentTransactionCategoryBinding
+    private lateinit var categoryItems: List<CategoryItem>
 
-    private val savedCategory: Int
-        get() = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
-
-    private var lastSelected = -1
     private val compositeDisposable = CompositeDisposable()
+    private var savedCategory: Int = TRANSACTION_CATEGORY_UNSET
+    private var lastSelected: Int = TRANSACTION_CATEGORY_UNSET
+    private var savedType: String = ""
+    private val adapter = BaseAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,39 +54,74 @@ class TransactionCategoryFragment : Fragment() {
             activity?.onBackPressed()
         }
 
+        if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
+            binding.submitButton.isEnabled = true
+        }
+
+        adapter.addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
+
+        binding.listCategory.adapter = adapter
+        binding.listCategory.setHasFixedSize(true)
+
+        loadCategories()
+
         binding.submitButton.setOnClickListener {
             setCurrentCategory()
         }
 
-        loadCategories()
-
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (savedInstanceState == null) {
+            savedCategory = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
+            savedType = arguments?.getString(TRANSACTION_TYPE_KEY) ?: ""
+        } else {
+            savedCategory = savedInstanceState.getInt(TRANSACTION_CATEGORY_KEY, TRANSACTION_CATEGORY_UNSET)
+            savedType = savedInstanceState.getString(TRANSACTION_TYPE_KEY) ?: ""
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(TRANSACTION_CATEGORY_KEY, savedCategory)
+        outState.putString(TRANSACTION_TYPE_KEY, savedType)
+        super.onSaveInstanceState(outState)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun onItemClicked(position: Int) {
-        if (lastSelected != position) {
+        if (lastSelected != TRANSACTION_CATEGORY_UNSET) categoryItems[lastSelected].isSelected = false
+        categoryItems[position].isSelected = true
+        adapter.setData(categoryItems)
+
+        savedCategory = categoryItems[position].id
+        lastSelected = position
+
+        if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
             binding.submitButton.isEnabled = true
-            if (lastSelected != -1) {
-                binding.listCategory.layoutManager?.findViewByPosition(lastSelected)
-                    ?.findViewById<ImageView>(R.id.category_check)?.visibility = View.INVISIBLE
-            }
-            lastSelected = position
         }
     }
 
     private fun setCurrentCategory() {
-        val category =
-            (binding.listCategory.adapter as TransactionCategoryAdapter).getItem(lastSelected)
-        (activity as TransactionCategoryListener).onCategorySubmitted(category.id, category.name)
+        (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
     }
 
     private fun loadCategories() {
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                binding.listCategory.adapter =
-                    TransactionCategoryAdapter(it, savedCategory) {
-                        onItemClicked(it)
+            .subscribe({ list ->
+                categoryItems =
+                    list.filter { category -> category.type.uiName == savedType }.map { category ->
+                        CategoryItem(
+                            id = category.id,
+                            name = category.name,
+                            icon = category.image as Int,
+                            isSelected = savedCategory == category.id
+                        )
                     }
+                lastSelected = categoryItems.indexOfFirst { it.id == savedCategory }
+                adapter.setData(categoryItems)
             }, {
                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
                     loadCategories()

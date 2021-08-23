@@ -151,7 +151,7 @@ class WalletDetailsSwipeController(
                     setTouchDownListener(
                         c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
                     )
-                    setItemsClickable(recyclerView, false);
+                    setItemsClickable(recyclerView, false)
                 }
             }
             false
@@ -198,7 +198,7 @@ class WalletDetailsSwipeController(
                     )
                 ) {
                     if (deleteButtonShowedState == ButtonsState.VISIBLE) {
-                        buttonsActions.onDeleteClicked(viewHolder.adapterPosition);
+                        buttonsActions.onDeleteClicked(viewHolder)
                     }
                 }
                 deleteButtonShowedState = ButtonsState.GONE
@@ -208,7 +208,7 @@ class WalletDetailsSwipeController(
                     )
                 ) {
                     if (editButtonShowedState == ButtonsState.VISIBLE) {
-                        buttonsActions.onEditClicked(viewHolder.adapterPosition);
+                        buttonsActions.onEditClicked(viewHolder)
                     }
                 }
                 editButtonShowedState = ButtonsState.GONE
@@ -232,6 +232,6 @@ enum class ButtonsState {
 }
 
 interface SwipeControllerActions {
-    fun onDeleteClicked(position: Int)
-    fun onEditClicked(position: Int)
+    fun onDeleteClicked(viewHolder: RecyclerView.ViewHolder)
+    fun onEditClicked(viewHolder: RecyclerView.ViewHolder)
 }

@@ -5,13 +5,15 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class TransactionCreationModel(
+    var id: Int? = null,
     var value: Int? = null,
     var type: String? = null,
-    var categoryId: Int? = null,
-    var categoryName: String? = null
+    var category: Int? = null,
+    var currency: String? = null,
+    var dateTime: String? = null,
 ) : Parcelable {
 
     fun isFilled(): Boolean =
-        (value != null && type != null && categoryId != null && categoryName != null)
+        (value != null && type != null && category != null)
 
 }
