@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.AdapterDelegate
+import com.theost.walletok.base.AdapterDelegate
 import com.theost.walletok.databinding.ItemListPreferenceBinding
 
 class PreferenceAdapterDelegate(
@@ -23,7 +23,10 @@ class PreferenceAdapterDelegate(
 
     override fun isOfViewType(item: Any): Boolean = item is TransactionPreference
 
-    class ViewHolder(private val binding: ItemListPreferenceBinding, private val clickListener: (preferenceName: String) -> Unit) :
+    class ViewHolder(
+        private val binding: ItemListPreferenceBinding,
+        private val clickListener: (preferenceName: String) -> Unit
+    ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(preference: TransactionPreference) {

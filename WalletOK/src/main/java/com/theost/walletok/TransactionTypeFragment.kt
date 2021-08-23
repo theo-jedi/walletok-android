@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.theost.walletok.base.BaseAdapter
 import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.delegates.TypeAdapterDelegate
@@ -92,7 +93,7 @@ class TransactionTypeFragment : Fragment() {
         adapter.setData(typeItems)
 
         savedType = typeItems[position].name
-        lastSelected =  position
+        lastSelected = position
 
         if (savedType != "") {
             binding.submitButton.isEnabled = true

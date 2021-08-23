@@ -97,7 +97,10 @@ class WalletDetailsActivity : AppCompatActivity() {
             }
 
             override fun onEditClicked(viewHolder: RecyclerView.ViewHolder) {
-                // TODO
+                val transactionId =
+                    (viewHolder as TransactionAdapterDelegate.ViewHolder).transactionId
+                val transaction = viewModel.allData.value!!.second.find { it.id == transactionId }
+                if (transaction != null) editTransaction(transaction)
             }
 
         })

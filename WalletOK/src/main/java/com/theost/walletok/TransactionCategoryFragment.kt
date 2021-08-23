@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.theost.walletok.base.BaseAdapter
 import com.theost.walletok.base.ErrorMessageHelper
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
@@ -23,7 +24,10 @@ class TransactionCategoryFragment : Fragment() {
         private const val TRANSACTION_TYPE_KEY = "transaction_type"
         private const val TRANSACTION_CATEGORY_UNSET = -1
 
-        fun newFragment(savedCategory: Int? = TRANSACTION_CATEGORY_UNSET, savedType: String? = ""): Fragment {
+        fun newFragment(
+            savedCategory: Int? = TRANSACTION_CATEGORY_UNSET,
+            savedType: String? = ""
+        ): Fragment {
             val fragment = TransactionCategoryFragment()
             val bundle = Bundle()
             bundle.putInt(TRANSACTION_CATEGORY_KEY, savedCategory ?: TRANSACTION_CATEGORY_UNSET)
@@ -77,10 +81,12 @@ class TransactionCategoryFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            savedCategory = arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
+            savedCategory =
+                arguments?.getInt(TRANSACTION_CATEGORY_KEY) ?: TRANSACTION_CATEGORY_UNSET
             savedType = arguments?.getString(TRANSACTION_TYPE_KEY) ?: ""
         } else {
-            savedCategory = savedInstanceState.getInt(TRANSACTION_CATEGORY_KEY, TRANSACTION_CATEGORY_UNSET)
+            savedCategory =
+                savedInstanceState.getInt(TRANSACTION_CATEGORY_KEY, TRANSACTION_CATEGORY_UNSET)
             savedType = savedInstanceState.getString(TRANSACTION_TYPE_KEY) ?: ""
         }
     }
@@ -93,7 +99,8 @@ class TransactionCategoryFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun onItemClicked(position: Int) {
-        if (lastSelected != TRANSACTION_CATEGORY_UNSET) categoryItems[lastSelected].isSelected = false
+        if (lastSelected != TRANSACTION_CATEGORY_UNSET) categoryItems[lastSelected].isSelected =
+            false
         categoryItems[position].isSelected = true
         adapter.setData(categoryItems)
 

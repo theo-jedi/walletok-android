@@ -91,15 +91,12 @@ object TransactionsRepository {
         )
     }
 
-    private fun simulateEditing(id: Int, value: Int, category: Int): Transaction {
-        var currency = ""
-        var dateTime = ""
-        transactions.forEach {
-            if (it.id == id) {
-                currency = it.currency
-                dateTime = it.dateTime
-                return@forEach
-            }
+    private fun simulateEditing(id: Int, value: Int, category: Int, walletId: Int): Transaction {
+        var currency: Currency
+        var dateTime: Date
+        transactions[walletId]!!.find { it.id == id }.apply {
+            currency = this!!.currency
+            dateTime = this.dateTime
         }
         return Transaction(
             id,
@@ -110,10 +107,17 @@ object TransactionsRepository {
         )
     }
 
-    fun removeTransaction(id: Int): Completable {
     fun removeTransaction(walletId: Int, id: Int): Completable {
         return Completable.fromAction {
             transactions[walletId]!!.removeAll { it.id == id }
+        }
+    }
+
+    fun editTransaction(id: Int, value: Int, category: Int, walletId: Int): Completable {
+        return Completable.fromAction { //TODO
+            val transaction = simulateEditing(id, value, category, walletId)
+            transactions[walletId]!!.removeAll { it.id == id }
+            addToCacheOrCreateNew(walletId, listOf(transaction))
         }
     }
 
@@ -124,7 +128,8 @@ object TransactionsRepository {
         return addTransaction(
             walletId = walletId,
             value = transactionCreationModel.value!!,
-            category = transactionCreationModel.categoryId!!
+            category = transactionCreationModel.category!!
         )
     }
+
 }

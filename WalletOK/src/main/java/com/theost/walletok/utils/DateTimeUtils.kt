@@ -5,8 +5,8 @@ import java.util.*
 
 object DateTimeUtils {
 
-    fun getCurrentDate() : String {
-        return SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+    fun getFormattedDateOrCurrent(date: Date = Date()) : String {
+        return SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date)
     }
 
     fun getCurrentDateTime() : String {

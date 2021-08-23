@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.AdapterDelegate
+import com.theost.walletok.base.AdapterDelegate
 import com.theost.walletok.databinding.ItemListTypeBinding
 
 class TypeAdapterDelegate(
@@ -24,14 +24,19 @@ class TypeAdapterDelegate(
 
     override fun isOfViewType(item: Any): Boolean = item is TypeItem
 
-    class ViewHolder(private val binding: ItemListTypeBinding, private val clickListener: (position: Int) -> Unit) :
+    class ViewHolder(
+        private val binding: ItemListTypeBinding,
+        private val clickListener: (position: Int) -> Unit
+    ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(type: TypeItem) {
             binding.root.setOnClickListener { clickListener(adapterPosition) }
             binding.typeTitle.text = type.name
             binding.typeCheck.visibility = View.INVISIBLE
-            if (type.isSelected) { binding.typeCheck.visibility = View.VISIBLE }
+            if (type.isSelected) {
+                binding.typeCheck.visibility = View.VISIBLE
+            }
         }
 
     }

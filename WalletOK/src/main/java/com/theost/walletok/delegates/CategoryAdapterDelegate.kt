@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.AdapterDelegate
+import com.theost.walletok.base.AdapterDelegate
 import com.theost.walletok.databinding.ItemListCategoryBinding
 
 class CategoryAdapterDelegate(
@@ -24,7 +24,10 @@ class CategoryAdapterDelegate(
 
     override fun isOfViewType(item: Any): Boolean = item is CategoryItem
 
-    class ViewHolder(private val binding: ItemListCategoryBinding, private val clickListener: (position: Int) -> Unit) :
+    class ViewHolder(
+        private val binding: ItemListCategoryBinding,
+        private val clickListener: (position: Int) -> Unit
+    ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: CategoryItem) {
@@ -32,7 +35,9 @@ class CategoryAdapterDelegate(
             binding.categoryTitle.text = category.name
             binding.categoryIcon.setImageResource(category.icon)
             binding.categoryCheck.visibility = View.INVISIBLE
-            if (category.isSelected) { binding.categoryCheck.visibility = View.VISIBLE }
+            if (category.isSelected) {
+                binding.categoryCheck.visibility = View.VISIBLE
+            }
         }
 
     }
