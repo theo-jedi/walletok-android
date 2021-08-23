@@ -67,8 +67,9 @@ class TransactionValueFragment : Fragment() {
     private fun onTextChanged(input: String) {
         val value = StringUtils.formatMoney(input)
 
+        val selection = binding.inputValue.selectionEnd + (value.length - input.length)
         binding.inputValue.setText(value)
-        binding.inputValue.setSelection(binding.inputValue.length())
+        binding.inputValue.setSelection(selection)
 
         updateSubmitButton(input)
     }
