@@ -17,10 +17,10 @@ class TransactionValueFragment : Fragment() {
     companion object {
         private const val TRANSACTION_VALUE_KEY = "transaction_value"
 
-        fun newFragment(savedValue: Int?): Fragment {
+        fun newFragment(savedValue: Int = 0): Fragment {
             val fragment = TransactionValueFragment()
             val bundle = Bundle()
-            bundle.putInt(TRANSACTION_VALUE_KEY, savedValue ?: 0)
+            bundle.putInt(TRANSACTION_VALUE_KEY, savedValue)
             fragment.arguments = bundle
             return fragment
         }
@@ -28,8 +28,8 @@ class TransactionValueFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionValueBinding
 
-    private val savedValue: Int?
-        get() = arguments?.getInt(TRANSACTION_VALUE_KEY)
+    private val savedValue: Int
+        get() = arguments?.getInt(TRANSACTION_VALUE_KEY)!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
