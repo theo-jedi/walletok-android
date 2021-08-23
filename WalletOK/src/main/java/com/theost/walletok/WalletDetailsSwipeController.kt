@@ -151,7 +151,7 @@ class WalletDetailsSwipeController(
                     setTouchDownListener(
                         c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
                     )
-                    setItemsClickable(recyclerView, false);
+                    setItemsClickable(recyclerView, false)
                 }
             }
             false

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.base.*
+import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
 import com.theost.walletok.utils.Resource
@@ -85,10 +86,8 @@ class WalletDetailsActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
-        binding.addTransactionBtn.setOnClickListener {
-            transactionHandler.launch(createTransaction(R.string.new_transaction))
-        }
 
+        binding.addTransactionBtn.setOnClickListener { createTransaction() }
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
             override fun onDeleteClicked(viewHolder: RecyclerView.ViewHolder) {
                 DeleteTransactionDialogFragment.newInstance {
@@ -142,7 +141,26 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun createTransaction(mode: Int): Intent {
-        return TransactionActivity.newIntent(this, mode, walletId)
+    private fun createTransaction() {
+        transactionHandler.launch(
+            TransactionActivity.newIntent(
+                this,
+                null,
+                R.string.new_transaction,
+                walletId
+            )
+        )
     }
+
+    private fun editTransaction(transaction: Transaction) {
+        transactionHandler.launch(
+            TransactionActivity.newIntent(
+                this,
+                transaction,
+                R.string.edit_transaction,
+                walletId
+            )
+        )
+    }
+
 }

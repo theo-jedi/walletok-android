@@ -76,12 +76,12 @@ object TransactionsRepository {
 
     fun addTransaction(walletId: Int, value: Int, category: Int): Completable {
         return Completable.fromAction {
-            val transaction = simulateServerResponse(value, category)
+            val transaction = simulateCreation(value, category)
             transactions[walletId]!!.add(transaction)
         }
     }
 
-    private fun simulateServerResponse(value: Int, category: Int): Transaction {
+    private fun simulateCreation(value: Int, category: Int): Transaction {
         return Transaction(
             transactions.size + 1,
             category,
@@ -91,6 +91,26 @@ object TransactionsRepository {
         )
     }
 
+    private fun simulateEditing(id: Int, value: Int, category: Int): Transaction {
+        var currency = ""
+        var dateTime = ""
+        transactions.forEach {
+            if (it.id == id) {
+                currency = it.currency
+                dateTime = it.dateTime
+                return@forEach
+            }
+        }
+        return Transaction(
+            id,
+            category,
+            value,
+            currency,
+            dateTime
+        )
+    }
+
+    fun removeTransaction(id: Int): Completable {
     fun removeTransaction(walletId: Int, id: Int): Completable {
         return Completable.fromAction {
             transactions[walletId]!!.removeAll { it.id == id }
