@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details
 
 import android.content.Context
 import android.content.Intent
@@ -12,10 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.base.*
+import com.theost.walletok.*
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
+import com.theost.walletok.presentation.base.*
+import com.theost.walletok.presentation.wallet_details.delegates.*
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionActivity
 import com.theost.walletok.utils.Resource
 import java.util.*
 

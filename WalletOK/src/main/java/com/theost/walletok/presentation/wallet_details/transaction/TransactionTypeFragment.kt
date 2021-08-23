@@ -1,16 +1,17 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details.transaction
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.theost.walletok.base.BaseAdapter
+import com.theost.walletok.R
 import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.delegates.TypeAdapterDelegate
 import com.theost.walletok.delegates.TypeItem
-import com.theost.walletok.widgets.TransactionTypeListener
+import com.theost.walletok.presentation.base.BaseAdapter
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionTypeListener
 
 class TransactionTypeFragment : Fragment() {
 

@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details.transaction
 
 import android.content.Context
 import android.content.Intent
@@ -7,18 +7,19 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.theost.walletok.base.ErrorMessageHelper
+import com.theost.walletok.R
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityTransactionBinding
+import com.theost.walletok.presentation.base.ErrorMessageHelper
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionTypeListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionValueListener
 import com.theost.walletok.utils.addTo
-import com.theost.walletok.widgets.TransactionCategoryListener
-import com.theost.walletok.widgets.TransactionListener
-import com.theost.walletok.widgets.TransactionTypeListener
-import com.theost.walletok.widgets.TransactionValueListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 

@@ -1,20 +1,21 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details.transaction
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.theost.walletok.base.BaseAdapter
-import com.theost.walletok.base.ErrorMessageHelper
+import com.theost.walletok.R
 import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
 import com.theost.walletok.delegates.*
+import com.theost.walletok.presentation.base.BaseAdapter
+import com.theost.walletok.presentation.base.ErrorMessageHelper
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionListener
 import com.theost.walletok.utils.DateTimeUtils
 import com.theost.walletok.utils.StringUtils
 import com.theost.walletok.utils.addTo
-import com.theost.walletok.widgets.TransactionListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 

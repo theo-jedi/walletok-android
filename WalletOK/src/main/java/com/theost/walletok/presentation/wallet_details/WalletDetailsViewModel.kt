@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
