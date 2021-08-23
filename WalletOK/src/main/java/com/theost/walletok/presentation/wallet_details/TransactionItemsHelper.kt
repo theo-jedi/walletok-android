@@ -4,9 +4,9 @@ import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.Wallet
-import com.theost.walletok.delegates.DateContent
-import com.theost.walletok.delegates.HeaderContent
-import com.theost.walletok.delegates.TransactionContent
+import com.theost.walletok.presentation.wallet_details.delegates.DateContent
+import com.theost.walletok.presentation.wallet_details.delegates.HeaderContent
+import com.theost.walletok.presentation.wallet_details.delegates.TransactionContent
 import com.theost.walletok.utils.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*

@@ -1,4 +1,4 @@
-package com.theost.walletok.delegates
+package com.theost.walletok.presentation.wallet_details.delegates
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
