@@ -13,6 +13,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="@string/new_transaction" />
 
+    <include
+        android:id="@+id/errorWidget"
+        layout="@layout/widget_error"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_preferences"
         android:layout_width="match_parent"

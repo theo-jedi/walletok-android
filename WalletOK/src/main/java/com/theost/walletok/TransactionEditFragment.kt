@@ -11,8 +11,10 @@ import com.theost.walletok.databinding.FragmentTransactionEditBinding
 import com.theost.walletok.delegates.*
 import com.theost.walletok.utils.DateTimeUtils
 import com.theost.walletok.utils.StringUtils
+import com.theost.walletok.utils.addTo
 import com.theost.walletok.widgets.TransactionListener
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 
 class TransactionEditFragment : Fragment() {
 
@@ -33,8 +35,11 @@ class TransactionEditFragment : Fragment() {
     private lateinit var transactionListener: TransactionListener
     private lateinit var binding: FragmentTransactionEditBinding
     private var categoryName: String? = null
-
     private var transaction: TransactionCreationModel? = null
+
+    private val adapter = BaseAdapter()
+    private val compositeDisposable = CompositeDisposable()
+
     private val titleRes: Int
         get() = arguments?.getInt(TRANSACTION_TITLE_KEY)!!
 
@@ -54,7 +59,6 @@ class TransactionEditFragment : Fragment() {
 
         transactionListener = activity as TransactionListener
 
-        val adapter = BaseAdapter()
         adapter.apply {
             addDelegate(PreferenceAdapterDelegate { onPreferenceClicked(it) })
             addDelegate(TitleAdapterDelegate())
@@ -63,11 +67,7 @@ class TransactionEditFragment : Fragment() {
         binding.listPreferences.setHasFixedSize(true)
         binding.listPreferences.adapter = adapter
 
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { list ->
-                categoryName = list.find { item -> item.id == transaction?.category }?.name
-                adapter.setData(getPreferencesList())
-            }.subscribe()
+        loadTransactionData()
 
         binding.submitButton.setOnClickListener {
             transactionListener.onTransactionSubmitted()
@@ -97,6 +97,18 @@ class TransactionEditFragment : Fragment() {
             TransactionPreferenceType.TYPE.uiName -> transactionListener.onTypeEdit()
             TransactionPreferenceType.CATEGORY.uiName -> transactionListener.onCategoryEdit()
         }
+    }
+
+    private fun loadTransactionData() {
+        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+            .subscribe({ list ->
+                categoryName = list.find { item -> item.id == transaction?.category }?.name
+                adapter.setData(getPreferencesList())
+            }, {
+                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                    loadTransactionData()
+                }
+            }).addTo(compositeDisposable)
     }
 
     private fun getPreferencesList(): List<Any> {
