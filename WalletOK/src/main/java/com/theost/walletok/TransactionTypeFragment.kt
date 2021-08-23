@@ -33,6 +33,7 @@ class TransactionTypeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         binding = FragmentTransactionTypeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
@@ -41,7 +42,6 @@ class TransactionTypeFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        savedType = arguments?.getString(TRANSACTION_TYPE_KEY) ?: ""
         if (savedType != "") binding.submitButton.isEnabled = true
 
         val adapter = BaseAdapter()
@@ -63,6 +63,21 @@ class TransactionTypeFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        savedType = if (savedInstanceState == null) {
+            arguments?.getString(TRANSACTION_TYPE_KEY) ?: ""
+        } else {
+            savedInstanceState.getString(TRANSACTION_TYPE_KEY) ?: ""
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(TRANSACTION_TYPE_KEY, savedType)
+        super.onSaveInstanceState(outState)
     }
 
     private fun onItemClicked(type: String) {
