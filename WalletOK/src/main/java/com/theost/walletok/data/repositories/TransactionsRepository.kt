@@ -58,18 +58,18 @@ object TransactionsRepository {
         )
     }
 
-    fun addTransaction(value: String, category: Int): Completable {
+    fun addTransaction(value: Int, category: Int): Completable {
         return Completable.fromAction {
             val transaction = simulateServerResponse(value, category)
             transactions.add(transaction)
         }
     }
 
-    private fun simulateServerResponse(value: String, category: Int): Transaction {
+    private fun simulateServerResponse(value: Int, category: Int): Transaction {
         return Transaction(
             transactions.size + 1,
             category,
-            value.toInt() * 100,
+            value * 100,
             Currency.RUB,
             Calendar.getInstance().time
         )
@@ -82,6 +82,6 @@ object TransactionsRepository {
     }
 
     fun addTransaction(walletId: Int, dto: TransactionContentDto): Completable {
-        return addTransaction(value = dto.money.toString(), category = dto.categoryId)
+        return addTransaction(value = dto.money, category = dto.categoryId)
     }
 }

@@ -12,7 +12,8 @@ import com.theost.walletok.widgets.TransactionListener
 import com.theost.walletok.widgets.TransactionTypeListener
 import com.theost.walletok.widgets.TransactionValueListener
 
-class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener, TransactionTypeListener,
+class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener,
+    TransactionTypeListener,
     TransactionCategoryListener {
 
     companion object {
@@ -34,7 +35,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         val mode = intent.getIntExtra(TRANSACTION_MODE_KEY, R.string.new_transaction)
         if (savedInstanceState == null) {
             when (mode) {
-                R.string.new_transaction -> startFragment(TransactionValueFragment.newFragment(null))
+                R.string.new_transaction -> startFragment(TransactionValueFragment.newFragment(0))
                 R.string.edit_transaction -> {
                     // todo transaction edit
                 }
@@ -43,7 +44,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onValueEdit() {
-        startFragment(TransactionValueFragment.newFragment(transaction.value))
+        startFragment(TransactionValueFragment.newFragment(transaction.value ?: 0))
     }
 
     override fun onTypeEdit() {
