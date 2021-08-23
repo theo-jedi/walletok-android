@@ -51,7 +51,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         binding = ActivityTransactionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.backButton.setOnClickListener { onBackPressed() }
+        binding.closeButton.setOnClickListener { onBackPressed() }
 
         if (savedInstanceState == null) {
             if (savedTransaction != null) {
@@ -81,7 +81,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
     private fun restoreSavedTransaction(savedTransaction: Transaction) {
         binding.transactionProgress.visibility = View.VISIBLE
-        binding.backButton.visibility = View.GONE
+        binding.closeButton.visibility = View.INVISIBLE
 
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
@@ -90,7 +90,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
                 binding.transactionProgress.visibility = View.GONE
                 startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
             }, {
-                binding.backButton.visibility = View.VISIBLE
+                binding.closeButton.visibility = View.VISIBLE
                 binding.transactionProgress.visibility = View.GONE
                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
                     restoreSavedTransaction(savedTransaction)
@@ -145,14 +145,34 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
     override fun onTransactionSubmitted() {
         if (transaction.isFilled()) {
+            binding.transactionProgress.visibility = View.VISIBLE
+            binding.closeButton.visibility = View.INVISIBLE
             if (transaction.id != null) {
-                TransactionsRepository.editTransaction(transaction.id!!, transaction.value!!, transaction.category!!)
+                TransactionsRepository.editTransaction(transaction.id!!, transaction.value!!, transaction.category!!).subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        binding.transactionProgress.visibility = View.GONE
+                        setResult(RESULT_OK)
+                        finish()
+                    }, {
+                        binding.closeButton.visibility = View.VISIBLE
+                        ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                            onTransactionSubmitted()
+                        }
+                    }).addTo(compositeDisposable)
             } else {
-                TransactionsRepository.addTransaction(transaction.value!!, transaction.category!!)
+                TransactionsRepository.addTransaction(transaction.value!!, transaction.category!!).subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        binding.transactionProgress.visibility = View.GONE
+                        setResult(RESULT_OK)
+                        finish()
+                    }, {
+                        binding.closeButton.visibility = View.VISIBLE
+                        ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                            onTransactionSubmitted()
+                        }
+                    }).addTo(compositeDisposable)
             }
-            setResult(RESULT_OK)
         }
-        finish()
     }
 
     private fun startFragment(fragment: Fragment) {

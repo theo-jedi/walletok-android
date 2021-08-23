@@ -21,16 +21,18 @@ object TransactionsRepository {
     }
 
     fun addTransaction(value: Int, category: Int): Completable {
-        val transaction = simulateCreation(value, category)
-        transactions.add(transaction)
-        return Completable.complete()
+        return Completable.fromAction {
+            val transaction = simulateCreation(value, category)
+            transactions.add(transaction)
+        }
     }
 
     fun editTransaction(id: Int, value: Int, category: Int): Completable {
-        val transaction = simulateEditing(id, value, category)
-        removeTransaction(id)
-        transactions.add(transaction)
-        return Completable.complete()
+        return Completable.fromAction {
+            val transaction = simulateEditing(id, value, category)
+            removeTransaction(id)
+            transactions.add(transaction)
+        }
     }
 
     private fun simulateCreation(value: Int, category: Int): Transaction {
