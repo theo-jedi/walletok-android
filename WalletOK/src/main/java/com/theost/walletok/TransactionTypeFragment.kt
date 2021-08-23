@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
-import com.theost.walletok.widgets.TransactionTypeAdapter
+import com.theost.walletok.delegates.TypeAdapterDelegate
+import com.theost.walletok.delegates.TypeItem
 import com.theost.walletok.widgets.TransactionTypeListener
 
 class TransactionTypeFragment : Fragment() {
@@ -26,17 +26,14 @@ class TransactionTypeFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionTypeBinding
-
-    private val savedType: String?
-        get() = arguments?.getString(TRANSACTION_TYPE_KEY)
-
-    private var lastSelected = -1
+    private lateinit var savedType: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         binding = FragmentTransactionTypeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
@@ -45,32 +42,53 @@ class TransactionTypeFragment : Fragment() {
             activity?.onBackPressed()
         }
 
+        if (savedType != "") binding.submitButton.isEnabled = true
+
+        val adapter = BaseAdapter()
+        adapter.addDelegate(TypeAdapterDelegate { onItemClicked(it) })
+
+        binding.listTypes.setHasFixedSize(true)
+        binding.listTypes.adapter = adapter
+
+        val typeItems = TransactionCategoryType.values().map { type ->
+            TypeItem(
+                name = type.uiName,
+                isSelected = savedType == type.uiName
+            )
+        }
+        adapter.setData(typeItems)
+
         binding.submitButton.setOnClickListener {
             setCurrentType()
-        }
-
-        binding.listTypes.adapter = TransactionTypeAdapter(TransactionCategoryType.values(), savedType.orEmpty()) {
-            onItemClicked(it)
         }
 
         return binding.root
     }
 
-    private fun onItemClicked(position: Int) {
-        if (lastSelected != position) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        savedType = if (savedInstanceState == null) {
+            arguments?.getString(TRANSACTION_TYPE_KEY) ?: ""
+        } else {
+            savedInstanceState.getString(TRANSACTION_TYPE_KEY) ?: ""
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(TRANSACTION_TYPE_KEY, savedType)
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun onItemClicked(type: String) {
+        savedType = type
+        if (savedType != "") {
             binding.submitButton.isEnabled = true
-            if (lastSelected != -1) {
-                binding.listTypes.layoutManager?.findViewByPosition(lastSelected)
-                    ?.findViewById<ImageView>(R.id.type_check)?.visibility = View.INVISIBLE
-            }
-            lastSelected = position
         }
     }
 
     private fun setCurrentType() {
-        val type = (binding.listTypes.adapter as TransactionTypeAdapter).getItem(lastSelected)
-        (activity as TransactionTypeListener).onTypeSubmitted(type)
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
+        (activity as TransactionTypeListener).onTypeSubmitted(savedType)
     }
 
 }
