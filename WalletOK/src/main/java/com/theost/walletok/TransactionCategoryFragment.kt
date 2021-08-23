@@ -63,26 +63,11 @@ class TransactionCategoryFragment : Fragment() {
         binding.listCategory.adapter = adapter
         binding.listCategory.setHasFixedSize(true)
 
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { list ->
-                categoryItems =
-                    list.filter { category -> category.type.uiName == savedType }.map { category ->
-                        CategoryItem(
-                            id = category.id,
-                            name = category.name,
-                            icon = category.image as Int,
-                            isSelected = savedCategory == category.id
-                        )
-                    }
-                lastSelected = categoryItems.indexOfFirst { it.id == savedCategory }
-                adapter.setData(categoryItems)
-            }.subscribe()
+        loadCategories()
 
         binding.submitButton.setOnClickListener {
             setCurrentCategory()
         }
-
-        loadCategories()
 
         return binding.root
     }
