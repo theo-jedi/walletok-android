@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.theost.walletok.base.PaginationStatus
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.Wallet
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.data.repositories.WalletsRepository
+import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
 import io.reactivex.Single
