@@ -3,7 +3,7 @@ package com.theost.walletok.delegates
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.AdapterDelegate
+import com.theost.walletok.base.AdapterDelegate
 import com.theost.walletok.databinding.ItemEmptyListBinding
 
 class EmptyListAdapterDelegate : AdapterDelegate {

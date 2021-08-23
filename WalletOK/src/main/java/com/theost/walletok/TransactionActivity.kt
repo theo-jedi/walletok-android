@@ -7,6 +7,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.theost.walletok.base.ErrorMessageHelper
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCreationModel
@@ -21,15 +22,23 @@ import com.theost.walletok.widgets.TransactionValueListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
-class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener, TransactionTypeListener,
+class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener,
+    TransactionTypeListener,
     TransactionCategoryListener {
 
     companion object {
+        private const val WALLET_ID_KEY = "wallet_id"
         private const val TRANSACTION_KEY = "transaction"
         private const val TRANSACTION_TITLE_KEY = "transaction_titleRes"
 
-        fun newIntent(context: Context, transaction: Transaction?, titleRes: Int): Intent {
+        fun newIntent(
+            context: Context,
+            transaction: Transaction?,
+            titleRes: Int,
+            walletId: Int
+        ): Intent {
             val intent = Intent(context, TransactionActivity::class.java)
+            intent.putExtra(WALLET_ID_KEY, walletId)
             intent.putExtra(TRANSACTION_KEY, transaction)
             intent.putExtra(TRANSACTION_TITLE_KEY, titleRes)
             return intent
@@ -45,6 +54,8 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
     private val transaction = TransactionCreationModel()
     private val compositeDisposable = CompositeDisposable()
+    private val walletId: Int
+        get() = intent.extras!!.getInt(WALLET_ID_KEY)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +79,8 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onBackPressed() {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
+        val currentFragment =
+            supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
         if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
             startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
         } else {
@@ -98,7 +110,10 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
             }).addTo(compositeDisposable)
     }
 
-    private fun loadSavedTransaction(savedTransaction: Transaction, savedCategory: TransactionCategory) {
+    private fun loadSavedTransaction(
+        savedTransaction: Transaction,
+        savedCategory: TransactionCategory
+    ) {
         transaction.id = savedTransaction.id
         transaction.value = savedTransaction.money
         transaction.type = savedCategory.type.uiName
@@ -116,7 +131,12 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onCategoryEdit() {
-        startFragment(TransactionCategoryFragment.newFragment(transaction.category, transaction.type))
+        startFragment(
+            TransactionCategoryFragment.newFragment(
+                transaction.category,
+                transaction.type
+            )
+        )
     }
 
     override fun onValueSubmitted(value: Int) {
@@ -134,7 +154,12 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         } else {
             transaction.type = type
             transaction.category = null
-            startFragment(TransactionCategoryFragment.newFragment(transaction.category, transaction.type))
+            startFragment(
+                TransactionCategoryFragment.newFragment(
+                    transaction.category,
+                    transaction.type
+                )
+            )
         }
     }
 
@@ -148,7 +173,12 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
             binding.transactionProgress.visibility = View.VISIBLE
             binding.closeButton.visibility = View.INVISIBLE
             if (transaction.id != null) {
-                TransactionsRepository.editTransaction(transaction.id!!, transaction.value!!, transaction.category!!).subscribeOn(AndroidSchedulers.mainThread())
+                TransactionsRepository.editTransaction(
+                    transaction.id!!,
+                    transaction.value!!,
+                    transaction.category!!,
+                    walletId
+                ).subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         binding.transactionProgress.visibility = View.GONE
                         setResult(RESULT_OK)
@@ -160,7 +190,11 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
                         }
                     }).addTo(compositeDisposable)
             } else {
-                TransactionsRepository.addTransaction(transaction.value!!, transaction.category!!).subscribeOn(AndroidSchedulers.mainThread())
+                TransactionsRepository.addTransaction(
+                    walletId,
+                    transaction.value!!,
+                    transaction.category!!
+                ).subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         binding.transactionProgress.visibility = View.GONE
                         setResult(RESULT_OK)

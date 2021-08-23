@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.theost.walletok.base.BaseAdapter
+import com.theost.walletok.base.ErrorMessageHelper
 import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
@@ -137,7 +139,9 @@ class TransactionEditFragment : Fragment() {
             ListTitle(getString(R.string.additional)),
             TransactionPreference(
                 TransactionPreferenceType.DATE,
-                transaction?.dateTime ?: DateTimeUtils.getCurrentDate(),
+                if (transaction != null && transaction!!.dateTime != null)
+                    DateTimeUtils.getFormattedDateOrCurrent(transaction!!.dateTime!!)
+                else DateTimeUtils.getFormattedDateOrCurrent(),
                 false
             )
         )

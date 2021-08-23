@@ -1,5 +1,7 @@
 package com.theost.walletok.data.models
 
+import java.util.*
+
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
@@ -8,8 +10,8 @@ data class Transaction(
     val id: Int,
     val categoryId: Int,
     val money: Int,
-    val currency: String,
-    val dateTime: String // yyyy/MM/dd hh:mm
+    val currency: Currency,
+    val dateTime: Date
 ) : Parcelable
 
 data class TransactionCategory(

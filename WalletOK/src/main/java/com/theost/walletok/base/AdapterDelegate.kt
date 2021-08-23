@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.base
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView

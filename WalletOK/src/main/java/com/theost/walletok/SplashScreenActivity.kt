@@ -1,4 +1,5 @@
 package com.theost.walletok
+
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -27,7 +28,7 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun onSignedIn(account: GoogleSignInAccount?) {
-        val intent = WalletDetailsActivity.newIntent(this)
+        val intent = WalletDetailsActivity.newIntent(this, 0)
         startActivity(intent)
     }
 }

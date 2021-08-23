@@ -198,7 +198,7 @@ class WalletDetailsSwipeController(
                     )
                 ) {
                     if (deleteButtonShowedState == ButtonsState.VISIBLE) {
-                        buttonsActions.onDeleteClicked(viewHolder)
+                        buttonsActions.onDeleteClicked(viewHolder);
                     }
                 }
                 deleteButtonShowedState = ButtonsState.GONE
@@ -208,7 +208,7 @@ class WalletDetailsSwipeController(
                     )
                 ) {
                     if (editButtonShowedState == ButtonsState.VISIBLE) {
-                        buttonsActions.onEditClicked(viewHolder)
+                        buttonsActions.onEditClicked(viewHolder);
                     }
                 }
                 editButtonShowedState = ButtonsState.GONE
