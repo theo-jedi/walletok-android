@@ -18,15 +18,19 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
     companion object {
         private const val TRANSACTION_MODE_KEY = "transaction_edit_mode"
+        private const val WALLET_ID_KEY = "wallet_id"
 
-        fun newIntent(context: Context, mode: Int): Intent {
+        fun newIntent(context: Context, mode: Int, walletId: Int): Intent {
             val intent = Intent(context, TransactionActivity::class.java)
             intent.putExtra(TRANSACTION_MODE_KEY, mode)
+            intent.putExtra(WALLET_ID_KEY, walletId)
             return intent
         }
     }
 
     private val transaction = TransactionCreationModel()
+    private val walletId: Int
+        get() = intent.extras!!.getInt(WALLET_ID_KEY)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +85,11 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
     override fun onTransactionSubmitted() {
         if (transaction.isFilled()) {
-            TransactionsRepository.addTransaction(transaction.value!!, transaction.categoryId!!)
+            TransactionsRepository.addTransaction(
+                walletId,
+                transaction.value!!,
+                transaction.categoryId!!
+            )
             setResult(RESULT_OK)
         }
         finish()

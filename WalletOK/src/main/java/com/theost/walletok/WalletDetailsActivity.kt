@@ -17,20 +17,21 @@ import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
 import com.theost.walletok.utils.Resource
 import java.util.*
-import kotlin.properties.Delegates
 
 
 class WalletDetailsActivity : AppCompatActivity() {
 
     companion object {
-        fun newIntent(context: Context, walletId: Int): Intent {
+        private const val WALLET_ID_KEY = "wallet_id"
+        fun newIntent(context: Context, walletId: Int = 0): Intent {
             val intent = Intent(context, WalletDetailsActivity::class.java)
-            intent.putExtra("wallet_id", walletId)
+            intent.putExtra(WALLET_ID_KEY, walletId)
             return intent
         }
     }
 
-    private var walletId by Delegates.notNull<Int>()
+    private val walletId: Int
+        get() = intent.extras!!.getInt(WALLET_ID_KEY)
     private lateinit var binding: ActivityWalletDetailsBinding
     private lateinit var walletDetailsAdapter: BaseAdapter
     private val viewModel: WalletDetailsViewModel by viewModels(factoryProducer = {
@@ -39,7 +40,6 @@ class WalletDetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        walletId = intent.extras!!.getInt("wallet_id")
         binding = ActivityWalletDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
@@ -64,8 +64,7 @@ class WalletDetailsActivity : AppCompatActivity() {
             setAdapterData()
         }
 
-        viewModel.removeTransactionStatus.observe(this)
-        {
+        viewModel.removeTransactionStatus.observe(this) {
             when (it) {
                 is Resource.Success -> viewModel.loadData()
                 is Resource.Error -> {
@@ -144,6 +143,6 @@ class WalletDetailsActivity : AppCompatActivity() {
     }
 
     private fun createTransaction(mode: Int): Intent {
-        return TransactionActivity.newIntent(this, mode)
+        return TransactionActivity.newIntent(this, mode, walletId)
     }
 }

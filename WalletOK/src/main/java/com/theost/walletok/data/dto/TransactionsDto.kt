@@ -3,6 +3,7 @@ package com.theost.walletok.data.dto
 import com.theost.walletok.data.dto.TransactionsDto.Companion.dateTimeFormat
 import com.theost.walletok.data.models.Currency
 import com.theost.walletok.data.models.Transaction
+import com.theost.walletok.data.models.TransactionsAndNextId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
@@ -28,7 +29,7 @@ data class TransactionContentDto(
     @SerialName("date_time") val dateTime: String
 )
 
-fun TransactionsDto.mapToTransactionsAndNextId(): Pair<List<Transaction>, Int?> {
+fun TransactionsDto.mapToTransactionsAndNextId(): TransactionsAndNextId {
     val newList = this.transactions.map {
         Transaction(
             id = it.id,
@@ -38,5 +39,5 @@ fun TransactionsDto.mapToTransactionsAndNextId(): Pair<List<Transaction>, Int?> 
             dateTime = dateTimeFormat.parse(it.dateTime)!!
         )
     }
-    return Pair(newList, this.nextTransactionId)
+    return TransactionsAndNextId(newList, this.nextTransactionId)
 }
