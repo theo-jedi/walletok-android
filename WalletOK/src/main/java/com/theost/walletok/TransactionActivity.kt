@@ -13,11 +13,13 @@ import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityTransactionBinding
+import com.theost.walletok.utils.addTo
 import com.theost.walletok.widgets.TransactionCategoryListener
 import com.theost.walletok.widgets.TransactionListener
 import com.theost.walletok.widgets.TransactionTypeListener
 import com.theost.walletok.widgets.TransactionValueListener
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 
 class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener, TransactionTypeListener,
     TransactionCategoryListener {
@@ -42,11 +44,14 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         get() = intent.getIntExtra(TRANSACTION_TITLE_KEY, R.string.new_transaction)
 
     private val transaction = TransactionCreationModel()
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTransactionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.backButton.setOnClickListener { onBackPressed() }
 
         if (savedInstanceState == null) {
             if (savedTransaction != null) {
@@ -55,6 +60,11 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
                 startFragment(TransactionValueFragment.newFragment())
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
     }
 
     override fun onBackPressed() {
@@ -71,13 +81,21 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
     private fun restoreSavedTransaction(savedTransaction: Transaction) {
         binding.transactionProgress.visibility = View.VISIBLE
+        binding.backButton.visibility = View.GONE
+
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { it ->
-                val category = it.find { it.id == savedTransaction.categoryId }!!
+            .subscribe({ list ->
+                val category = list.find { it.id == savedTransaction.categoryId }!!
                 loadSavedTransaction(savedTransaction, category)
                 binding.transactionProgress.visibility = View.GONE
                 startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
-            }.subscribe()
+            }, {
+                binding.backButton.visibility = View.VISIBLE
+                binding.transactionProgress.visibility = View.GONE
+                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                    restoreSavedTransaction(savedTransaction)
+                }
+            }).addTo(compositeDisposable)
     }
 
     private fun loadSavedTransaction(savedTransaction: Transaction, savedCategory: TransactionCategory) {

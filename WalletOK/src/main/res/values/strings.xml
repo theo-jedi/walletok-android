@@ -37,6 +37,8 @@
     <string name="yesterday">Вчера</string>
     <string name="error_sign_in">Ошибка авторизации</string>
 
+    <string name="back">Назад</string>
+
     <string name="zero">0</string>
     <string name="wallet_rub">₽</string>
     <string name="retry">Повторить</string>
