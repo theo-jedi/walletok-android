@@ -34,7 +34,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         val mode = intent.getIntExtra(TRANSACTION_MODE_KEY, R.string.new_transaction)
         if (savedInstanceState == null) {
             when (mode) {
-                R.string.new_transaction -> startFragment(TransactionValueFragment.newFragment(""))
+                R.string.new_transaction -> startFragment(TransactionValueFragment.newFragment(null))
                 R.string.edit_transaction -> {
                     // todo transaction edit
                 }
@@ -54,7 +54,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         startFragment(TransactionCategoryFragment.newFragment(transaction.categoryId))
     }
 
-    override fun onValueSubmitted(value: String) {
+    override fun onValueSubmitted(value: Int) {
         transaction.value = value
         if (transaction.isFilled()) {
             startFragment(TransactionEditFragment.newFragment(transaction))

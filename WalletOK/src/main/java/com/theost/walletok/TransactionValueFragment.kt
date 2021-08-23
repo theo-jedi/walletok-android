@@ -17,10 +17,10 @@ class TransactionValueFragment : Fragment() {
     companion object {
         private const val TRANSACTION_VALUE_KEY = "transaction_value"
 
-        fun newFragment(savedValue: String?): Fragment {
+        fun newFragment(savedValue: Int = 0): Fragment {
             val fragment = TransactionValueFragment()
             val bundle = Bundle()
-            bundle.putString(TRANSACTION_VALUE_KEY, savedValue)
+            bundle.putInt(TRANSACTION_VALUE_KEY, savedValue)
             fragment.arguments = bundle
             return fragment
         }
@@ -28,8 +28,8 @@ class TransactionValueFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionValueBinding
 
-    private val savedValue: String
-        get() = arguments?.getString(TRANSACTION_VALUE_KEY).orEmpty()
+    private val savedValue: Int
+        get() = arguments?.getInt(TRANSACTION_VALUE_KEY)!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,13 +59,14 @@ class TransactionValueFragment : Fragment() {
         }
 
         binding.inputValue.addTextChangedListener(textWatcher)
-        binding.inputValue.setText(savedValue)
+        binding.inputValue.setText(if (savedValue != 0) savedValue.toString() else "")
 
         return binding.root
     }
 
     private fun onTextChanged(input: String) {
-        val value = StringUtils.formatCurrency(input)
+        val value = StringUtils.formatMoney(input)
+
         val selection = binding.inputValue.selectionEnd + (value.length - input.length)
         binding.inputValue.setText(value)
         binding.inputValue.setSelection(selection)
@@ -74,11 +75,11 @@ class TransactionValueFragment : Fragment() {
     }
 
     private fun updateSubmitButton(input: String) {
-        binding.submitButton.isEnabled = StringUtils.isCurrencyValueValid(input)
+        binding.submitButton.isEnabled = StringUtils.isMoneyValueValid(input)
     }
 
     private fun setCurrentValue() {
-        val value = StringUtils.formatNumber(binding.inputValue.text.toString())
+        val value = StringUtils.convertMoneyForStorage(binding.inputValue.text.toString())
         (activity as TransactionValueListener).onValueSubmitted(value)
     }
 

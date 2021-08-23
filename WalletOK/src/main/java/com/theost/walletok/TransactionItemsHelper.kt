@@ -7,6 +7,7 @@ import com.theost.walletok.data.repositories.WalletInfoRepository
 import com.theost.walletok.delegates.DateContent
 import com.theost.walletok.delegates.HeaderContent
 import com.theost.walletok.delegates.TransactionContent
+import com.theost.walletok.utils.StringUtils
 import io.reactivex.Single
 import java.text.SimpleDateFormat
 import java.util.*
@@ -69,7 +70,13 @@ object TransactionItemsHelper {
                                 transactionId = transaction.id,
                                 categoryName = category.name,
                                 transactionType = category.type.uiName,
-                                moneyAmount = "${transaction.money / 100} ₽",
+                                moneyAmount = "${
+                                    StringUtils.formatMoney(
+                                        StringUtils.convertMoneyForDisplay(
+                                            transaction.money
+                                        )
+                                    )
+                                } " + transaction.currency,
                                 time = timeFormat.format(transactionUnformattedDate),
                                 image = category.image
                             )

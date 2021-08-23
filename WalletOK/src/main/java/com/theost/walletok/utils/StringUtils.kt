@@ -4,7 +4,7 @@ import java.text.DecimalFormat
 
 object StringUtils {
 
-    fun formatCurrency(input: String): String {
+    fun formatMoney(input: String): String {
         if (input != "") {
             var value = input
             if (value[0] == '.') value = "0$input"
@@ -16,26 +16,34 @@ object StringUtils {
             }
             val format = DecimalFormat("###,###")
             val formattedNumber =
-                format.format(formatNumber(numbers[0]).toDouble()).replace(",", " ")
+                format.format(replaceSpaces(numbers[0]).toDouble()).replace(",", " ")
             return formattedNumber + double
         }
         return ""
     }
 
-    fun formatNumber(input: String) : String {
-        return input.replace(" ", "")
+    fun convertMoneyForStorage(value: String) : Int {
+        return (replaceSpaces(value).toDouble() * 100).toInt()
     }
 
-    fun currencyToDouble(input: String): Double {
-        return if (input != "" && input != ".") {
-            formatNumber(input).toDouble()
+    fun convertMoneyForDisplay(value: Int) : String {
+        return if (value % 100 != 0) {
+            (value.toDouble() / 100).toString()
         } else {
-            0.0
+            (value / 100).toString()
         }
     }
 
-    fun isCurrencyValueValid(input: String): Boolean {
-        return (currencyToDouble(input) != 0.0 && input[input.length - 1] != '.')
+    fun isMoneyValueValid(input: String): Boolean {
+        return if (input != "" && input != "." && input[input.length - 1] != '.') {
+            replaceSpaces(input).toDouble() != 0.0
+        } else {
+            false
+        }
+    }
+
+    private fun replaceSpaces(input: String) : String {
+        return input.replace(" ", "")
     }
 
 }
