@@ -59,7 +59,7 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun onSignedIn(account: GoogleSignInAccount?) {
-        val intent = WalletDetailsActivity.newIntent(this)
+        val intent = WalletDetailsActivity.newIntent(this, 0)
         startActivity(intent)
         finish()
     }

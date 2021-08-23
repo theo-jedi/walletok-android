@@ -2,18 +2,37 @@ package com.theost.walletok.data.api
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.theost.walletok.data.dto.CategoryDto
+import com.theost.walletok.data.dto.TransactionsDto
+import com.theost.walletok.data.dto.WalletDto
+import io.reactivex.Single
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface WalletOkService {
-    // Запросы будут здесь
+
+    @GET("categories")
+    fun getCategories(): Single<List<CategoryDto>>
+
+    @GET("wallets")
+    fun getWallets(): Single<List<WalletDto>>
+
+    @GET("wallets/{id}/transactions")
+    fun getTransactions(
+        @Path("id") walletId: Int,
+        @Query("limit") limit: Int,
+        @Query("next_transaction_id") nextTransactionId: Int?
+    ): Single<TransactionsDto>
 
     companion object {
-        private const val BASE_URL = ""
+        private const val BASE_URL = "https://ya.ru/"
         private var instance: WalletOkService? = null
 
         fun getInstance(): WalletOkService {

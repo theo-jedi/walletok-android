@@ -1,10 +1,10 @@
-package com.theost.walletok
+package com.theost.walletok.base
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class BaseAdapter :
+open class BaseAdapter :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val data = mutableListOf<Any>()
     private val delegates = mutableListOf<AdapterDelegate>()

@@ -7,44 +7,75 @@ import android.os.Bundle
 import android.view.Menu
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.data.repositories.TransactionsRepository
+import com.theost.walletok.base.*
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
-import com.theost.walletok.utils.addTo
-import io.reactivex.disposables.CompositeDisposable
+import com.theost.walletok.utils.Resource
 import java.util.*
+import kotlin.properties.Delegates
 
 
 class WalletDetailsActivity : AppCompatActivity() {
 
     companion object {
-        fun newIntent(context: Context): Intent {
-            return Intent(context, WalletDetailsActivity::class.java)
+        fun newIntent(context: Context, walletId: Int): Intent {
+            val intent = Intent(context, WalletDetailsActivity::class.java)
+            intent.putExtra("wallet_id", walletId)
+            return intent
         }
     }
 
-    private val compositeDisposable = CompositeDisposable()
+    private var walletId by Delegates.notNull<Int>()
     private lateinit var binding: ActivityWalletDetailsBinding
     private lateinit var walletDetailsAdapter: BaseAdapter
+    private val viewModel: WalletDetailsViewModel by viewModels(factoryProducer = {
+        WalletDetailsViewModel.Factory(walletId)
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        walletId = intent.extras!!.getInt("wallet_id")
         binding = ActivityWalletDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        walletDetailsAdapter = BaseAdapter()
+        walletDetailsAdapter = PaginationAdapter(PaginationAdapterHelper {
+            if (viewModel.paginationStatus.value == PaginationStatus.Ready)
+                viewModel.loadData()
+        })
+        viewModel.paginationStatus.observe(this) {
+            setAdapterData()
+        }
         walletDetailsAdapter.apply {
             addDelegate(WalletDetailsHeaderAdapterDelegate())
             addDelegate(DateAdapterDelegate())
             addDelegate(TransactionAdapterDelegate())
             addDelegate(EmptyListAdapterDelegate())
+            addDelegate(LoadingOrErrorAdapterDelegate {
+                viewModel.loadData()
+            })
+        }
+        viewModel.loadData()
+        viewModel.allData.observe(this) {
+            setAdapterData()
         }
 
-        updateTransactionsList()
+        viewModel.removeTransactionStatus.observe(this)
+        {
+            when (it) {
+                is Resource.Success -> viewModel.loadData()
+                is Resource.Error -> {
+                    ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                    }
+                }
+                is Resource.Loading -> {
+                }
+            }
+        }
 
         binding.recycler.apply {
             adapter = walletDetailsAdapter
@@ -58,23 +89,16 @@ class WalletDetailsActivity : AppCompatActivity() {
         binding.addTransactionBtn.setOnClickListener {
             transactionHandler.launch(createTransaction(R.string.new_transaction))
         }
+
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
-            override fun onDeleteClicked(position: Int) {
+            override fun onDeleteClicked(viewHolder: RecyclerView.ViewHolder) {
                 DeleteTransactionDialogFragment.newInstance {
-                    val viewHolder = binding.recycler.findViewHolderForAdapterPosition(position)
-                            as TransactionAdapterDelegate.ViewHolder
-                    TransactionsRepository.removeTransaction(viewHolder.transactionId)
-                        .subscribe(
-                            { updateTransactionsList() },
-                            {
-                                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                                    onDeleteClicked(position)
-                                }
-                            }).addTo(compositeDisposable)
+                    if (viewHolder is TransactionAdapterDelegate.ViewHolder)
+                        viewModel.removeTransaction(viewHolder.transactionId)
                 }.show(supportFragmentManager, "dialog")
             }
 
-            override fun onEditClicked(position: Int) {
+            override fun onEditClicked(viewHolder: RecyclerView.ViewHolder) {
                 // TODO
             }
 
@@ -82,12 +106,13 @@ class WalletDetailsActivity : AppCompatActivity() {
         ItemTouchHelper(swipeController)
             .attachToRecyclerView(binding.recycler)
 
-        binding.recycler.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-                super.onDraw(c, parent, state)
-                swipeController.onDraw(c)
-            }
-        })
+        binding.recycler.addItemDecoration(
+            object : RecyclerView.ItemDecoration() {
+                override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+                    super.onDraw(c, parent, state)
+                    swipeController.onDraw(c)
+                }
+            })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -98,27 +123,27 @@ class WalletDetailsActivity : AppCompatActivity() {
     private val transactionHandler =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
             if (result?.resultCode == RESULT_OK) {
-                updateTransactionsList()
+                viewModel.loadData()
             }
         }
 
+    private fun setAdapterData() {
+        val data = viewModel.allData.value
+        val paginationStatus = viewModel.paginationStatus.value
+        if (data != null && paginationStatus != null) {
+            val (categories, transactions, wallet) = data
+            walletDetailsAdapter.setData(
+                TransactionItemsHelper.getRecyclerItems(
+                    categories,
+                    transactions,
+                    wallet,
+                    paginationStatus
+                )
+            )
+        }
+    }
+
     private fun createTransaction(mode: Int): Intent {
         return TransactionActivity.newIntent(this, mode)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.dispose()
-    }
-
-    private fun updateTransactionsList() {
-        TransactionItemsHelper.getData()
-            .subscribe({
-                walletDetailsAdapter.setData(it)
-            }, {
-                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                    updateTransactionsList()
-                }
-            }).addTo(compositeDisposable)
     }
 }
