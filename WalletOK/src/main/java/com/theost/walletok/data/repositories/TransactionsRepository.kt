@@ -20,20 +20,15 @@ object TransactionsRepository {
         return Single.just(transactions)
     }
 
-    fun addTransaction(value: String, category: Int): Completable {
-        return Completable.fromAction {
-            val transaction = simulateServerResponse(value, category)
-            transactions.add(transaction)
-        }
+    fun addTransaction(value: Int, category: Int): Completable {
+        val transaction = simulateServerResponse(value, category)
+        transactions.add(transaction)
+        return Completable.complete()
     }
 
-    private fun simulateServerResponse(value: String, category: Int): Transaction {
+    private fun simulateServerResponse(value: Int, category: Int): Transaction {
         return Transaction(
-            transactions.size + 1,
-            category,
-            value.toInt() * 100,
-            "₽",
-            DateTimeUtils.getCurrentDateTime()
+            transactions.size + 1, category, value, "₽", DateTimeUtils.getCurrentDateTime()
         )
     }
 

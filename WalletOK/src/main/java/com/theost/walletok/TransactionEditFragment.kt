@@ -58,7 +58,11 @@ class TransactionEditFragment : Fragment() {
     }
 
     private fun loadTransactionData() {
-        val value = StringUtils.formatCurrency(transaction?.value.orEmpty()) + " " + getString(R.string.wallet_rub) // todo currency
+        val value = StringUtils.formatMoney(
+            StringUtils.convertMoneyForDisplay(
+                transaction?.value ?: 0
+            )
+        ) + " " + getString(R.string.wallet_rub) // todo currency
         binding.transactionValue.text = value
         binding.transactionType.text = transaction?.type
         binding.transactionCategory.text = transaction?.categoryName

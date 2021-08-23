@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class TransactionCreationModel(
-    var value: String? = null,
+    var value: Int? = null,
     var type: String? = null,
     var categoryId: Int? = null,
     var categoryName: String? = null
