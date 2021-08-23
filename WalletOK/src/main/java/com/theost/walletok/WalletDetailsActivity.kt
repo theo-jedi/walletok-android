@@ -16,6 +16,7 @@ import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
 import com.theost.walletok.utils.addTo
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import java.util.*
 
@@ -58,16 +59,15 @@ class WalletDetailsActivity : AppCompatActivity() {
         }
         binding.addTransactionBtn.setOnClickListener { createTransaction() }
         val swipeController = WalletDetailsSwipeController(this, object : SwipeControllerActions {
-            override fun onDeleteClicked(position: Int) {
+            override fun onDeleteClicked(viewHolder: RecyclerView.ViewHolder) {
                 DeleteTransactionDialogFragment.newInstance {
-                    val viewHolder = binding.recycler.findViewHolderForAdapterPosition(position)
-                            as TransactionAdapterDelegate.ViewHolder
-                    TransactionsRepository.removeTransaction(viewHolder.transactionId)
+                    val transactionId = (viewHolder as TransactionAdapterDelegate.ViewHolder).transactionId
+                    TransactionsRepository.removeTransaction(transactionId)
                         .subscribe(
                             { updateTransactionsList() },
                             {
                                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                                    onDeleteClicked(position)
+                                    onDeleteClicked(viewHolder)
                                 }
                             }).addTo(compositeDisposable)
                 }.show(supportFragmentManager, "dialog")
@@ -75,7 +75,7 @@ class WalletDetailsActivity : AppCompatActivity() {
 
             override fun onEditClicked(viewHolder: RecyclerView.ViewHolder) {
                 val transactionId = (viewHolder as TransactionAdapterDelegate.ViewHolder).transactionId
-                TransactionsRepository.getTransactions()
+                TransactionsRepository.getTransactions(0) // todo add walletId after Samuel pr merged
                     .subscribeOn(AndroidSchedulers.mainThread()).doOnSuccess { it ->
                         val transaction = it.find { it.id == transactionId }
                         if (transaction != null) editTransaction(transaction)
