@@ -24,7 +24,7 @@ data class TransactionsDto(
 data class TransactionContentDto(
     @SerialName("id") val id: Int,
     @SerialName("category_id") val categoryId: Int,
-    @SerialName("money") val money: Int,
+    @SerialName("money") val money: Long,
     @SerialName("currency") val currency: Currency,
     @SerialName("date_time") val dateTime: String
 )

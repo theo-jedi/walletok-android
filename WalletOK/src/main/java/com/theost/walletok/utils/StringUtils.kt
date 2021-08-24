@@ -22,12 +22,12 @@ object StringUtils {
         return ""
     }
 
-    fun convertMoneyForStorage(value: String) : Int {
-        return (replaceSpaces(value).toDouble() * 100).toInt()
+    fun convertMoneyForStorage(value: String): Long {
+        return (replaceSpaces(value).toDouble() * 100).toLong()
     }
 
-    fun convertMoneyForDisplay(value: Int) : String {
-        return if (value % 100 != 0) {
+    fun convertMoneyForDisplay(value: Long): String {
+        return if (value % 100 != 0L) {
             (value.toDouble() / 100).toString()
         } else {
             (value / 100).toString()
@@ -42,7 +42,7 @@ object StringUtils {
         }
     }
 
-    private fun replaceSpaces(input: String) : String {
+    private fun replaceSpaces(input: String): String {
         return input.replace(" ", "")
     }
 

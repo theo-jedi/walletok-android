@@ -4,6 +4,7 @@ import com.theost.walletok.data.api.WalletOkService
 import com.theost.walletok.data.dto.mapToWallet
 import com.theost.walletok.data.models.Currency
 import com.theost.walletok.data.models.Wallet
+import com.theost.walletok.data.models.WalletsOverall
 import io.reactivex.Single
 
 object WalletsRepository {
@@ -19,6 +20,7 @@ object WalletsRepository {
             loseLimit = 0
         )
     )
+    private val walletsOverall = WalletsOverall(12000000, 10000000, Currency.RUB)
 
     fun getWallets(): Single<List<Wallet>> {
         return if (wallets.isNotEmpty()) Single.just(wallets) else
@@ -27,5 +29,9 @@ object WalletsRepository {
                     wallets.clear()
                     wallets.addAll(it)
                 }
+    }
+
+    fun getWalletsOverall(): Single<WalletsOverall> {
+        return Single.just(walletsOverall)
     }
 }

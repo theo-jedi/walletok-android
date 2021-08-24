@@ -44,4 +44,8 @@
     <string name="wallet_rub">₽</string>
     <string name="retry">Повторить</string>
     <string name="default_error_message">Что-то пошло не так</string>
+    <string name="wallets_overall_balance">Общий баланс</string>
+    <string name="overall_income">Общий доход</string>
+    <string name="limit_is_exceeded">Превышен лимит</string>
+    <string name="create_wallet">Создать кошелек</string>
 </resources>
