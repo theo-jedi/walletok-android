@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.base.AdapterDelegate
 import com.theost.walletok.databinding.ItemListButtonBinding
+import com.theost.walletok.presentation.base.AdapterDelegate
 
 class ButtonAdapterDelegate(
     private val clickListener: (position: Int) -> Unit

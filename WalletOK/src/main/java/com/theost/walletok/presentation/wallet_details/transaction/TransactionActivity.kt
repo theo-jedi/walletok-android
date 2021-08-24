@@ -7,10 +7,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.theost.walletok.base.ErrorMessageHelper
 import com.theost.walletok.data.models.CategoryCreationModel
-import com.theost.walletok.R
-import com.theost.walletok.TransactionEditFragment
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCreationModel
@@ -18,6 +15,10 @@ import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityTransactionBinding
 import com.theost.walletok.presentation.base.ErrorMessageHelper
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionCategoryFragment
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionEditFragment
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionTypeFragment
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionValueFragment
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionListener
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionTypeListener
@@ -59,6 +60,8 @@ class TransactionActivity : FragmentActivity(),
         get() = intent.getIntExtra(TRANSACTION_TITLE_KEY, R.string.new_transaction)
 
     private val transaction = TransactionCreationModel()
+    private var categoryModel = CategoryCreationModel()
+
     private val compositeDisposable = CompositeDisposable()
     private val walletId: Int
         get() = intent.extras!!.getInt(WALLET_ID_KEY)

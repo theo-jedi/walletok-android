@@ -3,10 +3,11 @@ package com.theost.walletok.delegates
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.base.AdapterDelegate
 import com.theost.walletok.databinding.ItemListIconBinding
+import com.theost.walletok.presentation.base.AdapterDelegate
 
-class IconAdapterDelegate(private var backgroundColor: Int, private val clickListener: (position: Int, iconRes: Int) -> Unit) : AdapterDelegate {
+class IconAdapterDelegate(private var backgroundColor: Int, private val clickListener: (position: Int, iconRes: Int) -> Unit) :
+    AdapterDelegate {
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val binding = ItemListIconBinding.inflate(
             LayoutInflater.from(parent.context), parent, false

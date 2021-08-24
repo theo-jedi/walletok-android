@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.skydoves.colorpickerview.ColorEnvelope
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
-import com.theost.walletok.base.BaseAdapter
 import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.databinding.FragmentCategoryEditBinding
 import com.theost.walletok.delegates.*
+import com.theost.walletok.presentation.base.BaseAdapter
 import com.theost.walletok.widgets.CategoryIconListener
 import com.theost.walletok.widgets.CategoryListener
 
