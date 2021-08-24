@@ -4,4 +4,6 @@ interface TransactionCategoryListener {
 
     fun onCategorySubmitted(category: Int)
 
+    fun onNewCategoryClicked()
+
 }

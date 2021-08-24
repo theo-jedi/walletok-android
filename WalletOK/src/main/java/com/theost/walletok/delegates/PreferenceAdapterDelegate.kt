@@ -43,11 +43,12 @@ class PreferenceAdapterDelegate(
 }
 
 data class TransactionPreference(
-    val type: TransactionPreferenceType,
+    val type: PreferenceType,
     val value: String,
     val isClickable: Boolean
 )
 
-enum class TransactionPreferenceType(val uiName: String) {
-    VALUE("Сумма"), TYPE("Тип"), CATEGORY("Категория"), DATE("Дата операции")
+enum class PreferenceType(val uiName: String) {
+    VALUE("Сумма"), TYPE("Тип"), CATEGORY("Категория"),
+    DATE("Дата операции"), NAME("Название"), ICON("Иконка")
 }

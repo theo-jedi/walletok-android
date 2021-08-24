@@ -11,4 +11,6 @@
     <color name="dark_gray">#333333</color>
     <color name="on_surface_medium_emphasis">#BB000000</color>
     <color name="blue_gray">#9299A2</color>
+
+    <color name="purple">#5833EE</color>
 </resources>

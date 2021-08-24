@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.theost.walletok.base.ErrorMessageHelper
+import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCreationModel
@@ -15,16 +16,14 @@ import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityTransactionBinding
 import com.theost.walletok.utils.addTo
-import com.theost.walletok.widgets.TransactionCategoryListener
-import com.theost.walletok.widgets.TransactionListener
-import com.theost.walletok.widgets.TransactionTypeListener
-import com.theost.walletok.widgets.TransactionValueListener
+import com.theost.walletok.widgets.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
-class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener,
-    TransactionTypeListener,
-    TransactionCategoryListener {
+class TransactionActivity : FragmentActivity(),
+    TransactionListener, TransactionValueListener, TransactionTypeListener,
+    TransactionCategoryListener, CategoryTypeListener, CategoryListener,
+    CategoryNameListener, CategoryIconListener {
 
     companion object {
         private const val WALLET_ID_KEY = "wallet_id"
@@ -53,6 +52,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         get() = intent.getIntExtra(TRANSACTION_TITLE_KEY, R.string.new_transaction)
 
     private val transaction = TransactionCreationModel()
+    private var categoryModel = CategoryCreationModel()
     private val compositeDisposable = CompositeDisposable()
     private val walletId: Int
         get() = intent.extras!!.getInt(WALLET_ID_KEY)
@@ -163,6 +163,10 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         }
     }
 
+    override fun onNewCategoryClicked() {
+        startFragment(CategoryEditFragment.newFragment(categoryModel))
+    }
+
     override fun onCategorySubmitted(category: Int) {
         transaction.category = category
         startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
@@ -207,6 +211,36 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
                     }).addTo(compositeDisposable)
             }
         }
+    }
+
+    override fun onCategoryNameEdit() {
+        startFragment(CategoryNameFragment.newFragment(categoryModel.name))
+    }
+
+    override fun onCategoryTypeEdit() {
+        startFragment(CategoryTypeFragment.newFragment(categoryModel.type))
+    }
+
+    override fun onCategoryNameSubmitted(name: String) {
+        categoryModel.name = name
+        startFragment(CategoryEditFragment.newFragment(categoryModel))
+    }
+
+    override fun onCategoryTypeSubmitted(type: String) {
+        categoryModel.type = type
+        startFragment(CategoryEditFragment.newFragment(categoryModel))
+    }
+
+    override fun onCategoryColorSubmitted(color: Int) {
+        categoryModel.color = color
+    }
+
+    override fun onCategoryIconSubmitted(iconRes: Int) {
+        categoryModel.iconRes = iconRes
+    }
+
+    override fun onCategoryCreated() {
+        categoryModel = CategoryCreationModel()
     }
 
     private fun startFragment(fragment: Fragment) {

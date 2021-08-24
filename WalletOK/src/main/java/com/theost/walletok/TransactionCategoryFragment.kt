@@ -10,8 +10,10 @@ import com.theost.walletok.base.BaseAdapter
 import com.theost.walletok.base.ErrorMessageHelper
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
+import com.theost.walletok.delegates.ButtonAdapterDelegate
 import com.theost.walletok.delegates.CategoryAdapterDelegate
 import com.theost.walletok.delegates.CategoryItem
+import com.theost.walletok.delegates.ListButton
 import com.theost.walletok.utils.addTo
 import com.theost.walletok.widgets.TransactionCategoryListener
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -63,7 +65,10 @@ class TransactionCategoryFragment : Fragment() {
             binding.submitButton.isEnabled = true
         }
 
-        adapter.addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
+        adapter.apply {
+            addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
+            addDelegate(ButtonAdapterDelegate { onNewCategoryClicked() })
+        }
 
         binding.listCategory.adapter = adapter
         binding.listCategory.setHasFixedSize(true)
@@ -112,6 +117,10 @@ class TransactionCategoryFragment : Fragment() {
         }
     }
 
+    private fun onNewCategoryClicked() {
+        (activity as TransactionCategoryListener).onNewCategoryClicked()
+    }
+
     private fun setCurrentCategory() {
         (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
     }
@@ -129,7 +138,15 @@ class TransactionCategoryFragment : Fragment() {
                         )
                     }
                 lastSelected = categoryItems.indexOfFirst { it.id == savedCategory }
-                adapter.setData(categoryItems)
+                val items: MutableList<Any> = categoryItems.toMutableList()
+                items.add(
+                    ListButton(
+                        text = getString(R.string.create_category),
+                        isVisible = true,
+                        isEnabled = true
+                    )
+                )
+                adapter.setData(items)
             }, {
                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
                     loadCategories()
