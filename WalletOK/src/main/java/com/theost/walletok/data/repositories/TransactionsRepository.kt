@@ -1,29 +1,17 @@
 package com.theost.walletok.data.repositories
 
 import com.theost.walletok.data.api.WalletOkService
-import com.theost.walletok.data.dto.TransactionsDto
-import com.theost.walletok.data.dto.mapToTransactionsAndNextId
-import com.theost.walletok.data.models.Currency
+import com.theost.walletok.data.dto.mapToTransaction
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.models.TransactionsAndNextId
 import io.reactivex.Completable
 import io.reactivex.Single
-import java.util.*
 
 object TransactionsRepository {
     const val LIMIT = 20
     private val service = WalletOkService.getInstance()
-    private val transactions = mutableMapOf(Pair(0, (0..9).map {
-        Transaction(
-            id = it,
-            categoryId = 0,
-            money = 12000,
-            currency = Currency.RUB,
-            dateTime = TransactionsDto.dateTimeFormat
-                .parse("2021-08-${12 + it}T12:08:56Z+0300")!!
-        )
-    }.toMutableList()))
+    private val transactions = mutableMapOf<Int, MutableList<Transaction>>()
 
     fun getNextTransactions(
         walletId: Int,
@@ -58,8 +46,8 @@ object TransactionsRepository {
     private fun getTransactionsFromServer(walletId: Int, nextTransactionId: Int?):
             Single<TransactionsAndNextId> {
         return service
-            .getTransactions(walletId, LIMIT, nextTransactionId)
-            .map { it.mapToTransactionsAndNextId() }
+            .getTransactions(walletId)
+            .map { list -> TransactionsAndNextId(list.map { it.mapToTransaction() }, null) }
     }
 
     private fun getTransactionsFromCache(walletId: Int): Single<TransactionsAndNextId> {
@@ -74,51 +62,28 @@ object TransactionsRepository {
         )
     }
 
-    fun addTransaction(walletId: Int, value: Long, category: Int, dateTime: Date): Completable {
-        return Completable.fromAction {
-            val transaction = simulateCreation(value, category, dateTime)
-            transactions[walletId]!!.add(transaction)
-        }
-    }
-
-    private fun simulateCreation(value: Long, category: Int, dateTime: Date): Transaction {
-        return Transaction(
-            transactions.size + 1,
-            category,
-            value * 100,
-            Currency.RUB,
-            dateTime
-        )
-    }
-
-    private fun simulateEditing(id: Int, value: Long, category: Int, dateTime: Date, walletId: Int): Transaction {
-        var currency: Currency
-        var dateTime: Date
-        transactions[walletId]!!.find { it.id == id }.apply {
-            currency = this!!.currency
-            dateTime = this.dateTime
-        }
-        return Transaction(
-            id,
-            category,
-            value,
-            currency,
-            dateTime
+    fun addTransaction(walletId: Int, amount: Long, categoryId: Int): Completable {
+        return Completable.fromSingle(
+            service.addTransaction(walletId, categoryId, amount).doOnSuccess {
+                transactions[walletId]!!.add(it.mapToTransaction())
+            }
         )
     }
 
     fun removeTransaction(walletId: Int, id: Int): Completable {
-        return Completable.fromAction {
-            transactions[walletId]!!.removeAll { it.id == id }
-        }
+//        return Completable.fromAction {
+//            transactions[walletId]!!.removeAll { it.id == id }
+//        }
+        return Completable.complete() // TODO
     }
 
-    fun editTransaction(id: Int, value: Long, category: Int, dateTime: Date, walletId: Int): Completable {
-        return Completable.fromAction {
-            val transaction = simulateEditing(id, value, category, dateTime, walletId)
-            transactions[walletId]!!.removeAll { it.id == id }
-            addToCacheOrCreateNew(walletId, listOf(transaction))
-        }
+    fun editTransaction(id: Int, value: Long, category: Int, walletId: Int): Completable {
+//        return Completable.fromAction {
+//            val transaction = simulateEditing(id, value, category, walletId)
+//            transactions[walletId]!!.removeAll { it.id == id }
+//            addToCacheOrCreateNew(walletId, listOf(transaction))
+//        }
+        return Completable.complete() // TODO
     }
 
     fun addTransaction(
@@ -127,9 +92,8 @@ object TransactionsRepository {
     ): Completable {
         return addTransaction(
             walletId = walletId,
-            value = transactionCreationModel.value!!,
-            category = transactionCreationModel.category!!,
-            dateTime = transactionCreationModel.dateTime!!
+            amount = transactionCreationModel.value!!,
+            categoryId = transactionCreationModel.category!!
         )
     }
 

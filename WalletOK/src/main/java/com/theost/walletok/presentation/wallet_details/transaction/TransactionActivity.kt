@@ -120,7 +120,6 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         transaction.value = savedTransaction.money
         transaction.type = savedCategory.type.uiName
         transaction.category = savedTransaction.categoryId
-        transaction.currency = savedTransaction.currency
         transaction.dateTime = savedTransaction.dateTime
     }
 

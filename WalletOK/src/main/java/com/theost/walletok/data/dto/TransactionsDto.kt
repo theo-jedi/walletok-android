@@ -1,7 +1,6 @@
 package com.theost.walletok.data.dto
 
 import com.theost.walletok.data.dto.TransactionsDto.Companion.dateTimeFormat
-import com.theost.walletok.data.models.Currency
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionsAndNextId
 import kotlinx.serialization.SerialName
@@ -23,21 +22,24 @@ data class TransactionsDto(
 @Serializable
 data class TransactionContentDto(
     @SerialName("id") val id: Int,
-    @SerialName("category_id") val categoryId: Int,
-    @SerialName("money") val money: Long,
-    @SerialName("currency") val currency: Currency,
-    @SerialName("date_time") val dateTime: String
+    @SerialName("walletId") val walletId: Int,
+    @SerialName("categoryId") val categoryId: Int,
+    @SerialName("amount") val money: Long,
+    @SerialName("date") val dateTime: String
 )
 
 fun TransactionsDto.mapToTransactionsAndNextId(): TransactionsAndNextId {
     val newList = this.transactions.map {
-        Transaction(
-            id = it.id,
-            categoryId = it.categoryId,
-            money = it.money,
-            currency = it.currency,
-            dateTime = dateTimeFormat.parse(it.dateTime)!!
-        )
+        it.mapToTransaction()
     }
     return TransactionsAndNextId(newList, this.nextTransactionId)
+}
+
+fun TransactionContentDto.mapToTransaction(): Transaction {
+    return Transaction(
+        id = this.id,
+        categoryId = this.categoryId,
+        money = this.money,
+        dateTime = dateTimeFormat.parse(this.dateTime)!!
+    )
 }
