@@ -123,26 +123,22 @@ class TransactionEditFragment : Fragment() {
             ListTitle(getString(R.string.basic)),
             TransactionPreference(
                 PreferenceType.VALUE,
-                value,
-                true
+                value,true
             ),
             TransactionPreference(
                 PreferenceType.TYPE,
-                transaction?.type ?: "",
-                true
+                transaction?.type ?: "",true
             ),
             TransactionPreference(
                 PreferenceType.CATEGORY,
-                categoryName ?: "",
-                true
+                categoryName ?: "",true
             ),
             ListTitle(getString(R.string.additional)),
             TransactionPreference(
                 PreferenceType.DATE,
                 if (transaction != null && transaction!!.dateTime != null)
                     DateTimeUtils.getFormattedDateOrCurrent(transaction!!.dateTime!!)
-                else DateTimeUtils.getFormattedDateOrCurrent(),
-                false
+                else DateTimeUtils.getFormattedDateOrCurrent(),false
             )
         )
     }

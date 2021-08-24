@@ -13,6 +13,7 @@ import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import com.theost.walletok.base.BaseAdapter
 import com.theost.walletok.data.models.CategoryCreationModel
+import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.databinding.FragmentCategoryEditBinding
 import com.theost.walletok.delegates.*
 import com.theost.walletok.widgets.CategoryIconListener
@@ -39,7 +40,7 @@ class CategoryEditFragment : Fragment() {
     private lateinit var categoryIconListener: CategoryIconListener
     private lateinit var binding: FragmentCategoryEditBinding
     private lateinit var iconDelegateAdapter: IconAdapterDelegate
-    private lateinit var preferencesList: List<Any>
+    private lateinit var preferencesList: MutableList<Any>
 
     private var category: CategoryCreationModel? = null
     private var lastSelected = CATEGORY_ICON_UNSET
@@ -62,12 +63,20 @@ class CategoryEditFragment : Fragment() {
         categoryListener = activity as CategoryListener
         categoryIconListener = activity as CategoryIconListener
 
-        if (category?.color == null) onSetColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.purple
-            )
-        )
+        preferencesList = getPreferencesList()
+
+        if (category?.type == TransactionCategoryType.INCOME.uiName) {
+            onSetColor(ContextCompat.getColor(requireContext(), R.color.green))
+            val item = preferencesList.find { it is TransactionPreference && it.type == PreferenceType.ICON }
+            preferencesList.remove(item)
+        } else if (category?.color == null || category?.color == ContextCompat.getColor(requireContext(), R.color.green)) {
+            onSetColor(ContextCompat.getColor(requireContext(), R.color.purple))
+        }
+
+        if (category?.iconRes != null) {
+            lastSelected = preferencesList.indexOfFirst { it is ListIcon && it.iconRes == category?.iconRes }
+            (preferencesList[lastSelected] as ListIcon).isSelected = true
+        }
 
         iconDelegateAdapter = IconAdapterDelegate(category!!.color!!) { position, iconRes ->
             onSetIcon(position, iconRes)
@@ -76,12 +85,6 @@ class CategoryEditFragment : Fragment() {
         adapter.apply {
             addDelegate(PreferenceAdapterDelegate { onPreferenceClicked(it) })
             addDelegate(iconDelegateAdapter)
-        }
-
-        preferencesList = getPreferencesList()
-        if (category?.iconRes != null) {
-            lastSelected = preferencesList.indexOfFirst { it is ListIcon && it.iconRes == category?.iconRes }
-            (preferencesList[lastSelected] as ListIcon).isSelected = true
         }
 
         adapter.setData(preferencesList)
@@ -171,26 +174,24 @@ class CategoryEditFragment : Fragment() {
 
     private fun createCategory() {
         /* todo createCategory
-            if created: categoryListener.onCategoryCreated(), setResult(RESULT_OK) and finish()
+            if created: setResult(RESULT_OK) and finish()
             else: showErrorWidget
          */
+        categoryListener.onCategoryCreated()
     }
 
-    private fun getPreferencesList(): List<Any> {
-        return listOf(
+    private fun getPreferencesList(): MutableList<Any> {
+        return mutableListOf(
             TransactionPreference(
                 PreferenceType.NAME,
-                category?.name ?: getString(R.string.new_category),
-                true
+                category?.name ?: getString(R.string.unset),true
             ),
             TransactionPreference(
                 PreferenceType.TYPE,
-                category?.type ?: getString(R.string.unset),
-                true
+                category?.type ?: getString(R.string.unset),true
             ),
             TransactionPreference(
-                PreferenceType.ICON, getString(R.string.choose_color),
-                true
+                PreferenceType.ICON, getString(R.string.choose_color),true
             ),
             ListIcon(R.drawable.ic_category_plane, false),
             ListIcon(R.drawable.ic_category_plane, false),

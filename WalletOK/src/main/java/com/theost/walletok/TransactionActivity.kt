@@ -131,12 +131,7 @@ class TransactionActivity : FragmentActivity(),
     }
 
     override fun onCategoryEdit() {
-        startFragment(
-            TransactionCategoryFragment.newFragment(
-                transaction.category,
-                transaction.type
-            )
-        )
+        startFragment(TransactionCategoryFragment.newFragment(transaction.category, transaction.type))
     }
 
     override fun onValueSubmitted(value: Int) {
@@ -164,6 +159,7 @@ class TransactionActivity : FragmentActivity(),
     }
 
     override fun onNewCategoryClicked() {
+        categoryModel.type = transaction.type
         startFragment(CategoryEditFragment.newFragment(categoryModel))
     }
 
