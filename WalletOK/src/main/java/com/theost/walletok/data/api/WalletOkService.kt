@@ -47,7 +47,7 @@ interface WalletOkService {
 
     @POST("wallets")
     fun addWallet(
-        @Field("id") id: Int,
+        @Field("name") name: String,
         @Field("currency") currency: CurrencyDto,
         @Field("balanceLimit") balanceLimit: Long
     ): Single<WalletDto>

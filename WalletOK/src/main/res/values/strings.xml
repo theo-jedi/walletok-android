@@ -47,4 +47,9 @@
     <string name="overall_income">Общий доход</string>
     <string name="limit_is_exceeded">Превышен лимит</string>
     <string name="create_wallet">Создать кошелек</string>
+    <string name="new_wallet">Новый кошелек</string>
+    <string name="create_wallet">Создать кошелек</string>
+    <string name="wallet_name">Название кошелька</string>
+    <string name="enter_wallet_name">Введите название кошелька</string>
+    <string name="show_more">Показать больше</string>
 </resources>
