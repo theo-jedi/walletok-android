@@ -13,6 +13,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.theost.walletok.R
 import com.theost.walletok.presentation.wallet_details.WalletDetailsActivity
+import com.theost.walletok.presentation.wallets.WalletsActivity
 
 
 class AuthActivity : AppCompatActivity() {
@@ -61,7 +62,7 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun onSignedIn(account: GoogleSignInAccount?) {
-        val intent = WalletDetailsActivity.newIntent(this)
+        val intent = WalletsActivity.newIntent(this)
         startActivity(intent)
         finish()
     }

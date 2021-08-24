@@ -16,7 +16,11 @@ import com.theost.walletok.*
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.delegates.*
+import com.theost.walletok.presentation.SwipeControllerActions
+import com.theost.walletok.presentation.WalletDetailsSwipeController
 import com.theost.walletok.presentation.base.*
+import com.theost.walletok.presentation.base.delegates.EmptyListAdapterDelegate
+import com.theost.walletok.presentation.base.delegates.LoadingOrErrorAdapterDelegate
 import com.theost.walletok.presentation.wallet_details.delegates.*
 import com.theost.walletok.presentation.wallet_details.transaction.TransactionActivity
 import com.theost.walletok.utils.Resource
@@ -27,7 +31,7 @@ class WalletDetailsActivity : AppCompatActivity() {
 
     companion object {
         private const val WALLET_ID_KEY = "wallet_id"
-        fun newIntent(context: Context, walletId: Int = 0): Intent {
+        fun newIntent(context: Context, walletId: Int): Intent {
             val intent = Intent(context, WalletDetailsActivity::class.java)
             intent.putExtra(WALLET_ID_KEY, walletId)
             return intent

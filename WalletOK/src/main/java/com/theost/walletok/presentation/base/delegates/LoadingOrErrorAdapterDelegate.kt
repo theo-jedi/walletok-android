@@ -1,12 +1,12 @@
-package com.theost.walletok.presentation.wallet_details.delegates
+package com.theost.walletok.presentation.base.delegates
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.theost.walletok.databinding.ItemLoadingOrErrorBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
 import com.theost.walletok.presentation.base.PaginationStatus
-import com.theost.walletok.databinding.ItemLoadingOrErrorBinding
 
 class LoadingOrErrorAdapterDelegate(private val listener: View.OnClickListener) : AdapterDelegate {
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {

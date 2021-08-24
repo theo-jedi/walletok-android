@@ -18,10 +18,10 @@ class TransactionValueFragment : Fragment() {
     companion object {
         private const val TRANSACTION_VALUE_KEY = "transaction_value"
 
-        fun newFragment(savedValue: Int = 0): Fragment {
+        fun newFragment(savedValue: Long = 0): Fragment {
             val fragment = TransactionValueFragment()
             val bundle = Bundle()
-            bundle.putInt(TRANSACTION_VALUE_KEY, savedValue)
+            bundle.putLong(TRANSACTION_VALUE_KEY, savedValue)
             fragment.arguments = bundle
             return fragment
         }
@@ -29,8 +29,8 @@ class TransactionValueFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionValueBinding
 
-    private val savedValue: Int
-        get() = arguments?.getInt(TRANSACTION_VALUE_KEY)!!
+    private val savedValue: Long
+        get() = arguments?.getLong(TRANSACTION_VALUE_KEY)!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,7 +60,7 @@ class TransactionValueFragment : Fragment() {
         }
 
         binding.inputValue.addTextChangedListener(textWatcher)
-        binding.inputValue.setText(if (savedValue != 0) StringUtils.convertMoneyForDisplay(savedValue) else "")
+        binding.inputValue.setText(if (savedValue != 0L) StringUtils.convertMoneyForDisplay(savedValue) else "")
 
         return binding.root
     }

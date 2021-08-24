@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 data class Transaction(
     val id: Int,
     val categoryId: Int,
-    val money: Int,
+    val money: Long,
     val currency: Currency,
     val dateTime: Date
 ) : Parcelable

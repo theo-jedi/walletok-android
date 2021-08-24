@@ -140,7 +140,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         )
     }
 
-    override fun onValueSubmitted(value: Int) {
+    override fun onValueSubmitted(value: Long) {
         transaction.value = value
         if (transaction.isFilled()) {
             startFragment(TransactionEditFragment.newFragment(transaction, titleRes))

@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE
 import androidx.recyclerview.widget.ItemTouchHelper.LEFT
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.theost.walletok.R
 import com.theost.walletok.presentation.wallet_details.delegates.TransactionAdapterDelegate
 import com.theost.walletok.utils.dpToPx
 import kotlin.math.min

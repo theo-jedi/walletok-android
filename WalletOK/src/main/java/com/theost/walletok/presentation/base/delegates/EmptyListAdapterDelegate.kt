@@ -1,10 +1,10 @@
-package com.theost.walletok.presentation.wallet_details.delegates
+package com.theost.walletok.presentation.base.delegates
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.presentation.base.AdapterDelegate
 import com.theost.walletok.databinding.ItemEmptyListBinding
+import com.theost.walletok.presentation.base.AdapterDelegate
 
 class EmptyListAdapterDelegate : AdapterDelegate {
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
@@ -15,13 +15,17 @@ class EmptyListAdapterDelegate : AdapterDelegate {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: Any, position: Int) {
-        // Nothing to do
+        (holder as ViewHolder).bind(item as EmptyListContent)
     }
 
     override fun isOfViewType(item: Any) = item is EmptyListContent
 
-    class ViewHolder(binding: ItemEmptyListBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: ItemEmptyListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: EmptyListContent) {
+            if (item.text != null) binding.emptyListTv.text = item.text
+        }
+    }
 }
 
-object EmptyListContent
+data class EmptyListContent(val text: String? = null)
