@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.theost.walletok.databinding.ActivityWalletsBinding
 import com.theost.walletok.presentation.base.BaseAdapter
 import com.theost.walletok.presentation.wallet_details.WalletDetailsActivity
@@ -16,9 +15,17 @@ import com.theost.walletok.presentation.wallets.delegates.WalletsHeaderDelegate
 import com.theost.walletok.utils.Resource
 
 class WalletsActivity : AppCompatActivity() {
+
+    companion object {
+        fun newIntent(context: Context): Intent {
+            return Intent(context, WalletsActivity::class.java)
+        }
+    }
+
     private val viewModel: WalletsViewModel by viewModels()
     private lateinit var binding: ActivityWalletsBinding
     private val walletsAdapter = BaseAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWalletsBinding.inflate(layoutInflater)
@@ -27,17 +34,11 @@ class WalletsActivity : AppCompatActivity() {
             addDelegate(WalletsHeaderDelegate())
             addDelegate(WalletsCurrenciesDelegate())
             addDelegate(WalletItemDelegate {
-                val position = binding.recycler.getChildLayoutPosition(it)
-                val data = viewModel.walletsAndOverall.value
-                if (data != null) {
-                    val walletId = data.wallets[position - WalletsItemHelper.walletsListOffset].id
-                    startActivity(WalletDetailsActivity.newIntent(this@WalletsActivity, walletId))
-                }
+                startActivity(WalletDetailsActivity.newIntent(this@WalletsActivity, it.id))
             })
         }
         binding.recycler.apply {
             adapter = walletsAdapter
-            layoutManager = LinearLayoutManager(this@WalletsActivity)
             setHasFixedSize(true)
         }
         binding.errorWidget.retryButton.setOnClickListener {
@@ -56,11 +57,5 @@ class WalletsActivity : AppCompatActivity() {
             )
         }
         viewModel.loadData()
-    }
-
-    companion object {
-        fun newIntent(context: Context): Intent {
-            return Intent(context, WalletsActivity::class.java)
-        }
     }
 }

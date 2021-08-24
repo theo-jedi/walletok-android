@@ -6,16 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.databinding.ItemWalletBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
-import kotlin.properties.Delegates
 
-class WalletItemDelegate(private val listener: View.OnClickListener) : AdapterDelegate {
+class WalletItemDelegate(private val clickListener: (WalletContent) -> Unit) : AdapterDelegate {
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val binding = ItemWalletBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        val holder = ViewHolder(binding)
-        holder.itemView.setOnClickListener(listener)
-        return holder
+        return ViewHolder(binding, clickListener)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: Any, position: Int) {
@@ -24,11 +21,10 @@ class WalletItemDelegate(private val listener: View.OnClickListener) : AdapterDe
 
     override fun isOfViewType(item: Any) = item is WalletContent
 
-    class ViewHolder(val binding: ItemWalletBinding) :
+    class ViewHolder(val binding: ItemWalletBinding, val clickListener: (WalletContent) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
-        var walletId by Delegates.notNull<Int>()
         fun bind(item: WalletContent) {
-            walletId = item.id
+            itemView.setOnClickListener { clickListener.invoke(item) }
             binding.walletNameTv.text = item.name
             binding.walletMoneyAmountTv.text = item.money
             if (item.isLimitExceeded)

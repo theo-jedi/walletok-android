@@ -10,21 +10,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.*
+import com.theost.walletok.R
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
-import com.theost.walletok.delegates.*
 import com.theost.walletok.presentation.SwipeControllerActions
 import com.theost.walletok.presentation.WalletDetailsSwipeController
 import com.theost.walletok.presentation.base.*
 import com.theost.walletok.presentation.base.delegates.EmptyListAdapterDelegate
 import com.theost.walletok.presentation.base.delegates.LoadingOrErrorAdapterDelegate
-import com.theost.walletok.presentation.wallet_details.delegates.*
+import com.theost.walletok.presentation.wallet_details.delegates.DateAdapterDelegate
+import com.theost.walletok.presentation.wallet_details.delegates.TransactionAdapterDelegate
+import com.theost.walletok.presentation.wallet_details.delegates.WalletDetailsHeaderAdapterDelegate
 import com.theost.walletok.presentation.wallet_details.transaction.TransactionActivity
 import com.theost.walletok.utils.Resource
-import java.util.*
 
 
 class WalletDetailsActivity : AppCompatActivity() {
@@ -86,7 +85,6 @@ class WalletDetailsActivity : AppCompatActivity() {
 
         binding.recycler.apply {
             adapter = walletDetailsAdapter
-            layoutManager = LinearLayoutManager(this@WalletDetailsActivity)
             setHasFixedSize(true)
         }
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
