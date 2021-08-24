@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimary">
+
+    <TextView
+        android:id="@+id/overall_balance_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="50dp"
+        android:text="@string/wallets_overall_balance"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/overall_balance_value_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/overall_balance_tv"
+        tools:text="120000 P" />
+
+    <ImageView
+        android:id="@+id/greenDot"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="6dp"
+        android:src="@drawable/ic_green_dot"
+        app:layout_constraintBottom_toBottomOf="@+id/overall_income_tv"
+        app:layout_constraintEnd_toStartOf="@id/overall_income_tv"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/overall_income_tv" />
+
+    <TextView
+        android:id="@+id/overall_income_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/overall_income"
+        android:textColor="@color/white_opacity_60"
+        app:layout_constraintEnd_toStartOf="@id/center_guideline"
+        app:layout_constraintStart_toEndOf="@id/greenDot"
+        app:layout_constraintTop_toBottomOf="@id/overall_balance_value_tv" />
+
+    <TextView
+        android:id="@+id/overall_income_value_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="22dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/overall_income_tv" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/center_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <ImageView
+        android:id="@+id/redDot"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="6dp"
+        android:src="@drawable/ic_red_dot"
+        app:layout_constraintBottom_toBottomOf="@+id/overall_expense_tv"
+        app:layout_constraintEnd_toStartOf="@id/overall_expense_tv"
+        app:layout_constraintStart_toEndOf="@id/center_guideline"
+        app:layout_constraintTop_toTopOf="@+id/overall_expense_tv" />
+
+    <TextView
+        android:id="@+id/overall_expense_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/overall_income"
+        android:textColor="@color/white_opacity_60"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/redDot"
+        app:layout_constraintTop_toBottomOf="@id/overall_balance_value_tv" />
+
+    <TextView
+        android:id="@+id/overall_expense_value_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="22dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/redDot"
+        app:layout_constraintTop_toBottomOf="@id/overall_expense_tv" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,7 @@ import java.util.*
 @Parcelize
 class TransactionCreationModel(
     var id: Int? = null,
-    var value: Int? = null,
+    var value: Long? = null,
     var type: String? = null,
     var category: Int? = null,
     var currency: Currency? = null,

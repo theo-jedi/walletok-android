@@ -4,8 +4,8 @@ data class Wallet(
     val id: Int,
     val name: String,
     val currency: Currency,
-    val amountOfMoney: Int,
-    val gain: Int,
-    val lose: Int,
-    val loseLimit: Int
+    val amountOfMoney: Long,
+    val gain: Long,
+    val lose: Long,
+    val loseLimit: Long
 )
