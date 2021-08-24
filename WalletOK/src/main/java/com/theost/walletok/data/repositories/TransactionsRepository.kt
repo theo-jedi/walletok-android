@@ -74,29 +74,27 @@ object TransactionsRepository {
         )
     }
 
-    fun addTransaction(walletId: Int, value: Int, category: Int): Completable {
+    fun addTransaction(walletId: Int, value: Int, category: Int, dateTime: Date): Completable {
         return Completable.fromAction {
-            val transaction = simulateCreation(value, category)
+            val transaction = simulateCreation(value, category, dateTime)
             transactions[walletId]!!.add(transaction)
         }
     }
 
-    private fun simulateCreation(value: Int, category: Int): Transaction {
+    private fun simulateCreation(value: Int, category: Int, dateTime: Date): Transaction {
         return Transaction(
             transactions.size + 1,
             category,
             value * 100,
             Currency.RUB,
-            Calendar.getInstance().time
+            dateTime
         )
     }
 
-    private fun simulateEditing(id: Int, value: Int, category: Int, walletId: Int): Transaction {
+    private fun simulateEditing(id: Int, value: Int, category: Int, dateTime: Date, walletId: Int): Transaction {
         var currency: Currency
-        var dateTime: Date
         transactions[walletId]!!.find { it.id == id }.apply {
             currency = this!!.currency
-            dateTime = this.dateTime
         }
         return Transaction(
             id,
@@ -113,9 +111,9 @@ object TransactionsRepository {
         }
     }
 
-    fun editTransaction(id: Int, value: Int, category: Int, walletId: Int): Completable {
-        return Completable.fromAction { //TODO
-            val transaction = simulateEditing(id, value, category, walletId)
+    fun editTransaction(id: Int, value: Int, category: Int, dateTime: Date, walletId: Int): Completable {
+        return Completable.fromAction {
+            val transaction = simulateEditing(id, value, category, dateTime, walletId)
             transactions[walletId]!!.removeAll { it.id == id }
             addToCacheOrCreateNew(walletId, listOf(transaction))
         }
@@ -128,7 +126,8 @@ object TransactionsRepository {
         return addTransaction(
             walletId = walletId,
             value = transactionCreationModel.value!!,
-            category = transactionCreationModel.category!!
+            category = transactionCreationModel.category!!,
+            dateTime = transactionCreationModel.dateTime!!
         )
     }
 
