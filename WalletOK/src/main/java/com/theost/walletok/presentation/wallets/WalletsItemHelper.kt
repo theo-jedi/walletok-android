@@ -10,7 +10,6 @@ import com.theost.walletok.presentation.wallets.delegates.WalletsOverallContent
 import com.theost.walletok.utils.StringUtils
 
 object WalletsItemHelper {
-    const val WALLETS_LIST_OFFSET = 2
 
     fun getData(wallets: List<Wallet>, walletsOverall: WalletsOverall): List<Any> {
         val result = mutableListOf<Any>()
