@@ -1,9 +1,9 @@
 package com.theost.walletok.presentation.wallet_details
 
-import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.Wallet
+import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.presentation.wallet_details.delegates.DateContent
 import com.theost.walletok.presentation.wallet_details.delegates.HeaderContent
 import com.theost.walletok.presentation.wallet_details.delegates.TransactionContent
@@ -68,9 +68,10 @@ object TransactionItemsHelper {
                                     transaction.money
                                 )
                             )
-                        } ${transaction.currency.symbol}",
+                        } ${wallet.currency.symbol}",
                         time = timeFormat.format(transaction.dateTime),
-                        image = category.image
+                        iconColor = category.iconColor,
+                        iconUrl = category.iconLink
                     )
                 )
                 transactionDate

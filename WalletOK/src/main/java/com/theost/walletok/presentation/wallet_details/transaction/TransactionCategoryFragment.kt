@@ -125,7 +125,8 @@ class TransactionCategoryFragment : Fragment() {
                         CategoryItem(
                             id = category.id,
                             name = category.name,
-                            icon = category.image as Int,
+                            iconUrl = category.iconLink,
+                            iconColor = category.iconColor,
                             isSelected = savedCategory == category.id
                         )
                     }

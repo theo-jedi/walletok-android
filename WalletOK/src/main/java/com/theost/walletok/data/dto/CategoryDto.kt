@@ -9,14 +9,16 @@ import kotlinx.serialization.Serializable
 data class CategoryDto(
     @SerialName("name") val name: String,
     @SerialName("id") val id: Int,
-    @SerialName("image_url") val imageUrl: String,
+    @SerialName("iconColor") val iconColor: Int,
+    @SerialName("iconLink") val iconLink: String,
     @SerialName("type") val type: TransactionCategoryType
 )
 
 fun CategoryDto.mapToCategory(): TransactionCategory {
     return TransactionCategory(
         id = this.id,
-        image = this.imageUrl,
+        iconColor = this.iconColor,
+        iconLink = this.iconLink,
         name = this.name,
         type = this.type
     )
