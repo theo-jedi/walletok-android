@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.theost.walletok.R
+import com.theost.walletok.TransactionEditFragment
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCreationModel
@@ -178,6 +179,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
                     transaction.id!!,
                     transaction.value!!,
                     transaction.category!!,
+                    transaction.dateTime!!,
                     walletId
                 ).subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe({
@@ -194,7 +196,8 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
                 TransactionsRepository.addTransaction(
                     walletId,
                     transaction.value!!,
-                    transaction.category!!
+                    transaction.category!!,
+                    transaction.dateTime!!
                 ).subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         binding.transactionProgress.visibility = View.GONE

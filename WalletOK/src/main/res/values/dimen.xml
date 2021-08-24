@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="mtrl_calendar_header_height">0dp</dimen>
+    <dimen name="mtrl_calendar_selection_text_baseline_to_top">0dp</dimen>
+    <dimen name="mtrl_time_header_height">0dp</dimen>
+    <dimen name="mtrl_time_selection_text_baseline_to_top">0dp</dimen>
+</resources>

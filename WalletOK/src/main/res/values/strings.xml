@@ -24,7 +24,7 @@
     <string name="edit_transaction">Редактирование операции</string>
 
     <string name="basic">Основные</string>
-    <string name="additional">Дополнительная информация</string>
+    <string name="additional">Дополнительные настройки</string>
     <string name="value">Сумма</string>
     <string name="type">Тип</string>
     <string name="category">Категория</string>
@@ -38,6 +38,7 @@
     <string name="error_sign_in">Ошибка авторизации</string>
 
     <string name="close">Закрыть</string>
+    <string name="now">Сейчас</string>
 
     <string name="zero">0</string>
     <string name="wallet_rub">₽</string>
