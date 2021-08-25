@@ -37,6 +37,7 @@
     <string name="category_name">Название категории</string>
     <string name="think_name">Придумайте название</string>
     <string name="create_category">Создать категорию</string>
+    <string name="delete_category">Удалить категорию</string>
     <string name="transaction_date">Дата операции</string>
 
     <string name="salary">Зарплата</string>
@@ -45,6 +46,7 @@
     <string name="today">Сегодня</string>
     <string name="yesterday">Вчера</string>
     <string name="error_sign_in">Ошибка авторизации</string>
+    <string name="not_available">Функция пока недоступна</string>
 
     <string name="close">Закрыть</string>
     <string name="now">Сейчас</string>

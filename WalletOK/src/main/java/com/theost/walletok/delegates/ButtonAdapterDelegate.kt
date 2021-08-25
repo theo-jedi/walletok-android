@@ -8,7 +8,7 @@ import com.theost.walletok.databinding.ItemListButtonBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
 
 class ButtonAdapterDelegate(
-    private val clickListener: (position: Int) -> Unit
+    private val clickListener: (buttonType: ListButtonType) -> Unit
 ) : AdapterDelegate {
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val binding = ItemListButtonBinding.inflate(
@@ -25,12 +25,12 @@ class ButtonAdapterDelegate(
 
     class ViewHolder(
         private val binding: ItemListButtonBinding,
-        private val clickListener: (position: Int) -> Unit
+        private val clickListener: (buttonType: ListButtonType) -> Unit
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(button: ListButton) {
-            binding.root.setOnClickListener { clickListener(adapterPosition) }
+            binding.root.setOnClickListener { clickListener(button.type) }
             binding.listButton.text = button.text
             binding.listButton.isEnabled = button.isEnabled
             binding.listButton.visibility = if (button.isVisible) View.VISIBLE else View.INVISIBLE
@@ -42,6 +42,11 @@ class ButtonAdapterDelegate(
 
 data class ListButton(
     val text: String,
+    val type: ListButtonType,
     val isVisible: Boolean,
     val isEnabled: Boolean
 )
+
+enum class ListButtonType {
+    CREATION, DELETION
+}

@@ -63,7 +63,7 @@ class TransactionActivity : FragmentActivity(),
         get() = intent.getIntExtra(TRANSACTION_TITLE_KEY, R.string.new_transaction)
 
     private val transaction = TransactionCreationModel()
-    private var categoryModel = CategoryCreationModel()
+    private var categoryModel : CategoryCreationModel? = null
 
     private val compositeDisposable = CompositeDisposable()
     private val walletId: Int
@@ -176,8 +176,9 @@ class TransactionActivity : FragmentActivity(),
     }
 
     override fun onNewCategoryClicked() {
-        categoryModel.type = transaction.type
-        startFragment(CategoryEditFragment.newFragment(categoryModel))
+        categoryModel = CategoryCreationModel()
+        categoryModel!!.type = transaction.type
+        startFragment(CategoryEditFragment.newFragment(categoryModel!!))
     }
 
     override fun onCategorySubmitted(category: Int) {
@@ -229,37 +230,42 @@ class TransactionActivity : FragmentActivity(),
     }
 
     override fun onCategoryNameEdit() {
-        startFragment(CategoryNameFragment.newFragment(categoryModel.name))
+        supportFragmentManager.popBackStack()
+        startFragment(CategoryNameFragment.newFragment(categoryModel?.name))
     }
 
     override fun onCategoryTypeEdit() {
-        startFragment(CategoryTypeFragment.newFragment(categoryModel.type))
+        supportFragmentManager.popBackStack()
+        startFragment(CategoryTypeFragment.newFragment(categoryModel?.type))
     }
 
     override fun onCategoryNameSubmitted(name: String) {
-        categoryModel.name = name
-        startFragment(CategoryEditFragment.newFragment(categoryModel))
+        categoryModel?.name = name
+        supportFragmentManager.popBackStack()
+        startFragment(CategoryEditFragment.newFragment(categoryModel!!))
     }
 
     override fun onCategoryTypeSubmitted(type: String) {
-        categoryModel.type = type
-        startFragment(CategoryEditFragment.newFragment(categoryModel))
+        categoryModel?.type = type
+        supportFragmentManager.popBackStack()
+        startFragment(CategoryEditFragment.newFragment(categoryModel!!))
     }
 
     override fun onCategoryColorSubmitted(color: Int) {
-        categoryModel.color = color
+        categoryModel?.color = color
     }
 
     override fun onCategoryIconSubmitted(iconRes: Int) {
-        categoryModel.iconRes = iconRes
+        categoryModel?.iconRes = iconRes
     }
 
     override fun onCategoryCreated() {
-        categoryModel = CategoryCreationModel()
+        categoryModel = null
     }
 
     private fun startFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
+            .setCustomAnimations(R.animator.slide_to_left, R.animator.slide_from_right, R.animator.slide_to_right, R.animator.slide_from_left)
             .replace(R.id.creation_fragment_container, fragment)
             .addToBackStack(null)
             .commit()

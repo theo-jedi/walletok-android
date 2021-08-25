@@ -67,7 +67,7 @@ class CategoryNameFragment : Fragment() {
     }
 
     private fun setCurrentName() {
-        val name = binding.inputName.text.toString()
+        val name = binding.inputName.text.toString().trim()
         (activity as CategoryNameListener).onCategoryNameSubmitted(name)
     }
 

@@ -5,17 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.theost.walletok.R
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
-import com.theost.walletok.delegates.ButtonAdapterDelegate
-import com.theost.walletok.delegates.CategoryAdapterDelegate
-import com.theost.walletok.delegates.CategoryItem
+import com.theost.walletok.delegates.*
 import com.theost.walletok.presentation.base.BaseAdapter
 import com.theost.walletok.presentation.base.ErrorMessageHelper
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
-import com.theost.walletok.delegates.ListButton
 import com.theost.walletok.utils.addTo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -68,7 +66,12 @@ class TransactionCategoryFragment : Fragment() {
 
         adapter.apply {
             addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
-            addDelegate(ButtonAdapterDelegate { onNewCategoryClicked() })
+            addDelegate(ButtonAdapterDelegate { type ->
+                when (type) {
+                    ListButtonType.CREATION -> onNewCategoryClicked()
+                    ListButtonType.DELETION -> showErrorToast()
+                }
+            })
         }
 
         binding.listCategory.adapter = adapter
@@ -140,19 +143,30 @@ class TransactionCategoryFragment : Fragment() {
                     }
                 lastSelected = categoryItems.indexOfFirst { it.id == savedCategory }
                 val items: MutableList<Any> = categoryItems.toMutableList()
-                items.add(
+                items.addAll(mutableListOf(
+                    ListButton(
+                        text = getString(R.string.delete_category),
+                        ListButtonType.DELETION,
+                        isVisible = true,
+                        isEnabled = true
+                    ),
                     ListButton(
                         text = getString(R.string.create_category),
+                        ListButtonType.CREATION,
                         isVisible = true,
                         isEnabled = true
                     )
-                )
+                ))
                 adapter.setData(items)
             }, {
                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
                     loadCategories()
                 }
             }).addTo(compositeDisposable)
+    }
+
+    private fun showErrorToast() {
+        Toast.makeText(requireContext(), getString(R.string.not_available), Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
