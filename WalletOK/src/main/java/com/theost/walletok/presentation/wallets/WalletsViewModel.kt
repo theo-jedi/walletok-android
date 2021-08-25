@@ -8,6 +8,7 @@ import com.theost.walletok.data.models.WalletsOverall
 import com.theost.walletok.data.repositories.WalletsRepository
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -20,13 +21,12 @@ class WalletsViewModel : ViewModel() {
     val walletsAndOverall: LiveData<WalletsAndOverall> = _walletsAndOverall
     fun loadData() {
         _loadingStatus.postValue(Resource.Loading(Unit))
-        Single.zip(
+        Observable.zip(
             WalletsRepository.getWallets(),
             WalletsRepository.getWalletsOverall(),
             { wallets, walletsOverall ->
                 WalletsAndOverall(wallets, walletsOverall)
             })
-            .subscribeOn(Schedulers.io())
             .subscribe({
                 _loadingStatus.postValue(Resource.Success(Unit))
                 _walletsAndOverall.postValue(it)

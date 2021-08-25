@@ -11,7 +11,8 @@ data class WalletDto(
     @SerialName("id") val id: Int,
     @SerialName("income") val income: Long,
     @SerialName("expenditure") val expenditure: Long,
-    @SerialName("balanceLimit") val loseLimit: Long
+    @SerialName("balanceLimit") val loseLimit: Long?,
+    @SerialName("hidden") val hidden: Boolean
 )
 
 fun WalletDto.mapToWallet(): Wallet {
@@ -22,6 +23,7 @@ fun WalletDto.mapToWallet(): Wallet {
         amountOfMoney = this.income - this.expenditure,
         gain = this.income,
         lose = this.expenditure,
-        loseLimit = this.loseLimit
+        loseLimit = this.loseLimit,
+        hidden = this.hidden
     )
 }

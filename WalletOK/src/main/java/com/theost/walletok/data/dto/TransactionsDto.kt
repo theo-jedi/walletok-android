@@ -2,7 +2,7 @@ package com.theost.walletok.data.dto
 
 import com.theost.walletok.data.dto.TransactionsDto.Companion.dateTimeFormat
 import com.theost.walletok.data.models.Transaction
-import com.theost.walletok.data.models.TransactionsAndNextId
+import com.theost.walletok.data.models.TransactionsAndLastId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
@@ -15,7 +15,7 @@ data class TransactionsDto(
 ) {
     companion object {
         val dateTimeFormat =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z", Locale("ru", "RU"))
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("ru", "RU"))
     }
 }
 
@@ -28,11 +28,11 @@ data class TransactionContentDto(
     @SerialName("date") val dateTime: String
 )
 
-fun TransactionsDto.mapToTransactionsAndNextId(): TransactionsAndNextId {
+fun TransactionsDto.mapToTransactionsAndNextId(): TransactionsAndLastId {
     val newList = this.transactions.map {
         it.mapToTransaction()
     }
-    return TransactionsAndNextId(newList, this.nextTransactionId)
+    return TransactionsAndLastId(newList, this.nextTransactionId)
 }
 
 fun TransactionContentDto.mapToTransaction(): Transaction {

@@ -2,11 +2,9 @@ package com.theost.walletok.data.api
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.theost.walletok.data.dto.CategoryDto
-import com.theost.walletok.data.dto.CurrencyDto
-import com.theost.walletok.data.dto.TransactionContentDto
-import com.theost.walletok.data.dto.WalletDto
+import com.theost.walletok.data.dto.*
 import com.theost.walletok.utils.AuthUtils
+import io.reactivex.Completable
 import io.reactivex.Single
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -15,10 +13,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.http.Field
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface WalletOkService {
 
@@ -27,6 +22,14 @@ interface WalletOkService {
 
     @GET("wallets")
     fun getWallets(): Single<List<WalletDto>>
+
+    @GET("wallets/{id}")
+    fun getWallet(
+        @Path("id") id: Int
+    ): Single<WalletDto>
+
+    @GET("currencies")
+    fun getCurrencies(): Single<List<CurrencyDto>>
 
     @GET("wallets/{id}/transactions")
     fun getTransactions(
@@ -47,20 +50,21 @@ interface WalletOkService {
 
     @POST("wallets")
     fun addWallet(
-        @Field("name") name: String,
-        @Field("currency") currency: CurrencyDto,
-        @Field("balanceLimit") balanceLimit: Long
+        @Body body: WalletPostDto
     ): Single<WalletDto>
+
+    @DELETE("transactions/{id}")
+    fun deleteTransaction(
+        @Path("id") transactionId: Int
+    ): Completable
 
     @POST("transactions")
     fun addTransaction(
-        @Field("walletId") walletId: Int,
-        @Field("categoryId") categoryId: Int,
-        @Field("amount") amount: Long
+        @Body body: TransactionPostDto
     ): Single<TransactionContentDto>
 
     companion object {
-        private const val BASE_URL = "http://34.88.199.231:9090/"
+        const val BASE_URL = "http://34.88.199.231:9090/"
         private var instance: WalletOkService? = null
 
         fun getInstance(): WalletOkService {
