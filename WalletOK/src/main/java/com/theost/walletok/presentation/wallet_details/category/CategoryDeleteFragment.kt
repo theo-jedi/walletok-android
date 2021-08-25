@@ -1,23 +1,17 @@
 package com.theost.walletok.presentation.wallet_details.category
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.theost.walletok.R
-import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
-import com.theost.walletok.delegates.*
+import com.theost.walletok.delegates.CategoryAdapterDelegate
 import com.theost.walletok.presentation.base.BaseAdapter
-import com.theost.walletok.presentation.base.ErrorMessageHelper
-import com.theost.walletok.presentation.wallet_details.transaction.TransactionCategoryFragment
-import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
-import com.theost.walletok.utils.addTo
+import com.theost.walletok.utils.Resource
 import com.theost.walletok.widgets.CategoryListener
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 class CategoryDeleteFragment : Fragment() {
@@ -30,11 +24,11 @@ class CategoryDeleteFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionCategoryBinding
-    private lateinit var categoryItems: List<CategoryItem>
 
     private val compositeDisposable = CompositeDisposable()
     private val adapter = BaseAdapter()
-    private val selectedCategories: MutableList<Int> = mutableListOf()
+
+    private val viewModel: UserCategoriesViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,66 +44,48 @@ class CategoryDeleteFragment : Fragment() {
         }
 
         adapter.apply {
-            addDelegate(CategoryAdapterDelegate {
-                position, categoryId -> onItemClicked(position, categoryId)
+            addDelegate(CategoryAdapterDelegate { position ->
+                onItemClicked(position)
             })
         }
 
         binding.listCategory.adapter = adapter
         binding.listCategory.setHasFixedSize(true)
 
-        loadCategories()
-
         binding.submitButton.text = getString(R.string.delete)
         binding.submitButton.setOnClickListener {
-            deleteSelectedCategories()
+            viewModel.deleteSelectedData()
         }
+
+        binding.errorWidget.retryButton.setOnClickListener {
+            if (binding.submitButton.isEnabled) {
+                viewModel.deleteSelectedData()
+            } else {
+                viewModel.loadData()
+            }
+        }
+
+        viewModel.loadingStatus.observe(viewLifecycleOwner) {
+            if (it is Resource.Error) {
+                binding.errorWidget.errorLayout.visibility = View.VISIBLE
+            } else if (it is Resource.Success) {
+                binding.errorWidget.errorLayout.visibility = View.GONE
+                if (binding.submitButton.isEnabled) (activity as CategoryListener).onCategoryDeleted()
+            }
+        }
+
+        viewModel.allData.observe(viewLifecycleOwner) { list ->
+            binding.submitButton.isEnabled = list.find { it.isSelected } != null
+            adapter.setData(list)
+        }
+
+        viewModel.loadData()
 
         return binding.root
     }
 
-    private fun onItemClicked(position: Int, categoryId: Int) {
-        if (categoryId in selectedCategories) {
-            categoryItems[position].isSelected = false
-            selectedCategories.remove(categoryId)
-        } else {
-            categoryItems[position].isSelected = true
-            selectedCategories.add(categoryId)
-        }
-        adapter.setData(categoryItems)
-
-        binding.submitButton.isEnabled = selectedCategories.size > 0
-    }
-
-    private fun deleteSelectedCategories() {
-        CategoriesRepository.removeCategories(selectedCategories).subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                (activity as CategoryListener).onCategoryDeleted()
-            }, {
-                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                    loadCategories()
-                }
-            }).addTo(compositeDisposable)
-    }
-
-    private fun loadCategories() {
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe({ list ->
-                categoryItems = list
-                    .map { category ->
-                        CategoryItem(
-                            id = category.id,
-                            name = category.name,
-                            icon = category.image as Int,
-                            isSelected = false
-                        )
-                    }
-                adapter.setData(categoryItems)
-            }, {
-                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                    loadCategories()
-                }
-            }).addTo(compositeDisposable)
+    private fun onItemClicked(position: Int) {
+        viewModel.selectData(position)
     }
 
     override fun onDestroy() {

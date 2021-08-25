@@ -64,8 +64,8 @@ class TransactionCategoryFragment : Fragment() {
         }
 
         adapter.apply {
-            addDelegate(CategoryAdapterDelegate {
-                    position, categoryId -> onItemClicked(position, categoryId)
+            addDelegate(CategoryAdapterDelegate { position ->
+                onItemClicked(position)
             })
             addDelegate(ButtonAdapterDelegate { type ->
                 when (type) {
@@ -107,14 +107,14 @@ class TransactionCategoryFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    private fun onItemClicked(position: Int, categoryId: Int) {
+    private fun onItemClicked(position: Int) {
         if (categoryItems[position] is CategoryItem && (lastSelected == TRANSACTION_CATEGORY_UNSET || categoryItems[lastSelected] is CategoryItem)) {
             if (lastSelected != TRANSACTION_CATEGORY_UNSET) (categoryItems[lastSelected] as CategoryItem).isSelected =
                 false
             (categoryItems[position] as CategoryItem).isSelected = true
             adapter.setData(categoryItems)
 
-            savedCategory = categoryId
+            savedCategory = (categoryItems[position] as CategoryItem).id
             lastSelected = position
 
             if (savedCategory != TRANSACTION_CATEGORY_UNSET) {

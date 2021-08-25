@@ -8,7 +8,7 @@ import com.theost.walletok.databinding.ItemListCategoryBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
 
 class CategoryAdapterDelegate(
-    private val clickListener: (position: Int, categoryId: Int) -> Unit
+    private val clickListener: (position: Int) -> Unit
 ) : AdapterDelegate {
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
@@ -26,12 +26,12 @@ class CategoryAdapterDelegate(
 
     class ViewHolder(
         private val binding: ItemListCategoryBinding,
-        private val clickListener: (position: Int, categoryId: Int) -> Unit
+        private val clickListener: (position: Int) -> Unit
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: CategoryItem) {
-            binding.root.setOnClickListener { clickListener(adapterPosition, category.id) }
+            binding.root.setOnClickListener { clickListener(adapterPosition) }
             binding.categoryTitle.text = category.name
             binding.categoryIcon.setImageResource(category.icon)
             binding.categoryCheck.visibility = View.INVISIBLE
