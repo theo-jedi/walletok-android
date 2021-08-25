@@ -97,7 +97,7 @@ class TransactionActivity : FragmentActivity(),
         if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
             startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
         } else if (currentFragment is CategoryNameFragment || currentFragment is CategoryTypeFragment ) {
-            startFragment(CategoryEditFragment.newFragment(categoryModel!!))
+            startFragment(CategoryEditFragment.newFragment(categoryModel))
         } else {
             if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {
                 supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -178,21 +178,6 @@ class TransactionActivity : FragmentActivity(),
         }
     }
 
-    override fun onCreateCategoryClicked() {
-        categoryModel = CategoryCreationModel()
-        categoryModel!!.type = transaction.type
-        startFragment(CategoryEditFragment.newFragment(categoryModel!!))
-    }
-
-    override fun onDeleteCategoryClicked() {
-        startFragment(CategoryDeleteFragment.newFragment())
-    }
-
-    override fun onCategorySubmitted(category: Int) {
-        transaction.category = category
-        startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
-    }
-
     override fun onTransactionSubmitted() {
         if (transaction.isFilled()) {
             binding.transactionProgress.visibility = View.VISIBLE
@@ -236,6 +221,21 @@ class TransactionActivity : FragmentActivity(),
         }
     }
 
+    override fun onCreateCategoryClicked() {
+        categoryModel = CategoryCreationModel()
+        categoryModel!!.type = transaction.type
+        startFragment(CategoryEditFragment.newFragment(categoryModel))
+    }
+
+    override fun onDeleteCategoryClicked() {
+        startFragment(CategoryDeleteFragment.newFragment())
+    }
+
+    override fun onCategorySubmitted(category: Int) {
+        transaction.category = category
+        startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
+    }
+
     override fun onCategoryNameEdit() {
         supportFragmentManager.popBackStack()
         startFragment(CategoryNameFragment.newFragment(categoryModel?.name))
@@ -249,13 +249,13 @@ class TransactionActivity : FragmentActivity(),
     override fun onCategoryNameSubmitted(name: String) {
         categoryModel?.name = name
         supportFragmentManager.popBackStack()
-        startFragment(CategoryEditFragment.newFragment(categoryModel!!))
+        startFragment(CategoryEditFragment.newFragment(categoryModel))
     }
 
     override fun onCategoryTypeSubmitted(type: String) {
         categoryModel?.type = type
         supportFragmentManager.popBackStack()
-        startFragment(CategoryEditFragment.newFragment(categoryModel!!))
+        startFragment(CategoryEditFragment.newFragment(categoryModel))
     }
 
     override fun onCategoryColorSubmitted(color: Int) {

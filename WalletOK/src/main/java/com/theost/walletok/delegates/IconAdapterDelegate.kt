@@ -6,8 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.databinding.ItemListIconBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
 
-class IconAdapterDelegate(private var backgroundColor: Int, private val clickListener: (position: Int, iconRes: Int) -> Unit) :
+class IconAdapterDelegate(private val clickListener: (iconRes: Int) -> Unit) :
     AdapterDelegate {
+
+    private var backgroundColor: Int = 0
+    private var iconRes: Int = 0
+
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val binding = ItemListIconBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
@@ -16,7 +20,7 @@ class IconAdapterDelegate(private var backgroundColor: Int, private val clickLis
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: Any, position: Int) {
-        (holder as ViewHolder).bind(item as ListIcon, backgroundColor)
+        (holder as ViewHolder).bind(item as ListIcon, backgroundColor, iconRes)
     }
 
     override fun isOfViewType(item: Any): Boolean = item is ListIcon
@@ -25,15 +29,26 @@ class IconAdapterDelegate(private var backgroundColor: Int, private val clickLis
         this.backgroundColor = backgroundColor
     }
 
-    class ViewHolder(private val binding: ItemListIconBinding, private val clickListener: (position: Int, iconRes: Int) -> Unit) :
+    fun setSelectedIcon(iconRes: Int) {
+        this.iconRes = iconRes
+    }
+
+    class ViewHolder(
+        private val binding: ItemListIconBinding,
+        private val clickListener: (iconRes: Int) -> Unit
+    ) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(iconItem: ListIcon, backgroundColor: Int) {
+        fun bind(iconItem: ListIcon, backgroundColor: Int, iconRes: Int) {
             binding.root.alpha = 1.0f
-            binding.root.setOnClickListener { clickListener(adapterPosition, iconItem.iconRes) }
+            binding.root.isEnabled = true
+            binding.root.setOnClickListener { clickListener(iconItem.iconRes) }
             binding.cateogryIcon.setImageResource(iconItem.iconRes)
             binding.categoryBackground.setColorFilter(backgroundColor, android.graphics.PorterDuff.Mode.SRC_IN)
-            if (iconItem.isSelected) binding.root.alpha = 0.5f
+            if (iconItem.iconRes == iconRes) {
+                binding.root.alpha = 0.5f
+                binding.root.isEnabled = false
+            }
         }
 
     }
@@ -41,6 +56,5 @@ class IconAdapterDelegate(private var backgroundColor: Int, private val clickLis
 }
 
 data class ListIcon(
-    val iconRes: Int,
-    var isSelected: Boolean
+    val iconRes: Int
 )

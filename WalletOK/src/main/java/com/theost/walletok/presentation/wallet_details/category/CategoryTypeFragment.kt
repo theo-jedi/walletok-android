@@ -59,7 +59,12 @@ class CategoryTypeFragment : Fragment() {
         binding.listTypes.adapter = adapter
 
         viewModel.allData.observe(viewLifecycleOwner) { list ->
-            binding.submitButton.isEnabled = list.find { it.isSelected } != null
+            val typeItem = list.find { it.isSelected }
+            if (typeItem != null) {
+                savedType = typeItem.name
+                binding.submitButton.isEnabled = true
+            }
+
             adapter.setData(list)
         }
 
