@@ -1,6 +1,5 @@
 package com.theost.walletok.presentation.wallet_details.transaction
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +38,7 @@ class TransactionCategoryFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionCategoryBinding
-    private lateinit var categoryItems: List<CategoryItem>
+    private lateinit var categoryItems: MutableList<Any>
 
     private val compositeDisposable = CompositeDisposable()
     private var savedCategory: Int = TRANSACTION_CATEGORY_UNSET
@@ -65,11 +64,13 @@ class TransactionCategoryFragment : Fragment() {
         }
 
         adapter.apply {
-            addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
+            addDelegate(CategoryAdapterDelegate {
+                    position, categoryId -> onItemClicked(position, categoryId)
+            })
             addDelegate(ButtonAdapterDelegate { type ->
                 when (type) {
-                    ListButtonType.CREATION -> onNewCategoryClicked()
-                    ListButtonType.DELETION -> showErrorToast()
+                    ListButtonType.CREATION -> (activity as TransactionCategoryListener).onCreateCategoryClicked()
+                    ListButtonType.DELETION -> (activity as TransactionCategoryListener).onDeleteCategoryClicked()
                 }
             })
         }
@@ -80,7 +81,7 @@ class TransactionCategoryFragment : Fragment() {
         loadCategories()
 
         binding.submitButton.setOnClickListener {
-            setCurrentCategory()
+            (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
         }
 
         return binding.root
@@ -106,58 +107,54 @@ class TransactionCategoryFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun onItemClicked(position: Int) {
-        if (lastSelected != TRANSACTION_CATEGORY_UNSET) categoryItems[lastSelected].isSelected =
-            false
-        categoryItems[position].isSelected = true
-        adapter.setData(categoryItems)
+    private fun onItemClicked(position: Int, categoryId: Int) {
+        if (categoryItems[position] is CategoryItem && (lastSelected == TRANSACTION_CATEGORY_UNSET || categoryItems[lastSelected] is CategoryItem)) {
+            if (lastSelected != TRANSACTION_CATEGORY_UNSET) (categoryItems[lastSelected] as CategoryItem).isSelected =
+                false
+            (categoryItems[position] as CategoryItem).isSelected = true
+            adapter.setData(categoryItems)
 
-        savedCategory = categoryItems[position].id
-        lastSelected = position
+            savedCategory = categoryId
+            lastSelected = position
 
-        if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
-            binding.submitButton.isEnabled = true
+            if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
+                binding.submitButton.isEnabled = true
+            }
         }
-    }
-
-    private fun onNewCategoryClicked() {
-        (activity as TransactionCategoryListener).onNewCategoryClicked()
-    }
-
-    private fun setCurrentCategory() {
-        (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
     }
 
     private fun loadCategories() {
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
-                categoryItems =
-                    list.filter { category -> category.type.uiName == savedType }.map { category ->
+                categoryItems = list
+                    .filter { category -> category.type.uiName == savedType }
+                    .map { category ->
                         CategoryItem(
                             id = category.id,
                             name = category.name,
                             icon = category.image as Int,
                             isSelected = savedCategory == category.id
                         )
-                    }
-                lastSelected = categoryItems.indexOfFirst { it.id == savedCategory }
-                val items: MutableList<Any> = categoryItems.toMutableList()
-                items.addAll(mutableListOf(
-                    ListButton(
-                        text = getString(R.string.delete_category),
-                        ListButtonType.DELETION,
-                        isVisible = true,
-                        isEnabled = true
-                    ),
-                    ListButton(
-                        text = getString(R.string.create_category),
-                        ListButtonType.CREATION,
-                        isVisible = true,
-                        isEnabled = true
+                    }.toMutableList()
+                categoryItems.addAll(
+                    listOf(
+                        ListButton(
+                            text = getString(R.string.delete_category),
+                            ListButtonType.DELETION,
+                            isVisible = true,
+                            isEnabled = true
+                        ),
+                        ListButton(
+                            text = getString(R.string.create_category),
+                            ListButtonType.CREATION,
+                            isVisible = true,
+                            isEnabled = true
+                        )
                     )
-                ))
-                adapter.setData(items)
+                )
+                lastSelected = categoryItems.indexOfFirst { it is CategoryItem && it.id == savedCategory }
+                if (lastSelected == TRANSACTION_CATEGORY_UNSET) savedCategory = TRANSACTION_CATEGORY_UNSET
+                adapter.setData(categoryItems)
             }, {
                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
                     loadCategories()
@@ -166,7 +163,8 @@ class TransactionCategoryFragment : Fragment() {
     }
 
     private fun showErrorToast() {
-        Toast.makeText(requireContext(), getString(R.string.not_available), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.not_available), Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun onDestroy() {

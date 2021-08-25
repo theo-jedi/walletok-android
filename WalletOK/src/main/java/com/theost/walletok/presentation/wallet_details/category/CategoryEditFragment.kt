@@ -14,11 +14,16 @@ import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import com.theost.walletok.R
 import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.models.TransactionCategoryType
+import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentCategoryEditBinding
 import com.theost.walletok.delegates.*
 import com.theost.walletok.presentation.base.BaseAdapter
+import com.theost.walletok.presentation.base.ErrorMessageHelper
+import com.theost.walletok.utils.addTo
 import com.theost.walletok.widgets.CategoryIconListener
 import com.theost.walletok.widgets.CategoryListener
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 
 class CategoryEditFragment : Fragment() {
 
@@ -47,6 +52,7 @@ class CategoryEditFragment : Fragment() {
     private var lastSelected = CATEGORY_ICON_UNSET
 
     private val adapter = BaseAdapter()
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -129,6 +135,11 @@ class CategoryEditFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
+    }
+
     private fun onPreferenceClicked(preferenceName: String) {
         when (preferenceName) {
             PreferenceType.NAME.uiName -> categoryListener.onCategoryNameEdit()
@@ -176,11 +187,18 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun createCategory() {
-        /* todo createCategory
-            if created: setResult(RESULT_OK) and finish()
-            else: showErrorWidget
-         */
-        categoryListener.onCategoryCreated()
+        CategoriesRepository.addCategory(
+            category!!.name!!,
+            category!!.iconRes!!,
+            TransactionCategoryType.values().find { it.uiName == category!!.type!!}!!
+        ).subscribeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                categoryListener.onCategoryCreated()
+            }, {
+                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                    createCategory()
+                }
+            }).addTo(compositeDisposable)
     }
 
     private fun getPreferencesList(): MutableList<Any> {

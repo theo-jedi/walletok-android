@@ -15,6 +15,7 @@ import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityTransactionBinding
 import com.theost.walletok.presentation.base.ErrorMessageHelper
+import com.theost.walletok.presentation.wallet_details.category.CategoryDeleteFragment
 import com.theost.walletok.presentation.wallet_details.category.CategoryEditFragment
 import com.theost.walletok.presentation.wallet_details.category.CategoryNameFragment
 import com.theost.walletok.presentation.wallet_details.category.CategoryTypeFragment
@@ -63,7 +64,7 @@ class TransactionActivity : FragmentActivity(),
         get() = intent.getIntExtra(TRANSACTION_TITLE_KEY, R.string.new_transaction)
 
     private val transaction = TransactionCreationModel()
-    private var categoryModel : CategoryCreationModel? = null
+    private var categoryModel: CategoryCreationModel? = null
 
     private val compositeDisposable = CompositeDisposable()
     private val walletId: Int
@@ -95,6 +96,8 @@ class TransactionActivity : FragmentActivity(),
             supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
         if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
             startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
+        } else if (currentFragment is CategoryNameFragment || currentFragment is CategoryTypeFragment ) {
+            startFragment(CategoryEditFragment.newFragment(categoryModel!!))
         } else {
             if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {
                 supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -175,10 +178,14 @@ class TransactionActivity : FragmentActivity(),
         }
     }
 
-    override fun onNewCategoryClicked() {
+    override fun onCreateCategoryClicked() {
         categoryModel = CategoryCreationModel()
         categoryModel!!.type = transaction.type
         startFragment(CategoryEditFragment.newFragment(categoryModel!!))
+    }
+
+    override fun onDeleteCategoryClicked() {
+        startFragment(CategoryDeleteFragment.newFragment())
     }
 
     override fun onCategorySubmitted(category: Int) {
@@ -261,11 +268,21 @@ class TransactionActivity : FragmentActivity(),
 
     override fun onCategoryCreated() {
         categoryModel = null
+        supportFragmentManager.popBackStack()
+    }
+
+    override fun onCategoryDeleted() {
+        supportFragmentManager.popBackStack()
     }
 
     private fun startFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .setCustomAnimations(R.animator.slide_to_left, R.animator.slide_from_right, R.animator.slide_to_right, R.animator.slide_from_left)
+            .setCustomAnimations(
+                R.anim.fade_in,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.fade_out
+            )
             .replace(R.id.creation_fragment_container, fragment)
             .addToBackStack(null)
             .commit()

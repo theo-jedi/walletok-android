@@ -5,6 +5,7 @@ import com.theost.walletok.data.api.WalletOkService
 import com.theost.walletok.data.dto.mapToCategory
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCategoryType
+import io.reactivex.Completable
 import io.reactivex.Single
 
 object CategoriesRepository {
@@ -92,4 +93,27 @@ object CategoriesRepository {
                     categories.addAll(it)
                 }
     }
+
+    fun addCategory(name: String, iconRes: Int, type: TransactionCategoryType): Completable {
+        return Completable.fromAction {
+            val category = simulateCreation(name, iconRes, type)
+            categories.add(category)
+        }
+    }
+
+    private fun simulateCreation(name: String, iconRes: Int, type: TransactionCategoryType): TransactionCategory {
+        return TransactionCategory(
+            categories.size + 1,
+            iconRes,
+            name,
+            type
+        )
+    }
+
+    fun removeCategories(categoriesIds: List<Int>): Completable {
+        return Completable.fromAction {
+            categoriesIds.forEach { id -> categories.removeAll { it.id == id} }
+        }
+    }
+
 }

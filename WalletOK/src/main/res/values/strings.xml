@@ -47,6 +47,7 @@
     <string name="yesterday">Вчера</string>
     <string name="error_sign_in">Ошибка авторизации</string>
     <string name="not_available">Функция пока недоступна</string>
+    <string name="delete">Удалить</string>
 
     <string name="close">Закрыть</string>
     <string name="now">Сейчас</string>

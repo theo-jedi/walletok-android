@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentCategoryNameBinding
@@ -44,7 +45,10 @@ class CategoryNameFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        binding.submitButton.setOnClickListener { setCurrentName() }
+        binding.submitButton.setOnClickListener {
+            binding.inputName.onEditorAction(EditorInfo.IME_ACTION_DONE)
+            setCurrentName()
+        }
 
         val textWatcher: TextWatcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {

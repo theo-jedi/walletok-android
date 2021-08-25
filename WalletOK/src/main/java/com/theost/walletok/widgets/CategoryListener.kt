@@ -4,6 +4,8 @@ interface CategoryListener {
 
     fun onCategoryCreated()
 
+    fun onCategoryDeleted()
+
     fun onCategoryNameEdit()
 
     fun onCategoryTypeEdit()
