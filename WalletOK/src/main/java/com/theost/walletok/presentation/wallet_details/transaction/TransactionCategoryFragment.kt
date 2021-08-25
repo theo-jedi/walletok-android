@@ -4,17 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.theost.walletok.R
-import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
-import com.theost.walletok.delegates.*
+import com.theost.walletok.delegates.ButtonAdapterDelegate
+import com.theost.walletok.delegates.CategoryAdapterDelegate
+import com.theost.walletok.delegates.ListButton
+import com.theost.walletok.delegates.ListButtonType
 import com.theost.walletok.presentation.base.BaseAdapter
-import com.theost.walletok.presentation.base.ErrorMessageHelper
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
-import com.theost.walletok.utils.addTo
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.theost.walletok.utils.Resource
 import io.reactivex.disposables.CompositeDisposable
 
 class TransactionCategoryFragment : Fragment() {
@@ -38,12 +38,12 @@ class TransactionCategoryFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionCategoryBinding
-    private lateinit var categoryItems: MutableList<Any>
 
     private val compositeDisposable = CompositeDisposable()
     private var savedCategory: Int = TRANSACTION_CATEGORY_UNSET
-    private var lastSelected: Int = TRANSACTION_CATEGORY_UNSET
     private var savedType: String = ""
+
+    private val viewModel: TransactionCategoryViewModel by viewModels()
     private val adapter = BaseAdapter()
 
     override fun onCreateView(
@@ -59,8 +59,39 @@ class TransactionCategoryFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
-            binding.submitButton.isEnabled = true
+        viewModel.allData.observe(viewLifecycleOwner) { list ->
+            val items = mutableListOf<Any>()
+            items.addAll(list)
+            items.addAll(listOf(
+                ListButton(
+                    text = getString(R.string.delete_category),
+                    ListButtonType.DELETION,
+                    isVisible = true,
+                    isEnabled = true
+                ),
+                ListButton(
+                    text = getString(R.string.create_category),
+                    ListButtonType.CREATION,
+                    isVisible = true,
+                    isEnabled = true
+                ))
+            )
+
+            val item = list.find { it.isSelected }
+            if (item != null) {
+                savedCategory = item.id
+                binding.submitButton.isEnabled = true
+            }
+
+            adapter.setData(list)
+        }
+
+        viewModel.loadingStatus.observe(viewLifecycleOwner) {
+            binding.errorWidget.errorLayout.visibility = if (it is Resource.Error) View.VISIBLE else View.GONE
+        }
+
+        binding.errorWidget.retryButton.setOnClickListener {
+            viewModel.loadData(savedCategory, savedType)
         }
 
         adapter.apply {
@@ -78,11 +109,11 @@ class TransactionCategoryFragment : Fragment() {
         binding.listCategory.adapter = adapter
         binding.listCategory.setHasFixedSize(true)
 
-        loadCategories()
-
         binding.submitButton.setOnClickListener {
             (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
         }
+
+        viewModel.loadData(savedCategory, savedType)
 
         return binding.root
     }
@@ -108,63 +139,7 @@ class TransactionCategoryFragment : Fragment() {
     }
 
     private fun onItemClicked(position: Int) {
-        if (categoryItems[position] is CategoryItem && (lastSelected == TRANSACTION_CATEGORY_UNSET || categoryItems[lastSelected] is CategoryItem)) {
-            if (lastSelected != TRANSACTION_CATEGORY_UNSET) (categoryItems[lastSelected] as CategoryItem).isSelected =
-                false
-            (categoryItems[position] as CategoryItem).isSelected = true
-            adapter.setData(categoryItems)
-
-            savedCategory = (categoryItems[position] as CategoryItem).id
-            lastSelected = position
-
-            if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
-                binding.submitButton.isEnabled = true
-            }
-        }
-    }
-
-    private fun loadCategories() {
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe({ list ->
-                categoryItems = list
-                    .filter { category -> category.type.uiName == savedType }
-                    .map { category ->
-                        CategoryItem(
-                            id = category.id,
-                            name = category.name,
-                            icon = category.image as Int,
-                            isSelected = savedCategory == category.id
-                        )
-                    }.toMutableList()
-                categoryItems.addAll(
-                    listOf(
-                        ListButton(
-                            text = getString(R.string.delete_category),
-                            ListButtonType.DELETION,
-                            isVisible = true,
-                            isEnabled = true
-                        ),
-                        ListButton(
-                            text = getString(R.string.create_category),
-                            ListButtonType.CREATION,
-                            isVisible = true,
-                            isEnabled = true
-                        )
-                    )
-                )
-                lastSelected = categoryItems.indexOfFirst { it is CategoryItem && it.id == savedCategory }
-                if (lastSelected == TRANSACTION_CATEGORY_UNSET) savedCategory = TRANSACTION_CATEGORY_UNSET
-                adapter.setData(categoryItems)
-            }, {
-                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                    loadCategories()
-                }
-            }).addTo(compositeDisposable)
-    }
-
-    private fun showErrorToast() {
-        Toast.makeText(requireContext(), getString(R.string.not_available), Toast.LENGTH_SHORT)
-            .show()
+        viewModel.selectData(position)
     }
 
     override fun onDestroy() {
