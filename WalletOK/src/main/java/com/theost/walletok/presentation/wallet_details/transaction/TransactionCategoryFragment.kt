@@ -118,7 +118,7 @@ class TransactionCategoryFragment : Fragment() {
     }
 
     private fun loadCategories() {
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+        CategoriesRepository.getCategories().observeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
                 categoryItems =
                     list.filter { category -> category.type.uiName == savedType }.map { category ->

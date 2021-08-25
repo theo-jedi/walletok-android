@@ -14,6 +14,7 @@ import com.theost.walletok.presentation.wallet_details.WalletDetailsActivity
 import com.theost.walletok.presentation.wallets.delegates.WalletItemDelegate
 import com.theost.walletok.presentation.wallets.delegates.WalletsCurrenciesDelegate
 import com.theost.walletok.presentation.wallets.delegates.WalletsHeaderDelegate
+import com.theost.walletok.presentation.wallets.wallet_creation.WalletCreationActivity
 import com.theost.walletok.utils.Resource
 
 class WalletsActivity : AppCompatActivity() {
@@ -47,10 +48,13 @@ class WalletsActivity : AppCompatActivity() {
         binding.errorWidget.retryButton.setOnClickListener {
             viewModel.loadData()
         }
+        binding.createWalletBtn.setOnClickListener {
+            startActivity(WalletCreationActivity.newIntent(this))
+        }
         viewModel.loadingStatus.observe(this) {
             binding.errorWidget.errorLayout.visibility =
                 if (it is Resource.Error) {
-                    Log.d("HELP", "onCreate: ${it.error}")
+                    Log.e("WalletsActivity", "onCreate: ${it.error}")
                     View.VISIBLE
                 } else View.GONE
         }
@@ -62,6 +66,10 @@ class WalletsActivity : AppCompatActivity() {
                 )
             )
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
         viewModel.loadData()
     }
 }

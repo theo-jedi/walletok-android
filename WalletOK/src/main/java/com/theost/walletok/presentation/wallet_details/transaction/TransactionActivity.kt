@@ -178,7 +178,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
                     transaction.value!!,
                     transaction.category!!,
                     walletId
-                ).subscribeOn(AndroidSchedulers.mainThread())
+                ).observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         binding.transactionProgress.visibility = View.GONE
                         setResult(RESULT_OK)
@@ -194,7 +194,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
                     walletId,
                     transaction.value!!,
                     transaction.category!!
-                ).subscribeOn(AndroidSchedulers.mainThread())
+                ).observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         binding.transactionProgress.visibility = View.GONE
                         setResult(RESULT_OK)

@@ -13,64 +13,69 @@ import com.theost.walletok.data.repositories.WalletsRepository
 import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
-import io.reactivex.Single
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 
 class WalletDetailsViewModel(private val walletId: Int) : ViewModel() {
-    private var nextTransactionId: Int? = null
+    private var lastTransactionId: Int? = null
     private val compositeDisposable = CompositeDisposable()
     private val _paginationStatus = MutableLiveData(PaginationStatus.Ready)
     private val _removeTransactionStatus = MutableLiveData<Resource<Unit>>()
     private val _allData =
-        MutableLiveData<Triple<List<TransactionCategory>, List<Transaction>, Wallet>>()
+        MutableLiveData<CategoriesWalletsTransactionsAndLastId>()
     val removeTransactionStatus: LiveData<Resource<Unit>> = _removeTransactionStatus
-    val allData: LiveData<Triple<List<TransactionCategory>, List<Transaction>, Wallet>> =
+    val allData: LiveData<CategoriesWalletsTransactionsAndLastId> =
         _allData
     val paginationStatus: LiveData<PaginationStatus> = _paginationStatus
 
     fun loadData() {
-        val oldData = _allData.value
         _paginationStatus.postValue(PaginationStatus.Loading)
-        Single.zip(
+        lastTransactionId = null
+        Observable.zip(
             CategoriesRepository.getCategories(),
-            WalletsRepository.getWallets(), { categoriesResult, walletsResult ->
-                Pair(categoriesResult, walletsResult)
-            }
-        )
-            .subscribeOn(Schedulers.io())
-            .subscribe({ pair ->
-                val wallet = pair.second.find { it.id == walletId }
-                if (wallet == null) {
-                    _paginationStatus.postValue(PaginationStatus.Error)
-                    return@subscribe
-                }
-                _allData.postValue(
-                    Triple(pair.first, oldData?.second.orEmpty(), wallet)
+            WalletsRepository.getWallets(),
+            TransactionsRepository.getTransactions(walletId, lastTransactionId),
+            { categoriesResult, walletsResult, transactionsResult ->
+                CategoriesWalletsTransactionsAndLastId(
+                    categoriesResult,
+                    walletsResult,
+                    transactionsResult.transactions,
+                    transactionsResult.lastTransactionId
                 )
-                loadTransactions(pair.first, wallet)
-            }, {
-                _paginationStatus.postValue(PaginationStatus.Error)
-            }).addTo(compositeDisposable)
+            }
+        ).subscribe({
+            _paginationStatus.postValue(
+                if (it.lastTransactionId == null)
+                    PaginationStatus.End
+                else PaginationStatus.Ready
+            )
+            _allData.postValue(it)
+        }, {
+            _paginationStatus.postValue(PaginationStatus.Error)
+        }).addTo(compositeDisposable)
     }
 
-    private fun loadTransactions(categories: List<TransactionCategory>, wallet: Wallet) {
-        TransactionsRepository.getNextTransactions(walletId, nextTransactionId)
-            .subscribeOn(Schedulers.io())
+    fun loadNextPage() {
+        _paginationStatus.postValue(PaginationStatus.Loading)
+        TransactionsRepository.getTransactions(walletId, lastTransactionId)
             .subscribe({
-                val transactions = it.transactions
-                nextTransactionId = if (it.nextTransactionId == null) {
-                    _paginationStatus.postValue(PaginationStatus.End)
-                    null
-                } else {
-                    _paginationStatus.postValue(PaginationStatus.Ready)
-                    it.nextTransactionId
-                }
-                _allData.postValue(
-                    Triple(categories, transactions, wallet)
+                _paginationStatus.postValue(
+                    if (it.lastTransactionId == null)
+                        PaginationStatus.End
+                    else PaginationStatus.Ready
                 )
+                val oldData = _allData.value
+                if (oldData != null)
+                    _allData.postValue(
+                        CategoriesWalletsTransactionsAndLastId(
+                            oldData.categories,
+                            oldData.wallets,
+                            it.transactions,
+                            it.lastTransactionId
+                        )
+                    )
             }, {
-                _paginationStatus.postValue(PaginationStatus.Error)
+
             }).addTo(compositeDisposable)
     }
 
@@ -79,6 +84,7 @@ class WalletDetailsViewModel(private val walletId: Int) : ViewModel() {
         TransactionsRepository.removeTransaction(walletId, id)
             .subscribe({
                 _removeTransactionStatus.postValue(Resource.Success(Unit))
+                loadData()
             }, {
                 _removeTransactionStatus.postValue(Resource.Error(Unit, it))
             }).addTo(compositeDisposable)
@@ -95,3 +101,10 @@ class WalletDetailsViewModel(private val walletId: Int) : ViewModel() {
         }
     }
 }
+
+data class CategoriesWalletsTransactionsAndLastId(
+    val categories: List<TransactionCategory>,
+    val wallets: List<Wallet>,
+    val transactions: List<Transaction>,
+    val lastTransactionId: Int?
+)
