@@ -46,7 +46,6 @@ class CategoryTypeFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        if (savedType != "") binding.submitButton.isEnabled = true
         binding.submitButton.setOnClickListener {
             setCurrentType()
         }

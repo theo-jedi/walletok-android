@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.theost.walletok.R
-import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.delegates.TypeAdapterDelegate
-import com.theost.walletok.delegates.TypeItem
 import com.theost.walletok.presentation.base.BaseAdapter
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionTypeListener
 
@@ -17,7 +16,6 @@ class TransactionTypeFragment : Fragment() {
 
     companion object {
         private const val TRANSACTION_TYPE_KEY = "transaction_type"
-        private const val TRANSACTION_TYPE_UNSET = -1
 
         fun newFragment(savedType: String? = ""): Fragment {
             val fragment = TransactionTypeFragment()
@@ -29,9 +27,9 @@ class TransactionTypeFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionTypeBinding
-    private lateinit var typeItems: List<TypeItem>
     private lateinit var savedType: String
-    private var lastSelected: Int = TRANSACTION_TYPE_UNSET
+
+    private val viewModel: TransactionTypesViewModel by viewModels()
     private val adapter = BaseAdapter()
 
     override fun onCreateView(
@@ -48,7 +46,9 @@ class TransactionTypeFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        if (savedType != "") binding.submitButton.isEnabled = true
+        binding.submitButton.setOnClickListener {
+            setCurrentType()
+        }
 
         adapter.addDelegate(TypeAdapterDelegate { position ->
             onItemClicked(position)
@@ -57,18 +57,17 @@ class TransactionTypeFragment : Fragment() {
         binding.listTypes.setHasFixedSize(true)
         binding.listTypes.adapter = adapter
 
-        typeItems = TransactionCategoryType.values().map { type ->
-            TypeItem(
-                name = type.uiName,
-                isSelected = savedType == type.uiName
-            )
-        }
-        adapter.setData(typeItems)
-        lastSelected = typeItems.indexOfFirst { it.name == savedType }
+        viewModel.allData.observe(viewLifecycleOwner) { list ->
+            val typeItem = list.find { it.isSelected }
+            if (typeItem != null) {
+                savedType = typeItem.name
+                binding.submitButton.isEnabled = true
+            }
 
-        binding.submitButton.setOnClickListener {
-            setCurrentType()
+            adapter.setData(list)
         }
+
+        viewModel.loadData(savedType)
 
         return binding.root
     }
@@ -89,16 +88,7 @@ class TransactionTypeFragment : Fragment() {
     }
 
     private fun onItemClicked(position: Int) {
-        if (lastSelected != TRANSACTION_TYPE_UNSET) typeItems[lastSelected].isSelected = false
-        typeItems[position].isSelected = true
-        adapter.setData(typeItems)
-
-        savedType = typeItems[position].name
-        lastSelected = position
-
-        if (savedType != "") {
-            binding.submitButton.isEnabled = true
-        }
+        viewModel.selectData(position)
     }
 
     private fun setCurrentType() {
