@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details.category
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.skydoves.colorpickerview.ColorEnvelope
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import com.theost.walletok.R
 import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.databinding.FragmentCategoryEditBinding
@@ -69,7 +70,9 @@ class CategoryEditFragment : Fragment() {
             onSetColor(ContextCompat.getColor(requireContext(), R.color.green))
             val item = preferencesList.find { it is TransactionPreference && it.type == PreferenceType.ICON }
             preferencesList.remove(item)
-        } else if (category?.color == null || category?.color == ContextCompat.getColor(requireContext(), R.color.green)) {
+        } else if (category?.color == null || category?.color == ContextCompat.getColor(requireContext(),
+                R.color.green
+            )) {
             onSetColor(ContextCompat.getColor(requireContext(), R.color.purple))
         }
 

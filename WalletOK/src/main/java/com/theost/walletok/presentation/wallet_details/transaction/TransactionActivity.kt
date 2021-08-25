@@ -15,6 +15,9 @@ import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityTransactionBinding
 import com.theost.walletok.presentation.base.ErrorMessageHelper
+import com.theost.walletok.presentation.wallet_details.category.CategoryEditFragment
+import com.theost.walletok.presentation.wallet_details.category.CategoryNameFragment
+import com.theost.walletok.presentation.wallet_details.category.CategoryTypeFragment
 import com.theost.walletok.presentation.wallet_details.transaction.TransactionCategoryFragment
 import com.theost.walletok.presentation.wallet_details.transaction.TransactionEditFragment
 import com.theost.walletok.presentation.wallet_details.transaction.TransactionTypeFragment
