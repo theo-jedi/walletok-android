@@ -49,6 +49,8 @@
     <string name="not_available">Функция пока недоступна</string>
     <string name="delete">Удалить</string>
 
+    <string name="client_id">"1046661703173-3iaos9geq21oi76ct19gki6797ooq3rd.apps.googleusercontent.com"</string>
+
     <string name="close">Закрыть</string>
     <string name="now">Сейчас</string>
 

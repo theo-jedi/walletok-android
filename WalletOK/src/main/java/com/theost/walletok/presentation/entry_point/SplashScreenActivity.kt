@@ -1,6 +1,7 @@
 package com.theost.walletok.presentation.entry_point
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.theost.walletok.presentation.wallet_details.WalletDetailsActivity
