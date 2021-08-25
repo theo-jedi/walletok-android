@@ -5,10 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.delegates.CategoryItem
-import com.theost.walletok.presentation.base.ErrorMessageHelper
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
-import com.theost.walletok.widgets.CategoryListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 

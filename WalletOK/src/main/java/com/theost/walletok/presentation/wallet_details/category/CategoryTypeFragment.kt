@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.theost.walletok.R
-import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.delegates.TypeAdapterDelegate
-import com.theost.walletok.delegates.TypeItem
 import com.theost.walletok.presentation.base.BaseAdapter
 import com.theost.walletok.widgets.CategoryTypeListener
 
@@ -17,7 +16,6 @@ class CategoryTypeFragment : Fragment() {
 
     companion object {
         private const val CATEGORY_TYPE_KEY = "category_type"
-        private const val CATEGORY_TYPE_UNSET = -1
 
         fun newFragment(savedType: String? = ""): Fragment {
             val fragment = CategoryTypeFragment()
@@ -29,9 +27,9 @@ class CategoryTypeFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionTypeBinding
-    private lateinit var typeItems: List<TypeItem>
     private lateinit var savedType: String
-    private var lastSelected: Int = CATEGORY_TYPE_UNSET
+
+    private val viewModel: CategoryTypesViewModel by viewModels()
     private val adapter = BaseAdapter()
 
     override fun onCreateView(
@@ -49,6 +47,9 @@ class CategoryTypeFragment : Fragment() {
         }
 
         if (savedType != "") binding.submitButton.isEnabled = true
+        binding.submitButton.setOnClickListener {
+            setCurrentType()
+        }
 
         adapter.addDelegate(TypeAdapterDelegate { position ->
             onItemClicked(position)
@@ -57,18 +58,12 @@ class CategoryTypeFragment : Fragment() {
         binding.listTypes.setHasFixedSize(true)
         binding.listTypes.adapter = adapter
 
-        typeItems = TransactionCategoryType.values().map { type ->
-            TypeItem(
-                name = type.uiName,
-                isSelected = savedType == type.uiName
-            )
+        viewModel.allData.observe(viewLifecycleOwner) { list ->
+            binding.submitButton.isEnabled = list.find { it.isSelected } != null
+            adapter.setData(list)
         }
-        adapter.setData(typeItems)
-        lastSelected = typeItems.indexOfFirst { it.name == savedType }
 
-        binding.submitButton.setOnClickListener {
-            setCurrentType()
-        }
+        viewModel.loadData(savedType)
 
         return binding.root
     }
@@ -89,16 +84,7 @@ class CategoryTypeFragment : Fragment() {
     }
 
     private fun onItemClicked(position: Int) {
-        if (lastSelected != CATEGORY_TYPE_UNSET) typeItems[lastSelected].isSelected = false
-        typeItems[position].isSelected = true
-        adapter.setData(typeItems)
-
-        savedType = typeItems[position].name
-        lastSelected = position
-
-        if (savedType != "") {
-            binding.submitButton.isEnabled = true
-        }
+        viewModel.selectData(position)
     }
 
     private fun setCurrentType() {
