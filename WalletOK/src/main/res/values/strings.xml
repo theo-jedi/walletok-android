@@ -18,6 +18,7 @@
     <string name="name">Название</string>
 
     <string name="choose_transaction_type">Выберите тип операции</string>
+    <string name="choose_category_type">Выберите тип категории</string>
     <string name="choose_transaction_category">Выберите категорию</string>
 
     <string name="enter_value">Введите сумму</string>

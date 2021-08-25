@@ -92,11 +92,11 @@ class TransactionActivity : FragmentActivity(),
     }
 
     override fun onBackPressed() {
-        val currentFragment =
-            supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
         if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
             startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
         } else if (currentFragment is CategoryNameFragment || currentFragment is CategoryTypeFragment ) {
+            supportFragmentManager.popBackStack()
             startFragment(CategoryEditFragment.newFragment(categoryModel!!))
         } else {
             if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {
