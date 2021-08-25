@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details.transaction
 
 import android.content.Context
 import android.content.Intent
@@ -7,6 +7,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.theost.walletok.R
 import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
@@ -19,23 +20,17 @@ import com.theost.walletok.presentation.wallet_details.category.CategoryDeleteFr
 import com.theost.walletok.presentation.wallet_details.category.CategoryEditFragment
 import com.theost.walletok.presentation.wallet_details.category.CategoryNameFragment
 import com.theost.walletok.presentation.wallet_details.category.CategoryTypeFragment
-import com.theost.walletok.presentation.wallet_details.transaction.TransactionCategoryFragment
-import com.theost.walletok.presentation.wallet_details.transaction.TransactionEditFragment
-import com.theost.walletok.presentation.wallet_details.transaction.TransactionTypeFragment
-import com.theost.walletok.presentation.wallet_details.transaction.TransactionValueFragment
-import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
-import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionListener
-import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionTypeListener
-import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionValueListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.*
 import com.theost.walletok.utils.addTo
 import com.theost.walletok.widgets.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import java.util.*
 
 class TransactionActivity : FragmentActivity(),
     TransactionListener, TransactionValueListener, TransactionTypeListener,
     TransactionCategoryListener, CategoryTypeListener, CategoryListener,
-    CategoryNameListener, CategoryIconListener {
+    CategoryNameListener, CategoryIconListener, TransactionDateListener {
 
     companion object {
         private const val WALLET_ID_KEY = "wallet_id"
@@ -178,6 +173,10 @@ class TransactionActivity : FragmentActivity(),
         }
     }
 
+    override fun onDateSubmitted(dateTime: Date) {
+       transaction.dateTime = dateTime
+    }
+
     override fun onTransactionSubmitted() {
         if (transaction.isFilled()) {
             binding.transactionProgress.visibility = View.VISIBLE
@@ -205,7 +204,7 @@ class TransactionActivity : FragmentActivity(),
                     walletId,
                     transaction.value!!,
                     transaction.category!!,
-                    transaction.dateTime!!
+                    transaction.dateTime ?: Date()
                 ).subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         binding.transactionProgress.visibility = View.GONE

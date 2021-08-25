@@ -81,6 +81,8 @@ class TransactionCategoryFragment : Fragment() {
             if (item != null) {
                 savedCategory = item.id
                 binding.submitButton.isEnabled = true
+            } else {
+                binding.submitButton.isEnabled = false
             }
 
             adapter.setData(list)

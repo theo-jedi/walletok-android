@@ -62,6 +62,8 @@ class CategoryTypeFragment : Fragment() {
             if (typeItem != null) {
                 savedType = typeItem.name
                 binding.submitButton.isEnabled = true
+            } else {
+                binding.submitButton.isEnabled = false
             }
 
             adapter.setData(list)

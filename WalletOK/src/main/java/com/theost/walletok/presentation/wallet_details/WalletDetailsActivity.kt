@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.R
-import com.theost.walletok.TransactionActivity
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionActivity
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.presentation.SwipeControllerActions
