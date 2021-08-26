@@ -7,5 +7,6 @@ data class Wallet(
     val amountOfMoney: Long,
     val gain: Long,
     val lose: Long,
-    val loseLimit: Long
+    val loseLimit: Long?,
+    val hidden: Boolean
 )

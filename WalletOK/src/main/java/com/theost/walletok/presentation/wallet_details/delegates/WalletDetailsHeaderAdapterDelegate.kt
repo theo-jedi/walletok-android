@@ -40,6 +40,6 @@ data class HeaderContent(
     val walletName: String,
     val walletGain: String,
     val walletLose: String,
-    val walletLoseLimit: String,
+    val walletLoseLimit: String?,
     val walletMoney: String
 )
