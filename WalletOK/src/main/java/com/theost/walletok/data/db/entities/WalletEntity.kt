@@ -36,3 +36,14 @@ fun WalletEntity.mapToWallet(currency: Currency): Wallet {
         currency = currency
     )
 }
+
+fun Wallet.mapToEntity(): WalletEntity {
+    return WalletEntity(
+        name = this.name,
+        balanceLimit = this.loseLimit,
+        currencyShortName = this.currency.shortName,
+        income = this.gain,
+        expenditure = this.lose,
+        id = this.id
+    )
+}

@@ -28,14 +28,20 @@ interface WalletOkService {
         @Path("id") id: Int
     ): Single<WalletDto>
 
+    @PATCH("transactions/{id}")
+    fun editTransaction(
+        @Path("id") transactionId: Int,
+        @Body body: TransactionPatchDto
+    )
+
     @GET("currencies")
     fun getCurrencies(): Single<List<CurrencyDto>>
 
     @GET("wallets/{id}/transactions")
     fun getTransactions(
         @Path("id") walletId: Int,
-//        @Query("limit") limit: Int,
-//        @Query("next_transaction_id") nextTransactionId: Int?
+        @Query("limit") limit: Int = 10,
+        @Query("lastId") lastTransactionId: Int?
     ): Single<List<TransactionContentDto>>
 
     @GET("wallets/{id}/income")
@@ -47,6 +53,15 @@ interface WalletOkService {
     fun getWalletExpenditure(
         @Path("id") walletId: Int,
     ): Single<Long>
+
+    @GET("currencies/{input}_{output}")
+    fun convertCurrency(
+        @Path("input") inputShortName: String,
+        @Path("output") outputShortName: String
+    ): Single<Double>
+
+    @GET("wallets/stat")
+    fun getWalletsStat(): Single<WalletsStatDto>
 
     @POST("wallets")
     fun addWallet(

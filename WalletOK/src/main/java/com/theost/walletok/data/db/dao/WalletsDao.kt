@@ -19,4 +19,7 @@ interface WalletsDao {
 
     @Delete
     fun delete(wallet: WalletEntity): Completable
+
+    @Query("DELETE FROM wallets")
+    fun deleteAll(): Completable
 }

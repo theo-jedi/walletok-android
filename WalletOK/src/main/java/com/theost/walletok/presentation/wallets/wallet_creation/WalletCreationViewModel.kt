@@ -35,7 +35,7 @@ class WalletCreationViewModel : ViewModel() {
     fun loadCurrencies() {
         _loadCurrenciesStatus.postValue(Resource.Loading(Unit))
         CurrenciesRepository.getCurrencies().subscribeOn(Schedulers.io()).subscribe({
-            _currencies.postValue(it)
+            _currencies.postValue(it.data!!)
             _loadCurrenciesStatus.postValue(Resource.Success(Unit))
         }, {
             _loadCurrenciesStatus.postValue(Resource.Error(Unit, it))

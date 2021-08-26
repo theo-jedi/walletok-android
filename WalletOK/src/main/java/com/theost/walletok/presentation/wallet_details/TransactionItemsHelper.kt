@@ -23,10 +23,11 @@ object TransactionItemsHelper {
         val result = mutableListOf<Any>()
         result.add(
             HeaderContent(
-                walletLoseLimit = wallet.loseLimit?.let { "${wallet.loseLimit / 100} ₽" },
-                walletLose = "${wallet.lose / 100} ₽",
-                walletGain = "${wallet.gain / 100} ₽",
-                walletMoney = "${wallet.amountOfMoney / 100} ₽",
+                walletLoseLimit = wallet.loseLimit?.let
+                { "${StringUtils.formatMoney((wallet.loseLimit/100).toString())} ${wallet.currency.symbol}" },
+                walletLose = "${StringUtils.formatMoney((wallet.lose/100).toString())} ${wallet.currency.symbol}",
+                walletGain = "${StringUtils.formatMoney((wallet.gain/100).toString())} ${wallet.currency.symbol}",
+                walletMoney = "${StringUtils.formatMoney((wallet.amountOfMoney/100).toString())} ${wallet.currency.symbol}",
                 walletName = wallet.name
             )
         )

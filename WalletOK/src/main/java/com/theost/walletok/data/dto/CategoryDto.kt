@@ -20,7 +20,7 @@ fun CategoryDto.mapToCategory(): TransactionCategory {
     return TransactionCategory(
         id = this.id,
         iconColor = this.iconColor,
-        iconLink = WalletOkService.BASE_URL+this.iconLink,
+        iconLink = WalletOkService.BASE_URL + this.iconLink,
         name = this.name,
         type = if (this.income) TransactionCategoryType.INCOME else TransactionCategoryType.EXPENSE,
         userId = this.userId

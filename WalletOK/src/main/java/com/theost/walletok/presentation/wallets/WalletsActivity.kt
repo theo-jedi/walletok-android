@@ -59,9 +59,21 @@ class WalletsActivity : AppCompatActivity() {
             walletsAdapter.setData(
                 WalletsItemHelper.getData(
                     wallets = it.wallets,
-                    walletsOverall = it.walletsOverall
+                    walletsOverall = it.walletsOverall,
+                    currenciesPrices = viewModel.currenciesPrices.value
                 )
             )
+        }
+        viewModel.currenciesPrices.observe(this) {
+            val oldData = viewModel.walletsAndOverall.value
+            if (oldData != null)
+                walletsAdapter.setData(
+                    WalletsItemHelper.getData(
+                        wallets = oldData.wallets,
+                        walletsOverall = oldData.walletsOverall,
+                        currenciesPrices = viewModel.currenciesPrices.value
+                    )
+                )
         }
     }
 

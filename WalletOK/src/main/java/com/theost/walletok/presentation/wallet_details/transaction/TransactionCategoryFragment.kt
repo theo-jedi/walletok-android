@@ -121,7 +121,7 @@ class TransactionCategoryFragment : Fragment() {
         CategoriesRepository.getCategories().observeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
                 categoryItems =
-                    list.filter { category -> category.type.uiName == savedType }.map { category ->
+                    list.data!!.filter { category -> category.type.uiName == savedType }.map { category ->
                         CategoryItem(
                             id = category.id,
                             name = category.name,

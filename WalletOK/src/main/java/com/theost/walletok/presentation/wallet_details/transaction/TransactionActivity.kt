@@ -98,7 +98,7 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
 
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
-                val category = list.find { it.id == savedTransaction.categoryId }!!
+                val category = list.data!!.find { it.id == savedTransaction.categoryId }!!
                 loadSavedTransaction(savedTransaction, category)
                 binding.transactionProgress.visibility = View.GONE
                 startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
