@@ -40,6 +40,7 @@ fun TransactionContentDto.mapToTransaction(): Transaction {
         id = this.id,
         categoryId = this.categoryId,
         money = this.money,
-        dateTime = dateTimeFormat.parse(this.dateTime)!!
+        dateTime = dateTimeFormat.parse(this.dateTime)!!,
+        walletId = this.walletId
     )
 }

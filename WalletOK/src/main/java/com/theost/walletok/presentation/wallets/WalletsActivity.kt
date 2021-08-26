@@ -3,7 +3,6 @@ package com.theost.walletok.presentation.wallets
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -53,10 +52,8 @@ class WalletsActivity : AppCompatActivity() {
         }
         viewModel.loadingStatus.observe(this) {
             binding.errorWidget.errorLayout.visibility =
-                if (it is Resource.Error) {
-                    Log.e("WalletsActivity", "onCreate: ${it.error}")
-                    View.VISIBLE
-                } else View.GONE
+                if (it is Resource.Error) View.VISIBLE
+                else View.GONE
         }
         viewModel.walletsAndOverall.observe(this) {
             walletsAdapter.setData(

@@ -5,11 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.theost.walletok.data.models.Wallet
 import com.theost.walletok.data.models.WalletsOverall
+import com.theost.walletok.data.repositories.CurrenciesRepository
 import com.theost.walletok.data.repositories.WalletsRepository
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
 import io.reactivex.Observable
-import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
@@ -24,14 +25,17 @@ class WalletsViewModel : ViewModel() {
         Observable.zip(
             WalletsRepository.getWallets(),
             WalletsRepository.getWalletsOverall(),
-            { wallets, walletsOverall ->
+            CurrenciesRepository.getCurrencies(),
+            { wallets, walletsOverall, _ ->
                 WalletsAndOverall(wallets, walletsOverall)
             })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                _loadingStatus.postValue(Resource.Success(Unit))
-                _walletsAndOverall.postValue(it)
+                _loadingStatus.value = Resource.Success(Unit)
+                _walletsAndOverall.value = it
             }, {
-                _loadingStatus.postValue(Resource.Error(Unit, it))
+                _loadingStatus.value = Resource.Error(Unit, it)
             }).addTo(compositeDisposable)
     }
 
