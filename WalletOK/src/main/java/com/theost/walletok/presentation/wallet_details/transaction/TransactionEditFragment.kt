@@ -37,7 +37,9 @@ class TransactionEditFragment : Fragment() {
         }
     }
 
-    private lateinit var binding: FragmentTransactionEditBinding
+    private var _binding: FragmentTransactionEditBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var currentDate: Calendar
     private lateinit var preferencesList: List<Any>
 
@@ -55,7 +57,7 @@ class TransactionEditFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTransactionEditBinding.inflate(inflater, container, false)
+        _binding = FragmentTransactionEditBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.title = getString(titleRes)
@@ -190,6 +192,11 @@ class TransactionEditFragment : Fragment() {
                 true
             )
         )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

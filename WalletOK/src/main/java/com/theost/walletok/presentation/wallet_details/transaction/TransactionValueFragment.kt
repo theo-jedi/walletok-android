@@ -28,7 +28,8 @@ class TransactionValueFragment : Fragment() {
         }
     }
 
-    private lateinit var binding: FragmentTransactionValueBinding
+    private var _binding: FragmentTransactionValueBinding? = null
+    private val binding get() = _binding!!
 
     private val savedValue: Long
         get() = arguments?.getLong(TRANSACTION_VALUE_KEY)!!
@@ -38,7 +39,7 @@ class TransactionValueFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTransactionValueBinding.inflate(inflater, container, false)
+        _binding = FragmentTransactionValueBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -86,6 +87,11 @@ class TransactionValueFragment : Fragment() {
     private fun setCurrentValue() {
         val value = StringUtils.convertMoneyForStorage(binding.inputValue.text.toString())
         (activity as TransactionValueListener).onValueSubmitted(value)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

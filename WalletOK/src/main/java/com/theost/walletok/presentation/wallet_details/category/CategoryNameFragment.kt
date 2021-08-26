@@ -27,7 +27,8 @@ class CategoryNameFragment : Fragment() {
         }
     }
 
-    private lateinit var binding: FragmentCategoryNameBinding
+    private var _binding: FragmentCategoryNameBinding? = null
+    private val binding get() = _binding!!
 
     private val savedName: String
         get() = arguments?.getString(CATEGORY_NAME_KEY) ?: ""
@@ -37,7 +38,7 @@ class CategoryNameFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCategoryNameBinding.inflate(inflater, container, false)
+        _binding = FragmentCategoryNameBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -73,6 +74,11 @@ class CategoryNameFragment : Fragment() {
     private fun setCurrentName() {
         val name = binding.inputName.text.toString().trim()
         (activity as CategoryNameListener).onCategoryNameSubmitted(name)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

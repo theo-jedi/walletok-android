@@ -177,7 +177,6 @@ class TransactionActivity : FragmentActivity(),
 
     override fun onTransactionSubmitted() {
         if (transactionModel.isFilled()) {
-            binding.transactionProgress.visibility = View.VISIBLE
             viewModel.sendData(transactionModel, walletId)
         }
     }
@@ -234,13 +233,13 @@ class TransactionActivity : FragmentActivity(),
     private fun onObserveLoading(status: Resource<*>) {
         binding.errorWidget.errorLayout.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
         binding.closeButton.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
-        if (status !is Resource.Loading) binding.transactionProgress.visibility = View.GONE
+        binding.transactionProgress.visibility = if (status is Resource.Loading) View.VISIBLE else View.GONE
     }
 
     private fun onObserveSending(status: Resource<*>) {
         binding.errorWidget.errorLayout.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
         binding.closeButton.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
-        if (status !is Resource.Loading) binding.transactionProgress.visibility = View.GONE
+        binding.transactionProgress.visibility = if (status is Resource.Loading) View.VISIBLE else View.GONE
         if (status is Resource.Success) {
             setResult(RESULT_OK)
             finish()

@@ -26,7 +26,9 @@ class TransactionTypeFragment : Fragment() {
         }
     }
 
-    private lateinit var binding: FragmentTransactionTypeBinding
+    private var _binding: FragmentTransactionTypeBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var savedType: String
 
     private val viewModel: TransactionTypesViewModel by viewModels()
@@ -38,7 +40,7 @@ class TransactionTypeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentTransactionTypeBinding.inflate(inflater, container, false)
+        _binding = FragmentTransactionTypeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -95,6 +97,11 @@ class TransactionTypeFragment : Fragment() {
 
     private fun setCurrentType() {
         (activity as TransactionTypeListener).onTypeSubmitted(savedType)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

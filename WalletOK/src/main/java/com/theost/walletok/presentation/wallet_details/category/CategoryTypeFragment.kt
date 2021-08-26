@@ -26,7 +26,9 @@ class CategoryTypeFragment : Fragment() {
         }
     }
 
-    private lateinit var binding: FragmentTransactionTypeBinding
+    private var _binding: FragmentTransactionTypeBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var savedType: String
 
     private val viewModel: CategoryTypesViewModel by viewModels()
@@ -38,7 +40,7 @@ class CategoryTypeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentTransactionTypeBinding.inflate(inflater, container, false)
+        _binding = FragmentTransactionTypeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.title = getString(R.string.choose_category_type)
@@ -96,6 +98,11 @@ class CategoryTypeFragment : Fragment() {
 
     private fun setCurrentType() {
         (activity as CategoryTypeListener).onCategoryTypeSubmitted(savedType)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

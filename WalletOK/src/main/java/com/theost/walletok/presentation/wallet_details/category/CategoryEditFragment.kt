@@ -41,7 +41,9 @@ class CategoryEditFragment : Fragment() {
         private const val ICON_COLUMN_COUNT = 6
     }
 
-    private lateinit var binding: FragmentCategoryEditBinding
+    private var _binding: FragmentCategoryEditBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var iconDelegateAdapter: IconAdapterDelegate
     private lateinit var preferencesList: MutableList<Any>
 
@@ -56,7 +58,7 @@ class CategoryEditFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCategoryEditBinding.inflate(inflater, container, false)
+        _binding = FragmentCategoryEditBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -124,6 +126,7 @@ class CategoryEditFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        _binding = null
         compositeDisposable.dispose()
     }
 

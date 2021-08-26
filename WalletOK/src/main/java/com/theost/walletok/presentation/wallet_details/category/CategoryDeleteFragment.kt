@@ -23,7 +23,8 @@ class CategoryDeleteFragment : Fragment() {
         }
     }
 
-    private lateinit var binding: FragmentTransactionCategoryBinding
+    private var _binding: FragmentTransactionCategoryBinding? = null
+    private val binding get() = _binding!!
 
     private val compositeDisposable = CompositeDisposable()
     private val adapter = BaseAdapter()
@@ -35,7 +36,7 @@ class CategoryDeleteFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTransactionCategoryBinding.inflate(inflater, container, false)
+        _binding = FragmentTransactionCategoryBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -90,6 +91,7 @@ class CategoryDeleteFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        _binding = null
         compositeDisposable.dispose()
     }
 }
