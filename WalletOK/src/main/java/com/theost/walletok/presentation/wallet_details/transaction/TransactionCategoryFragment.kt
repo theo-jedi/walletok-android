@@ -60,18 +60,18 @@ class TransactionCategoryFragment : Fragment() {
         }
 
         viewModel.allData.observe(viewLifecycleOwner) { list ->
-            val items = mutableListOf<Any>()
-            items.addAll(list)
-            items.addAll(listOf(
+            val listItems = mutableListOf<Any>()
+            listItems.addAll(list)
+            listItems.addAll(listOf(
                 ListButton(
                     text = getString(R.string.delete_category),
-                    ListButtonType.DELETION,
+                    type = ListButtonType.DELETION,
                     isVisible = true,
                     isEnabled = true
                 ),
                 ListButton(
                     text = getString(R.string.create_category),
-                    ListButtonType.CREATION,
+                    type = ListButtonType.CREATION,
                     isVisible = true,
                     isEnabled = true
                 ))
@@ -85,7 +85,7 @@ class TransactionCategoryFragment : Fragment() {
                 binding.submitButton.isEnabled = false
             }
 
-            adapter.setData(list)
+            adapter.setData(listItems)
         }
 
         viewModel.loadingStatus.observe(viewLifecycleOwner) {
