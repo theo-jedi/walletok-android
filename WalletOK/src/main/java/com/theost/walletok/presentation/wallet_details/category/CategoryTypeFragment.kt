@@ -41,6 +41,7 @@ class CategoryTypeFragment : Fragment() {
         binding = FragmentTransactionTypeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
+        binding.toolbar.title = getString(R.string.choose_category_type)
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
         binding.toolbar.setNavigationOnClickListener {
             activity?.onBackPressed()

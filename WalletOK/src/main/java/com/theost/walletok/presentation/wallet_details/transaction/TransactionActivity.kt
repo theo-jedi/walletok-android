@@ -106,6 +106,7 @@ class TransactionActivity : FragmentActivity(),
     }
 
     override fun onBackPressed() {
+
         val currentFragment =
             supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
         if (transactionModel.isFilled() && currentFragment !is TransactionEditFragment) {
