@@ -61,4 +61,6 @@
     <string name="overall_income">Общий доход</string>
     <string name="limit_is_exceeded">Превышен лимит</string>
     <string name="create_wallet">Создать кошелек</string>
+    
+    <string name="client_id">"1046661703173-3iaos9geq21oi76ct19gki6797ooq3rd.apps.googleusercontent.com"</string>
 </resources>

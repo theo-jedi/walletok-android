@@ -14,14 +14,15 @@
         android:src="@drawable/ic_wallet"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/create_wallet" />
 
     <TextView
         android:id="@+id/wallet_name_tv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="?attr/mainTextColor"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/wallet_money_amount_tv"
@@ -50,7 +51,7 @@
             android:text="@string/limit_is_exceeded"
             android:textColor="@color/white"
             android:textSize="10sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
     </com.google.android.material.card.MaterialCardView>
 
 
@@ -60,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="?attr/mainTextColor"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
