@@ -187,7 +187,7 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun createCategory() {
-        CategoriesRepository.addCategory(
+        /*CategoriesRepository.addCategory(
             category!!.name!!,
             category!!.iconRes!!,
             TransactionCategoryType.values().find { it.uiName == category!!.type!!}!!
@@ -198,7 +198,7 @@ class CategoryEditFragment : Fragment() {
                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
                     createCategory()
                 }
-            }).addTo(compositeDisposable)
+            }).addTo(compositeDisposable) todo*/
     }
 
     private fun getPreferencesList(): MutableList<Any> {

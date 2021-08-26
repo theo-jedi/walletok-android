@@ -82,25 +82,26 @@ class CategoryDeleteFragment : Fragment() {
     }
 
     private fun deleteSelectedCategories() {
-        CategoriesRepository.removeCategories(selectedCategories).subscribeOn(AndroidSchedulers.mainThread())
+        /*CategoriesRepository.removeCategories(selectedCategories).subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 (activity as CategoryListener).onCategoryDeleted()
             }, {
                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
                     loadCategories()
                 }
-            }).addTo(compositeDisposable)
+            }).addTo(compositeDisposable) todo*/
     }
 
     private fun loadCategories() {
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
-                categoryItems = list
-                    .map { category ->
+                categoryItems =
+                    list.data!!.map { category ->
                         CategoryItem(
                             id = category.id,
                             name = category.name,
-                            icon = category.image as Int,
+                            iconUrl = category.iconLink,
+                            iconColor = category.iconColor,
                             isSelected = false
                         )
                     }
