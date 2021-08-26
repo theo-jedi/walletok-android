@@ -12,10 +12,8 @@ import io.reactivex.disposables.CompositeDisposable
 
 class UserCategoriesViewModel : ViewModel() {
 
-    private val _allData =
-        MutableLiveData<List<CategoryItem>>()
-    val allData :
-        LiveData<List<CategoryItem>> = _allData
+    private val _allData = MutableLiveData<List<CategoryItem>>()
+    val allData: LiveData<List<CategoryItem>> = _allData
     private val compositeDisposable = CompositeDisposable()
 
     private val _loadingStatus = MutableLiveData<Resource<*>>()
@@ -26,13 +24,13 @@ class UserCategoriesViewModel : ViewModel() {
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
                 val categoryItems = list.map { category ->
-                        CategoryItem(
-                            id = category.id,
-                            name = category.name,
-                            icon = category.image as Int,
-                            isSelected = false
-                        )
-                    }
+                    CategoryItem(
+                        id = category.id,
+                        name = category.name,
+                        icon = category.image as Int,
+                        isSelected = false
+                    )
+                }
                 _allData.postValue(categoryItems)
                 _loadingStatus.postValue(Resource.Success(Unit))
             }, {
@@ -51,7 +49,8 @@ class UserCategoriesViewModel : ViewModel() {
         _loadingStatus.postValue(Resource.Loading(Unit))
         val selectedCategories = mutableListOf<Int>()
         _allData.value?.forEach { if (it.isSelected) selectedCategories.add(it.id) }
-        CategoriesRepository.removeCategories(selectedCategories).subscribeOn(AndroidSchedulers.mainThread())
+        CategoriesRepository.removeCategories(selectedCategories)
+            .subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 _loadingStatus.postValue(Resource.Success(Unit))
             }, {

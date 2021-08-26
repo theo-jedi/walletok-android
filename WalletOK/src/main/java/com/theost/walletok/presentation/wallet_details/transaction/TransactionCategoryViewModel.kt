@@ -12,10 +12,8 @@ import io.reactivex.disposables.CompositeDisposable
 
 class TransactionCategoryViewModel : ViewModel() {
 
-    private val _allData =
-        MutableLiveData<List<CategoryItem>>()
-    val allData :
-            LiveData<List<CategoryItem>> = _allData
+    private val _allData = MutableLiveData<List<CategoryItem>>()
+    val allData : LiveData<List<CategoryItem>> = _allData
     private val compositeDisposable = CompositeDisposable()
 
     private val _loadingStatus = MutableLiveData<Resource<*>>()

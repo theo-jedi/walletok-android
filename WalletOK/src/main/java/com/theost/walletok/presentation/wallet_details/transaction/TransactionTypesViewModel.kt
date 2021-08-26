@@ -8,10 +8,8 @@ import com.theost.walletok.delegates.TypeItem
 
 class TransactionTypesViewModel : ViewModel() {
 
-    private val _allData =
-        MutableLiveData<List<TypeItem>>()
-    val allData :
-            LiveData<List<TypeItem>> = _allData
+    private val _allData = MutableLiveData<List<TypeItem>>()
+    val allData : LiveData<List<TypeItem>> = _allData
 
     fun loadData(savedType: String?) {
         _allData.value = TransactionCategoryType.values().map { type ->

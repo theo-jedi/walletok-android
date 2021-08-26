@@ -30,7 +30,7 @@ class CategoryEditFragment : Fragment() {
     companion object {
         private const val CATEGORY_NEW_KEY = "category_new"
 
-        fun newFragment(category: CategoryCreationModel?): Fragment {
+        fun newFragment(category: CategoryCreationModel? = null): Fragment {
             val fragment = CategoryEditFragment()
             val bundle = Bundle()
             bundle.putParcelable(CATEGORY_NEW_KEY, category)
