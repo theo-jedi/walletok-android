@@ -29,3 +29,13 @@ fun TransactionEntity.mapToTransaction(): Transaction {
         walletId = this.walletId
     )
 }
+
+fun Transaction.mapToEntity(): TransactionEntity {
+    return TransactionEntity(
+        id = this.id,
+        categoryId = this.categoryId,
+        amount = this.money,
+        walletId = this.walletId,
+        date = TransactionsDto.dateTimeFormat.format(this.dateTime)
+    )
+}

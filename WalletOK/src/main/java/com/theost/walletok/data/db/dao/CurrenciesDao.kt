@@ -22,4 +22,7 @@ interface CurrenciesDao {
 
     @Delete
     fun delete(currency: CurrencyEntity): Completable
+
+    @Query("DELETE FROM currencies")
+    fun deleteAll(): Completable
 }

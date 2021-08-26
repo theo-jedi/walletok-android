@@ -20,3 +20,10 @@ fun CurrencyEntity.mapToCurrency(): Currency {
         decimalDigits = this.decimalDigits
     )
 }
+
+fun Currency.mapToEntity(): CurrencyEntity {
+    return CurrencyEntity(
+        shortName = this.shortName,
+        decimalDigits = this.decimalDigits
+    )
+}

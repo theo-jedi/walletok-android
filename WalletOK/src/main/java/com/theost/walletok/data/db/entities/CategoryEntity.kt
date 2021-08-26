@@ -32,3 +32,14 @@ fun CategoryEntity.mapToTransactionCategory(): TransactionCategory {
         userId = this.userId
     )
 }
+
+fun TransactionCategory.mapToEntity(): CategoryEntity {
+    return CategoryEntity(
+        id = this.id,
+        iconColor = this.iconColor,
+        iconLink = this.iconLink,
+        income = this.type == TransactionCategoryType.INCOME,
+        name = this.name,
+        userId = this.userId
+    )
+}

@@ -19,4 +19,7 @@ interface CategoriesDao {
 
     @Delete
     fun delete(category: CategoryEntity): Completable
+
+    @Query("DELETE FROM categories")
+    fun deleteAll(): Completable
 }
