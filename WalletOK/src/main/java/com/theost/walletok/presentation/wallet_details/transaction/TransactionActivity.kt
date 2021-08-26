@@ -112,7 +112,7 @@ class TransactionActivity : FragmentActivity(),
 
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
-                val category = list.find { it.id == savedTransaction.categoryId }!!
+                val category = list.data!!.find { it.id == savedTransaction.categoryId }!!
                 loadSavedTransaction(savedTransaction, category)
                 binding.transactionProgress.visibility = View.GONE
                 startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
@@ -133,7 +133,6 @@ class TransactionActivity : FragmentActivity(),
         transaction.value = savedTransaction.money
         transaction.type = savedCategory.type.uiName
         transaction.category = savedTransaction.categoryId
-        transaction.currency = savedTransaction.currency
         transaction.dateTime = savedTransaction.dateTime
     }
 
@@ -202,9 +201,8 @@ class TransactionActivity : FragmentActivity(),
                     transaction.id!!,
                     transaction.value!!,
                     transaction.category!!,
-                    transaction.dateTime!!,
                     walletId
-                ).subscribeOn(AndroidSchedulers.mainThread())
+                ).observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         binding.transactionProgress.visibility = View.GONE
                         setResult(RESULT_OK)
@@ -219,9 +217,8 @@ class TransactionActivity : FragmentActivity(),
                 TransactionsRepository.addTransaction(
                     walletId,
                     transaction.value!!,
-                    transaction.category!!,
-                    transaction.dateTime!!
-                ).subscribeOn(AndroidSchedulers.mainThread())
+                    transaction.category!!
+                ).observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         binding.transactionProgress.visibility = View.GONE
                         setResult(RESULT_OK)

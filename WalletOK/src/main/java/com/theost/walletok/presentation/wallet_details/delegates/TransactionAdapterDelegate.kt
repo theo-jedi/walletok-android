@@ -1,11 +1,14 @@
 package com.theost.walletok.presentation.wallet_details.delegates
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.theost.walletok.presentation.base.AdapterDelegate
+import coil.ImageLoaderFactory
+import coil.load
+import com.theost.walletok.App
 import com.theost.walletok.databinding.ItemTransactionBinding
+import com.theost.walletok.presentation.base.AdapterDelegate
+import com.theost.walletok.utils.ViewUtils
 import kotlin.properties.Delegates
 
 class TransactionAdapterDelegate : AdapterDelegate {
@@ -30,11 +33,14 @@ class TransactionAdapterDelegate : AdapterDelegate {
         RecyclerView.ViewHolder(binding.root) {
         var transactionId by Delegates.notNull<Int>()
         fun bind(item: TransactionContent) {
-            transactionId = item.transactionId
-            when (item.image) {
-                is Int -> binding.transactionIconImage.setImageResource(item.image)
-                is Uri -> binding.transactionIconImage.setImageURI(item.image)
+            if (item.iconColor != null && item.iconUrl != null) {
+                transactionId = item.transactionId
+                ViewUtils.changeDrawableColor(
+                    binding.transactionCategoryCircle.background,
+                    item.iconColor
+                )
             }
+            binding.transactionIcon.load(item.iconUrl, App.svgImageLoader)
             binding.transactionNameTextView.text = item.categoryName
             binding.transactionTypeTextView.text = item.transactionType
             binding.transactionTimeTextView.text = item.time
@@ -45,9 +51,10 @@ class TransactionAdapterDelegate : AdapterDelegate {
 
 data class TransactionContent(
     val transactionId: Int,
-    val image: Any,
     val categoryName: String,
     val transactionType: String,
     val moneyAmount: String,
-    val time: String
+    val time: String,
+    val iconUrl: String?,
+    val iconColor: Int?
 )

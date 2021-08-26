@@ -60,7 +60,15 @@
     <string name="wallets_overall_balance">Общий баланс</string>
     <string name="overall_income">Общий доход</string>
     <string name="limit_is_exceeded">Превышен лимит</string>
-    <string name="create_wallet">Создать кошелек</string>
-    
     <string name="client_id">"1046661703173-3iaos9geq21oi76ct19gki6797ooq3rd.apps.googleusercontent.com"</string>
+    <string name="new_wallet">Новый кошелек</string>
+    <string name="create_wallet">Создать кошелек</string>
+    <string name="wallet_name">Название кошелька</string>
+    <string name="enter_wallet_name">Введите название</string>
+    <string name="show_more">Показать больше</string>
+    <string name="wallet_limit">Лимит на траты</string>
+    <string name="russian_rouble">Российский рубль</string>
+    <string name="euro">Евро</string>
+    <string name="usd_name">Доллар США</string>
+    <string name="currency">Валюта</string>
 </resources>

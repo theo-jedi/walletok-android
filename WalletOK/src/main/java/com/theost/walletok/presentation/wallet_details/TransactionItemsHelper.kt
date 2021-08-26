@@ -1,9 +1,9 @@
 package com.theost.walletok.presentation.wallet_details
 
-import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.Wallet
+import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.presentation.wallet_details.delegates.DateContent
 import com.theost.walletok.presentation.wallet_details.delegates.HeaderContent
 import com.theost.walletok.presentation.wallet_details.delegates.TransactionContent
@@ -23,10 +23,11 @@ object TransactionItemsHelper {
         val result = mutableListOf<Any>()
         result.add(
             HeaderContent(
-                walletLoseLimit = "${wallet.loseLimit / 100} ₽",
-                walletLose = "${wallet.lose / 100} ₽",
-                walletGain = "${wallet.gain / 100} ₽",
-                walletMoney = "${wallet.amountOfMoney / 100} ₽",
+                walletLoseLimit = wallet.loseLimit?.let
+                { "${StringUtils.formatMoney((wallet.loseLimit/100).toString())} ${wallet.currency.symbol}" },
+                walletLose = "${StringUtils.formatMoney((wallet.lose/100).toString())} ${wallet.currency.symbol}",
+                walletGain = "${StringUtils.formatMoney((wallet.gain/100).toString())} ${wallet.currency.symbol}",
+                walletMoney = "${StringUtils.formatMoney((wallet.amountOfMoney/100).toString())} ${wallet.currency.symbol}",
                 walletName = wallet.name
             )
         )
@@ -68,9 +69,10 @@ object TransactionItemsHelper {
                                     transaction.money
                                 )
                             )
-                        } ${transaction.currency.symbol}",
+                        } ${wallet.currency.symbol}",
                         time = timeFormat.format(transaction.dateTime),
-                        image = category.image
+                        iconColor = category.iconColor,
+                        iconUrl = category.iconLink
                     )
                 )
                 transactionDate
