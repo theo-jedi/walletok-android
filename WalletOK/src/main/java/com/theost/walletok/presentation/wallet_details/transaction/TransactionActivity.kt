@@ -4,26 +4,25 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.theost.walletok.R
 import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.models.Transaction
-import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCreationModel
-import com.theost.walletok.data.repositories.CategoriesRepository
-import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityTransactionBinding
-import com.theost.walletok.presentation.base.ErrorMessageHelper
 import com.theost.walletok.presentation.wallet_details.category.CategoryDeleteFragment
 import com.theost.walletok.presentation.wallet_details.category.CategoryEditFragment
 import com.theost.walletok.presentation.wallet_details.category.CategoryNameFragment
 import com.theost.walletok.presentation.wallet_details.category.CategoryTypeFragment
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.*
-import com.theost.walletok.utils.addTo
-import com.theost.walletok.widgets.*
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.theost.walletok.utils.Resource
+import com.theost.walletok.widgets.CategoryIconListener
+import com.theost.walletok.widgets.CategoryListener
+import com.theost.walletok.widgets.CategoryNameListener
+import com.theost.walletok.widgets.CategoryTypeListener
 import io.reactivex.disposables.CompositeDisposable
 import java.util.*
 
@@ -58,9 +57,11 @@ class TransactionActivity : FragmentActivity(),
     private val titleRes: Int
         get() = intent.getIntExtra(TRANSACTION_TITLE_KEY, R.string.new_transaction)
 
-    private val transaction = TransactionCreationModel()
+    private var transactionModel = TransactionCreationModel()
     private var categoryModel: CategoryCreationModel? = null
+    private var isSending: Boolean = false
 
+    private val viewModel: TransactionViewModel by viewModels()
     private val compositeDisposable = CompositeDisposable()
     private val walletId: Int
         get() = intent.extras!!.getInt(WALLET_ID_KEY)
@@ -70,11 +71,29 @@ class TransactionActivity : FragmentActivity(),
         binding = ActivityTransactionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewModel.loadingStatus.observe(this) { onObserveLoading(it) }
+        viewModel.sendingStatus.observe(this) { onObserveSending(it) }
+
+        binding.errorWidget.retryButton.setOnClickListener {
+            if (isSending) {
+                onTransactionSubmitted()
+            } else {
+                viewModel.loadData(savedTransaction!!)
+            }
+        }
+
         binding.closeButton.setOnClickListener { onBackPressed() }
+
+        viewModel.allData.observe(this) { transaction ->
+            binding.transactionProgress.visibility = View.GONE
+            transactionModel = transaction
+            startFragment(TransactionEditFragment.newFragment(transaction, R.string.edit_transaction))
+        }
 
         if (savedInstanceState == null) {
             if (savedTransaction != null) {
-                restoreSavedTransaction(savedTransaction!!)
+                binding.transactionProgress.visibility = View.VISIBLE
+                viewModel.loadData(savedTransaction!!)
             } else {
                 startFragment(TransactionValueFragment.newFragment())
             }
@@ -89,8 +108,8 @@ class TransactionActivity : FragmentActivity(),
     override fun onBackPressed() {
         val currentFragment =
             supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
-        if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
-            startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
+        if (transactionModel.isFilled() && currentFragment !is TransactionEditFragment) {
+            startFragment(TransactionEditFragment.newFragment(transactionModel, titleRes))
         } else if (currentFragment is CategoryNameFragment || currentFragment is CategoryTypeFragment ) {
             startFragment(CategoryEditFragment.newFragment(categoryModel))
         } else {
@@ -101,138 +120,75 @@ class TransactionActivity : FragmentActivity(),
         }
     }
 
-    private fun restoreSavedTransaction(savedTransaction: Transaction) {
-        binding.transactionProgress.visibility = View.VISIBLE
-        binding.closeButton.visibility = View.INVISIBLE
-
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe({ list ->
-                val category = list.find { it.id == savedTransaction.categoryId }!!
-                loadSavedTransaction(savedTransaction, category)
-                binding.transactionProgress.visibility = View.GONE
-                startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
-            }, {
-                binding.closeButton.visibility = View.VISIBLE
-                binding.transactionProgress.visibility = View.GONE
-                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                    restoreSavedTransaction(savedTransaction)
-                }
-            }).addTo(compositeDisposable)
-    }
-
-    private fun loadSavedTransaction(
-        savedTransaction: Transaction,
-        savedCategory: TransactionCategory
-    ) {
-        transaction.id = savedTransaction.id
-        transaction.value = savedTransaction.money
-        transaction.type = savedCategory.type.uiName
-        transaction.category = savedTransaction.categoryId
-        transaction.currency = savedTransaction.currency
-        transaction.dateTime = savedTransaction.dateTime
-    }
-
     override fun onValueEdit() {
-        startFragment(TransactionValueFragment.newFragment(transaction.value ?: 0))
+        startFragment(TransactionValueFragment.newFragment(transactionModel.value ?: 0))
     }
 
     override fun onTypeEdit() {
-        startFragment(TransactionTypeFragment.newFragment(transaction.type))
+        startFragment(TransactionTypeFragment.newFragment(transactionModel.type))
     }
 
     override fun onCategoryEdit() {
         startFragment(
             TransactionCategoryFragment.newFragment(
-                transaction.category,
-                transaction.type
+                transactionModel.category,
+                transactionModel.type
             )
         )
     }
 
     override fun onValueSubmitted(value: Long) {
-        transaction.value = value
-        if (transaction.isFilled()) {
-            startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
+        viewModel.setValue(value)
+        transactionModel.value = value
+        if (transactionModel.isFilled()) {
+            startFragment(TransactionEditFragment.newFragment(transactionModel, titleRes))
         } else {
-            startFragment(TransactionTypeFragment.newFragment(transaction.type))
+            startFragment(TransactionTypeFragment.newFragment(transactionModel.type))
         }
     }
 
     override fun onTypeSubmitted(type: String) {
-        if (transaction.isFilled() && transaction.type == type) {
-            startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
+        if (transactionModel.isFilled() && transactionModel.type == type) {
+            startFragment(TransactionEditFragment.newFragment(transactionModel, titleRes))
         } else {
-            transaction.type = type
-            transaction.category = null
+            viewModel.setType(type)
+            transactionModel.type = type
+            transactionModel.category = null
             startFragment(
                 TransactionCategoryFragment.newFragment(
-                    transaction.category,
-                    transaction.type
+                    transactionModel.category,
+                    transactionModel.type
                 )
             )
         }
     }
 
+    override fun onCategorySubmitted(category: Int) {
+        viewModel.setCategory(category)
+        transactionModel.category = category
+        startFragment(TransactionEditFragment.newFragment(transactionModel, titleRes))
+    }
+
     override fun onDateSubmitted(dateTime: Date) {
-       transaction.dateTime = dateTime
+        viewModel.setDateTime(dateTime)
+       transactionModel.dateTime = dateTime
     }
 
     override fun onTransactionSubmitted() {
-        if (transaction.isFilled()) {
+        if (transactionModel.isFilled()) {
             binding.transactionProgress.visibility = View.VISIBLE
-            binding.closeButton.visibility = View.INVISIBLE
-            if (transaction.id != null) {
-                TransactionsRepository.editTransaction(
-                    transaction.id!!,
-                    transaction.value!!,
-                    transaction.category!!,
-                    transaction.dateTime!!,
-                    walletId
-                ).subscribeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        binding.transactionProgress.visibility = View.GONE
-                        setResult(RESULT_OK)
-                        finish()
-                    }, {
-                        binding.closeButton.visibility = View.VISIBLE
-                        ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                            onTransactionSubmitted()
-                        }
-                    }).addTo(compositeDisposable)
-            } else {
-                TransactionsRepository.addTransaction(
-                    walletId,
-                    transaction.value!!,
-                    transaction.category!!,
-                    transaction.dateTime ?: Date()
-                ).subscribeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        binding.transactionProgress.visibility = View.GONE
-                        setResult(RESULT_OK)
-                        finish()
-                    }, {
-                        binding.closeButton.visibility = View.VISIBLE
-                        ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                            onTransactionSubmitted()
-                        }
-                    }).addTo(compositeDisposable)
-            }
+            viewModel.sendData(transactionModel, walletId)
         }
     }
 
     override fun onCreateCategoryClicked() {
         categoryModel = CategoryCreationModel()
-        categoryModel!!.type = transaction.type
+        categoryModel!!.type = transactionModel.type
         startFragment(CategoryEditFragment.newFragment(categoryModel))
     }
 
     override fun onDeleteCategoryClicked() {
         startFragment(CategoryDeleteFragment.newFragment())
-    }
-
-    override fun onCategorySubmitted(category: Int) {
-        transaction.category = category
-        startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
     }
 
     override fun onCategoryNameEdit() {
@@ -272,6 +228,23 @@ class TransactionActivity : FragmentActivity(),
 
     override fun onCategoryDeleted() {
         supportFragmentManager.popBackStack()
+    }
+
+    private fun onObserveLoading(status: Resource<*>) {
+        binding.errorWidget.errorLayout.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
+        binding.closeButton.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
+        if (status !is Resource.Loading) binding.transactionProgress.visibility = View.GONE
+    }
+
+    private fun onObserveSending(status: Resource<*>) {
+        binding.errorWidget.errorLayout.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
+        binding.closeButton.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
+        if (status !is Resource.Loading) binding.transactionProgress.visibility = View.GONE
+        if (status is Resource.Success) {
+            setResult(RESULT_OK)
+            finish()
+        }
+        isSending = true
     }
 
     private fun startFragment(fragment: Fragment) {

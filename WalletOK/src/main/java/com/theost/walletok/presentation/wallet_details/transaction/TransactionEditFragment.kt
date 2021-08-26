@@ -91,7 +91,7 @@ class TransactionEditFragment : Fragment() {
         }
 
         binding.submitButton.setOnClickListener {
-            (activity as TransactionListener).onTransactionSubmitted()
+            onTransactionSubmitted()
         }
 
         viewModel.loadData(transaction!!)
@@ -152,6 +152,11 @@ class TransactionEditFragment : Fragment() {
     private fun onDateSubmitted() {
         (activity as TransactionDateListener).onDateSubmitted(currentDate.time)
         viewModel.setDate(currentDate.time)
+    }
+
+    private fun onTransactionSubmitted() {
+        if (transaction?.dateTime == null) (activity as TransactionDateListener).onDateSubmitted(Date())
+        (activity as TransactionListener).onTransactionSubmitted()
     }
 
     private fun getPreferencesList(): List<Any> {
