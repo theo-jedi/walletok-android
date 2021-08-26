@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.delegates.TypeItem
+import com.theost.walletok.utils.TypeModelUtils
 
 class CategoryTypesViewModel : ViewModel() {
 
@@ -23,12 +24,7 @@ class CategoryTypesViewModel : ViewModel() {
     }
 
     fun selectData(position: Int) {
-        val typeItems = mutableListOf<TypeItem>()
-        typeItems.addAll(_allData.value!!)
-        val isSelected = !typeItems[position].isSelected
-        typeItems.forEach { it.isSelected = false }
-        typeItems[position].isSelected = isSelected
-        _allData.value = typeItems
+        _allData.value = TypeModelUtils.selectData(_allData.value!!, position)
     }
 
 }
