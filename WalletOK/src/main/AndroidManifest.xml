@@ -29,13 +29,15 @@
         <activity
             android:name="com.theost.walletok.presentation.wallet_details.WalletDetailsActivity"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".presentation.entry_point.AuthActivity"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name="com.theost.walletok.presentation.wallet_details.transaction.TransactionActivity"
+            android:name=".TransactionActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity" />
@@ -44,7 +46,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Walletokandroid.Blue"
             tools:ignore="LockedOrientationActivity" />
-        <activity android:name=".presentation.wallets.wallet_creation.WalletCreationActivity" />
+        <activity android:name=".presentation.wallets.wallet_creation.WalletCreationActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="LockedOrientationActivity"/>
     </application>
 
 </manifest>

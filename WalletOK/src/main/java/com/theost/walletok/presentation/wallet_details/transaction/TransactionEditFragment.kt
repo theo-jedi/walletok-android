@@ -1,4 +1,4 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details.transaction
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
+import com.theost.walletok.R
 import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
@@ -111,10 +112,10 @@ class TransactionEditFragment : Fragment() {
 
     private fun onPreferenceClicked(preferenceName: String) {
         when (preferenceName) {
-            TransactionPreferenceType.VALUE.uiName -> transactionListener.onValueEdit()
-            TransactionPreferenceType.TYPE.uiName -> transactionListener.onTypeEdit()
-            TransactionPreferenceType.CATEGORY.uiName -> transactionListener.onCategoryEdit()
-            TransactionPreferenceType.DATE.uiName -> pickDate()
+            PreferenceType.VALUE.uiName -> transactionListener.onValueEdit()
+            PreferenceType.TYPE.uiName -> transactionListener.onTypeEdit()
+            PreferenceType.CATEGORY.uiName -> transactionListener.onCategoryEdit()
+            PreferenceType.DATE.uiName -> pickDate()
         }
     }
 
@@ -166,23 +167,23 @@ class TransactionEditFragment : Fragment() {
         return listOf(
             ListTitle(getString(R.string.basic)),
             TransactionPreference(
-                TransactionPreferenceType.VALUE,
+                PreferenceType.VALUE,
                 value,
                 true
             ),
             TransactionPreference(
-                TransactionPreferenceType.TYPE,
+                PreferenceType.TYPE,
                 transaction?.type ?: "",
                 true
             ),
             TransactionPreference(
-                TransactionPreferenceType.CATEGORY,
+                PreferenceType.CATEGORY,
                 categoryName ?: "",
                 true
             ),
             ListTitle(getString(R.string.additional)),
             TransactionPreference(
-                TransactionPreferenceType.DATE,
+                PreferenceType.DATE,
                 if (!isDefaultDate)
                     DateTimeUtils.getFormattedDateOrCurrent(transaction!!.dateTime!!)
                 else getString(R.string.now),

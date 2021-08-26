@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentTransactionValueBinding
@@ -45,7 +46,10 @@ class TransactionValueFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        binding.submitButton.setOnClickListener { setCurrentValue() }
+        binding.submitButton.setOnClickListener {
+            binding.inputValue.onEditorAction(EditorInfo.IME_ACTION_DONE)
+            setCurrentValue()
+        }
 
         val textWatcher: TextWatcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {

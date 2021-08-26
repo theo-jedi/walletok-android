@@ -33,9 +33,8 @@ class PreferenceAdapterDelegate(
             binding.root.setOnClickListener { clickListener(preference.type.uiName) }
             binding.preferenceName.text = preference.type.uiName
             binding.preferenceValue.text = preference.value
-            binding.root.isClickable = preference.isClickable
-            binding.preferenceArrow.visibility =
-                if (preference.isClickable) View.VISIBLE else View.GONE
+            binding.root.isEnabled = preference.isEnabled
+            binding.preferenceArrow.visibility = if (preference.isEnabled) View.VISIBLE else View.GONE
         }
 
     }
@@ -43,11 +42,12 @@ class PreferenceAdapterDelegate(
 }
 
 data class TransactionPreference(
-    val type: TransactionPreferenceType,
+    val type: PreferenceType,
     val value: String,
-    val isClickable: Boolean
+    var isEnabled: Boolean
 )
 
-enum class TransactionPreferenceType(val uiName: String) {
-    VALUE("Сумма"), TYPE("Тип"), CATEGORY("Категория"), DATE("Дата операции")
+enum class PreferenceType(val uiName: String) {
+    VALUE("Сумма"), TYPE("Тип"), CATEGORY("Категория"),
+    DATE("Дата операции"), NAME("Название"), ICON("Иконка")
 }

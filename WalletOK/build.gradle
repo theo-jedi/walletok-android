@@ -77,4 +77,7 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-rxjava2:$room_version")
+
+    //Color picker
+    implementation "com.github.skydoves:colorpickerpreference:2.0.5"
 }

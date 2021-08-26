@@ -1,6 +1,5 @@
 package com.theost.walletok.presentation.wallet_details.transaction
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +8,7 @@ import androidx.fragment.app.Fragment
 import com.theost.walletok.R
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
-import com.theost.walletok.delegates.CategoryAdapterDelegate
-import com.theost.walletok.delegates.CategoryItem
+import com.theost.walletok.delegates.*
 import com.theost.walletok.presentation.base.BaseAdapter
 import com.theost.walletok.presentation.base.ErrorMessageHelper
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
@@ -39,7 +37,7 @@ class TransactionCategoryFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTransactionCategoryBinding
-    private lateinit var categoryItems: List<CategoryItem>
+    private lateinit var categoryItems: MutableList<Any>
 
     private val compositeDisposable = CompositeDisposable()
     private var savedCategory: Int = TRANSACTION_CATEGORY_UNSET
@@ -64,7 +62,17 @@ class TransactionCategoryFragment : Fragment() {
             binding.submitButton.isEnabled = true
         }
 
-        adapter.addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
+        adapter.apply {
+            addDelegate(CategoryAdapterDelegate {
+                    position, categoryId -> onItemClicked(position, categoryId)
+            })
+            addDelegate(ButtonAdapterDelegate { type ->
+                when (type) {
+                    ListButtonType.CREATION -> (activity as TransactionCategoryListener).onCreateCategoryClicked()
+                    ListButtonType.DELETION -> (activity as TransactionCategoryListener).onDeleteCategoryClicked()
+                }
+            })
+        }
 
         binding.listCategory.adapter = adapter
         binding.listCategory.setHasFixedSize(true)
@@ -72,7 +80,7 @@ class TransactionCategoryFragment : Fragment() {
         loadCategories()
 
         binding.submitButton.setOnClickListener {
-            setCurrentCategory()
+            (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
         }
 
         return binding.root
@@ -98,23 +106,20 @@ class TransactionCategoryFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun onItemClicked(position: Int) {
-        if (lastSelected != TRANSACTION_CATEGORY_UNSET) categoryItems[lastSelected].isSelected =
-            false
-        categoryItems[position].isSelected = true
-        adapter.setData(categoryItems)
+    private fun onItemClicked(position: Int, categoryId: Int) {
+        if (categoryItems[position] is CategoryItem && (lastSelected == TRANSACTION_CATEGORY_UNSET || categoryItems[lastSelected] is CategoryItem)) {
+            if (lastSelected != TRANSACTION_CATEGORY_UNSET) (categoryItems[lastSelected] as CategoryItem).isSelected =
+                false
+            (categoryItems[position] as CategoryItem).isSelected = true
+            adapter.setData(categoryItems)
 
-        savedCategory = categoryItems[position].id
-        lastSelected = position
+            savedCategory = categoryId
+            lastSelected = position
 
-        if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
-            binding.submitButton.isEnabled = true
+            if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
+                binding.submitButton.isEnabled = true
+            }
         }
-    }
-
-    private fun setCurrentCategory() {
-        (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
     }
 
     private fun loadCategories() {
@@ -129,8 +134,25 @@ class TransactionCategoryFragment : Fragment() {
                             iconColor = category.iconColor,
                             isSelected = savedCategory == category.id
                         )
-                    }
-                lastSelected = categoryItems.indexOfFirst { it.id == savedCategory }
+                    }.toMutableList()
+                categoryItems.addAll(
+                    listOf(
+                        ListButton(
+                            text = getString(R.string.delete_category),
+                            ListButtonType.DELETION,
+                            isVisible = true,
+                            isEnabled = true
+                        ),
+                        ListButton(
+                            text = getString(R.string.create_category),
+                            ListButtonType.CREATION,
+                            isVisible = true,
+                            isEnabled = true
+                        )
+                    )
+                )
+                lastSelected = categoryItems.indexOfFirst { it is CategoryItem && it.id == savedCategory }
+                if (lastSelected == TRANSACTION_CATEGORY_UNSET) savedCategory = TRANSACTION_CATEGORY_UNSET
                 adapter.setData(categoryItems)
             }, {
                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {

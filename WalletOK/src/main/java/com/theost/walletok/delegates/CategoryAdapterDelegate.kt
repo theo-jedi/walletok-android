@@ -11,7 +11,7 @@ import com.theost.walletok.presentation.base.AdapterDelegate
 import com.theost.walletok.utils.ViewUtils
 
 class CategoryAdapterDelegate(
-    private val clickListener: (position: Int) -> Unit
+    private val clickListener: (position: Int, categoryId: Int) -> Unit
 ) : AdapterDelegate {
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
@@ -29,12 +29,12 @@ class CategoryAdapterDelegate(
 
     class ViewHolder(
         private val binding: ItemListCategoryBinding,
-        private val clickListener: (position: Int) -> Unit
+        private val clickListener: (position: Int, categoryId: Int) -> Unit
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: CategoryItem) {
-            binding.root.setOnClickListener { clickListener(adapterPosition) }
+            binding.root.setOnClickListener { clickListener(adapterPosition, category.id) }
             binding.categoryTitle.text = category.name
             if (category.iconColor != null && category.iconUrl != null) {
                 binding.categoryIcon.load(category.iconUrl, App.svgImageLoader)

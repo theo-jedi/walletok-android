@@ -15,4 +15,7 @@
     <color name="blue_gray">#9299A2</color>
     <color name="light_grey_card_color">#299C9C9C</color>
     <color name="red_orange">#F52222</color>
+
+    <color name="purple">#5833EE</color>
+    <color name="green">#00B92D</color>
 </resources>

@@ -21,4 +21,9 @@
         <item name="mainTextColor">@color/black</item>
         <item name="secondTextColor">@color/dark_gray_opacity_60</item>
     </style>
+
+    <style name="Theme.Walletokandroid.Blue" parent="Theme.Walletokandroid">
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+    </style>
 </resources>

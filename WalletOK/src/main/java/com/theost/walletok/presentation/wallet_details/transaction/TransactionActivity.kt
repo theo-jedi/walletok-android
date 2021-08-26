@@ -1,4 +1,4 @@
-package com.theost.walletok.presentation.wallet_details.transaction
+package com.theost.walletok
 
 import android.content.Context
 import android.content.Intent
@@ -7,8 +7,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.theost.walletok.R
-import com.theost.walletok.TransactionEditFragment
+import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCreationModel
@@ -16,17 +15,27 @@ import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
 import com.theost.walletok.databinding.ActivityTransactionBinding
 import com.theost.walletok.presentation.base.ErrorMessageHelper
+import com.theost.walletok.presentation.wallet_details.category.CategoryDeleteFragment
+import com.theost.walletok.presentation.wallet_details.category.CategoryEditFragment
+import com.theost.walletok.presentation.wallet_details.category.CategoryNameFragment
+import com.theost.walletok.presentation.wallet_details.category.CategoryTypeFragment
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionCategoryFragment
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionEditFragment
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionTypeFragment
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionValueFragment
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionListener
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionTypeListener
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionValueListener
 import com.theost.walletok.utils.addTo
+import com.theost.walletok.widgets.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
-class TransactionActivity : FragmentActivity(), TransactionListener, TransactionValueListener,
-    TransactionTypeListener,
-    TransactionCategoryListener {
+class TransactionActivity : FragmentActivity(),
+    TransactionListener, TransactionValueListener, TransactionTypeListener,
+    TransactionCategoryListener, CategoryTypeListener, CategoryListener,
+    CategoryNameListener, CategoryIconListener {
 
     companion object {
         private const val WALLET_ID_KEY = "wallet_id"
@@ -55,6 +64,8 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         get() = intent.getIntExtra(TRANSACTION_TITLE_KEY, R.string.new_transaction)
 
     private val transaction = TransactionCreationModel()
+    private var categoryModel: CategoryCreationModel? = null
+
     private val compositeDisposable = CompositeDisposable()
     private val walletId: Int
         get() = intent.extras!!.getInt(WALLET_ID_KEY)
@@ -81,10 +92,12 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
     }
 
     override fun onBackPressed() {
-        val currentFragment =
-            supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.creation_fragment_container)
         if (transaction.isFilled() && currentFragment !is TransactionEditFragment) {
             startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
+        } else if (currentFragment is CategoryNameFragment || currentFragment is CategoryTypeFragment ) {
+            supportFragmentManager.popBackStack()
+            startFragment(CategoryEditFragment.newFragment(categoryModel!!))
         } else {
             if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {
                 supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -164,6 +177,16 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         }
     }
 
+    override fun onCreateCategoryClicked() {
+        categoryModel = CategoryCreationModel()
+        categoryModel!!.type = transaction.type
+        startFragment(CategoryEditFragment.newFragment(categoryModel!!))
+    }
+
+    override fun onDeleteCategoryClicked() {
+        startFragment(CategoryDeleteFragment.newFragment())
+    }
+
     override fun onCategorySubmitted(category: Int) {
         transaction.category = category
         startFragment(TransactionEditFragment.newFragment(transaction, titleRes))
@@ -210,8 +233,53 @@ class TransactionActivity : FragmentActivity(), TransactionListener, Transaction
         }
     }
 
+    override fun onCategoryNameEdit() {
+        supportFragmentManager.popBackStack()
+        startFragment(CategoryNameFragment.newFragment(categoryModel?.name))
+    }
+
+    override fun onCategoryTypeEdit() {
+        supportFragmentManager.popBackStack()
+        startFragment(CategoryTypeFragment.newFragment(categoryModel?.type))
+    }
+
+    override fun onCategoryNameSubmitted(name: String) {
+        categoryModel?.name = name
+        supportFragmentManager.popBackStack()
+        startFragment(CategoryEditFragment.newFragment(categoryModel!!))
+    }
+
+    override fun onCategoryTypeSubmitted(type: String) {
+        categoryModel?.type = type
+        supportFragmentManager.popBackStack()
+        startFragment(CategoryEditFragment.newFragment(categoryModel!!))
+    }
+
+    override fun onCategoryColorSubmitted(color: Int) {
+        categoryModel?.color = color
+    }
+
+    override fun onCategoryIconSubmitted(iconRes: Int) {
+        categoryModel?.iconRes = iconRes
+    }
+
+    override fun onCategoryCreated() {
+        categoryModel = null
+        supportFragmentManager.popBackStack()
+    }
+
+    override fun onCategoryDeleted() {
+        supportFragmentManager.popBackStack()
+    }
+
     private fun startFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.anim.fade_in,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.fade_out
+            )
             .replace(R.id.creation_fragment_container, fragment)
             .addToBackStack(null)
             .commit()
