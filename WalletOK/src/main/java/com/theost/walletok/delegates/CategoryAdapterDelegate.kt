@@ -8,6 +8,7 @@ import coil.load
 import com.theost.walletok.App
 import com.theost.walletok.databinding.ItemListCategoryBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
+import com.theost.walletok.presentation.base.DelegateItem
 import com.theost.walletok.utils.ViewUtils
 
 class CategoryAdapterDelegate(

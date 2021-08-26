@@ -25,12 +25,13 @@ class TransactionCategoryViewModel : ViewModel() {
         _loadingStatus.postValue(Resource.Loading(Unit))
         CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                val categoryItems = list.filter { category -> category.type.uiName == savedType }
+                val categoryItems = list.data!!.filter { category -> category.type.uiName == savedType }
                     .map { category ->
                     CategoryItem(
                         id = category.id,
                         name = category.name,
-                        icon = category.image as Int,
+                        iconUrl = category.iconLink,
+                        iconColor = category.iconColor,
                         isSelected = category.id == savedCategory
                     )
                 }

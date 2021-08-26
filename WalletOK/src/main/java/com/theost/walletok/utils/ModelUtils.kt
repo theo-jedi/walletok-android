@@ -22,7 +22,8 @@ object ModelUtils {
             CategoryItem(
                 id = it.id,
                 name = it.name,
-                icon = it.icon,
+                iconUrl = it.iconUrl,
+                iconColor = it.iconColor,
                 isSelected = if (it.id == selectedId) !it.isSelected else if (!isSingle) it.isSelected else false
             )
         }

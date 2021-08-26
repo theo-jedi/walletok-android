@@ -26,11 +26,12 @@ class UserCategoriesViewModel : ViewModel() {
         _loadingStatus.postValue(Resource.Loading(Unit))
         CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                val categoryItems = list.map { category ->
+                val categoryItems = list.data!!.map { category ->
                     CategoryItem(
                         id = category.id,
                         name = category.name,
-                        icon = category.image as Int,
+                        iconUrl = category.iconLink,
+                        iconColor = category.iconColor,
                         isSelected = false
                     )
                 }
@@ -46,7 +47,7 @@ class UserCategoriesViewModel : ViewModel() {
     }
 
     fun deleteSelectedData() {
-        _loadingStatus.postValue(Resource.Loading(Unit))
+        /*_loadingStatus.postValue(Resource.Loading(Unit))
         val selectedCategories = mutableListOf<Int>()
         _allData.value?.forEach { if (it.isSelected) selectedCategories.add(it.id) }
         CategoriesRepository.removeCategories(selectedCategories)
@@ -55,7 +56,7 @@ class UserCategoriesViewModel : ViewModel() {
                 _loadingStatus.postValue(Resource.Success(Unit))
             }, {
                 _loadingStatus.postValue(Resource.Error(Unit, it))
-            }).addTo(compositeDisposable)
+            }).addTo(compositeDisposable) todo*/
     }
 
     override fun onCleared() {
