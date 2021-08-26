@@ -14,6 +14,7 @@ import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 class WalletDetailsViewModel(private val walletId: Int) : ViewModel() {
@@ -43,50 +44,51 @@ class WalletDetailsViewModel(private val walletId: Int) : ViewModel() {
                     transactionsResult.lastTransactionId
                 )
             }
-        ).subscribe({
-            _paginationStatus.postValue(
-                if (it.lastTransactionId == null)
-                    PaginationStatus.End
-                else PaginationStatus.Ready
-            )
-            _allData.postValue(it)
-        }, {
-            _paginationStatus.postValue(PaginationStatus.Error)
-        }).addTo(compositeDisposable)
+        )
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                _paginationStatus.value =
+                    if (it.lastTransactionId == null)
+                        PaginationStatus.End
+                    else PaginationStatus.Ready
+                _allData.value = it
+            }, {
+                _paginationStatus.value = PaginationStatus.Error
+            }).addTo(compositeDisposable)
     }
 
     fun loadNextPage() {
         _paginationStatus.postValue(PaginationStatus.Loading)
         TransactionsRepository.getTransactions(walletId, lastTransactionId)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                _paginationStatus.postValue(
+                _paginationStatus.value =
                     if (it.lastTransactionId == null)
                         PaginationStatus.End
                     else PaginationStatus.Ready
-                )
                 val oldData = _allData.value
                 if (oldData != null)
-                    _allData.postValue(
+                    _allData.value =
                         CategoriesWalletsTransactionsAndLastId(
                             oldData.categories,
                             oldData.wallets,
                             it.transactions,
                             it.lastTransactionId
                         )
-                    )
             }, {
-
+                _paginationStatus.postValue(PaginationStatus.Error)
             }).addTo(compositeDisposable)
     }
 
     fun removeTransaction(id: Int) {
-        _removeTransactionStatus.postValue(Resource.Loading(Unit))
+        _removeTransactionStatus.value = Resource.Loading(Unit)
         TransactionsRepository.removeTransaction(walletId, id)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                _removeTransactionStatus.postValue(Resource.Success(Unit))
+                _removeTransactionStatus.value = Resource.Success(Unit)
                 loadData()
             }, {
-                _removeTransactionStatus.postValue(Resource.Error(Unit, it))
+                _removeTransactionStatus.value = Resource.Error(Unit, it)
             }).addTo(compositeDisposable)
     }
 

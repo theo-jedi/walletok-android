@@ -1,11 +1,9 @@
 package com.theost.walletok.presentation.wallets.wallet_creation
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.theost.walletok.databinding.FragmentWalletEditBinding
@@ -33,12 +31,7 @@ class WalletEditFragment : Fragment() {
             viewModel.addWallet()
         }
         viewModel.addWalletStatus.observe(viewLifecycleOwner) {
-            when (it) {
-                is Resource.Success -> activity?.finish()
-                is Resource.Loading -> {
-                }
-                is Resource.Error -> Log.d("HELP", "onCreateView: ${it.error}")
-            }
+            if (it is Resource.Success) activity?.finish()
         }
         return binding.root
     }
