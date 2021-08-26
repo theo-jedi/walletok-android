@@ -11,6 +11,7 @@ import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class TransactionViewModel : ViewModel() {
@@ -27,7 +28,7 @@ class TransactionViewModel : ViewModel() {
 
     fun loadData(savedTransaction: Transaction) {
         _loadingStatus.postValue(Resource.Loading(Unit))
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+        CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
             .subscribe({ list ->
                 val savedCategory = list.find { it.id == savedTransaction.categoryId }!!
                 val transactionCreationModel = TransactionCreationModel()
