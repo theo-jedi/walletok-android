@@ -10,6 +10,8 @@ import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
 import com.theost.walletok.delegates.CategoryAdapterDelegate
 import com.theost.walletok.presentation.base.BaseAdapter
+import com.theost.walletok.presentation.base.DiffAdapter
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryListener
 import com.theost.walletok.utils.Resource
 import io.reactivex.disposables.CompositeDisposable
 
@@ -26,7 +28,7 @@ class CategoryDeleteFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val compositeDisposable = CompositeDisposable()
-    private val adapter = BaseAdapter()
+    private val adapter = DiffAdapter()
 
     private val viewModel: UserCategoriesViewModel by viewModels()
 
@@ -72,12 +74,13 @@ class CategoryDeleteFragment : Fragment() {
                 binding.errorWidget.closeButton.visibility = if (binding.submitButton.isEnabled) View.VISIBLE else View.GONE
             } else if (it is Resource.Success) {
                 binding.errorWidget.errorLayout.visibility = View.GONE
+                if (binding.submitButton.isEnabled) (activity as CategoryListener).onCategoryDeleted()
             }
         }
 
         viewModel.allData.observe(viewLifecycleOwner) { list ->
             binding.submitButton.isEnabled = list.find { it.isSelected } != null
-            adapter.setData(list)
+            adapter.submitList(list)
         }
 
         viewModel.loadData()

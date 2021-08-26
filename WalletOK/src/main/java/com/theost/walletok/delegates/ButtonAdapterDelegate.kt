@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.databinding.ItemListButtonBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
+import com.theost.walletok.presentation.base.DelegateItem
 
 class ButtonAdapterDelegate(
     private val clickListener: (buttonType: ListButtonType) -> Unit
@@ -45,7 +46,11 @@ data class ListButton(
     val type: ListButtonType,
     val isVisible: Boolean,
     val isEnabled: Boolean
-)
+) : DelegateItem {
+    override fun content(): Any = text
+
+    override fun id(): Any = type
+}
 
 enum class ListButtonType {
     CREATION, DELETION

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.delegates.CategoryItem
+import com.theost.walletok.utils.ModelUtils
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -41,12 +42,7 @@ class TransactionCategoryViewModel : ViewModel() {
     }
 
     fun selectData(position: Int) {
-        val categoryItems = mutableListOf<CategoryItem>()
-        categoryItems.addAll(_allData.value!!)
-        val isSelected = !categoryItems[position].isSelected
-        categoryItems.forEach { it.isSelected = false }
-        categoryItems[position].isSelected = isSelected
-        _allData.value = categoryItems
+        _allData.value = ModelUtils.selectCategoryData(_allData.value!!, position, true)
     }
 
     override fun onCleared() {

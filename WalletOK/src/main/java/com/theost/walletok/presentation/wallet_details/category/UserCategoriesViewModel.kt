@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.delegates.CategoryItem
+import com.theost.walletok.delegates.TypeItem
+import com.theost.walletok.utils.ModelUtils
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -40,10 +42,7 @@ class UserCategoriesViewModel : ViewModel() {
     }
 
     fun selectData(position: Int) {
-        val categoryItems = mutableListOf<CategoryItem>()
-        categoryItems.addAll(_allData.value!!)
-        categoryItems[position].isSelected = !categoryItems[position].isSelected
-        _allData.value = categoryItems
+        _allData.value = ModelUtils.selectCategoryData(_allData.value!!, position, false)
     }
 
     fun deleteSelectedData() {

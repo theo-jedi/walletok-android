@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.delegates.TypeItem
-import com.theost.walletok.utils.TypeModelUtils
+import com.theost.walletok.utils.ModelUtils
 
 class TransactionTypesViewModel : ViewModel() {
 
@@ -22,7 +22,7 @@ class TransactionTypesViewModel : ViewModel() {
     }
 
     fun selectData(position: Int) {
-        _allData.value = TypeModelUtils.selectData(_allData.value!!, position)
+        _allData.value = ModelUtils.selectTypeData(_allData.value!!, position)
     }
 
 }

@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.delegates.TypeAdapterDelegate
-import com.theost.walletok.presentation.base.BaseAdapter
+import com.theost.walletok.presentation.base.DiffAdapter
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryTypeListener
 
 class CategoryTypeFragment : Fragment() {
@@ -32,7 +32,7 @@ class CategoryTypeFragment : Fragment() {
     private lateinit var savedType: String
 
     private val viewModel: CategoryTypesViewModel by viewModels()
-    private val adapter = BaseAdapter()
+    private val adapter = DiffAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +69,7 @@ class CategoryTypeFragment : Fragment() {
                 binding.submitButton.isEnabled = false
             }
 
-            adapter.setData(list)
+            adapter.submitList(list)
         }
 
         viewModel.loadData(savedType)

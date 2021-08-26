@@ -13,6 +13,8 @@ import com.theost.walletok.delegates.CategoryAdapterDelegate
 import com.theost.walletok.delegates.ListButton
 import com.theost.walletok.delegates.ListButtonType
 import com.theost.walletok.presentation.base.BaseAdapter
+import com.theost.walletok.presentation.base.DelegateItem
+import com.theost.walletok.presentation.base.DiffAdapter
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
 import com.theost.walletok.utils.Resource
 import io.reactivex.disposables.CompositeDisposable
@@ -45,7 +47,7 @@ class TransactionCategoryFragment : Fragment() {
     private var savedType: String = ""
 
     private val viewModel: TransactionCategoryViewModel by viewModels()
-    private val adapter = BaseAdapter()
+    private val adapter = DiffAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,7 +63,7 @@ class TransactionCategoryFragment : Fragment() {
         }
 
         viewModel.allData.observe(viewLifecycleOwner) { list ->
-            val listItems = mutableListOf<Any>()
+            val listItems = mutableListOf<DelegateItem>()
             listItems.addAll(list)
             listItems.addAll(listOf(
                 ListButton(
@@ -86,7 +88,7 @@ class TransactionCategoryFragment : Fragment() {
                 binding.submitButton.isEnabled = false
             }
 
-            adapter.setData(listItems)
+            adapter.submitList(listItems)
         }
 
         viewModel.loadingStatus.observe(viewLifecycleOwner) {

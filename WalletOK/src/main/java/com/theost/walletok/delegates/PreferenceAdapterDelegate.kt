@@ -44,7 +44,7 @@ class PreferenceAdapterDelegate(
 data class TransactionPreference(
     val type: PreferenceType,
     val value: String,
-    var isEnabled: Boolean
+    val isEnabled: Boolean
 )
 
 enum class PreferenceType(val uiName: String) {
