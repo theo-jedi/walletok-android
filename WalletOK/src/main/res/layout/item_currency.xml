@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
-        android:textColor="@color/dark_gray_opacity_60"
+        android:textColor="?attr/secondTextColor"
         android:textSize="13sp"
         tools:text="USD" />
 
@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="6dp"
-        android:textColor="@color/dark_gray"
+        android:textColor="?attr/mainTextColor"
         android:textSize="13sp"
         tools:text="31.4" />
 

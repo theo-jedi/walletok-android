@@ -13,7 +13,8 @@
         android:layout_margin="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/edit_transaction" />
 
     <TextView
         android:id="@+id/transaction_name_text_view"
@@ -21,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="?attr/mainTextColor"
         android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@id/transaction_money_amount_text_view"
         app:layout_constraintStart_toEndOf="@+id/transaction_icon_image"
@@ -35,7 +36,7 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
-        android:textColor="@color/on_surface_medium_emphasis"
+        android:textColor="?attr/mainTextColor"
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/transaction_time_text_view"
@@ -49,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="?attr/mainTextColor"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -62,7 +63,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:textColor="@color/on_surface_medium_emphasis"
+        android:textColor="?attr/mainTextColor"
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
