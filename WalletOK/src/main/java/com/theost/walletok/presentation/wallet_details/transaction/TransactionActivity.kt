@@ -111,6 +111,7 @@ class TransactionActivity : FragmentActivity(),
         if (transactionModel.isFilled() && currentFragment !is TransactionEditFragment) {
             startFragment(TransactionEditFragment.newFragment(transactionModel, titleRes))
         } else if (currentFragment is CategoryNameFragment || currentFragment is CategoryTypeFragment ) {
+            supportFragmentManager.popBackStack()
             startFragment(CategoryEditFragment.newFragment(categoryModel))
         } else {
             if (currentFragment is TransactionValueFragment || currentFragment is TransactionEditFragment) {

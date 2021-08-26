@@ -65,6 +65,7 @@ class TransactionViewModel : ViewModel() {
                 walletId,
                 transactionModel.value!!,
                 transactionModel.category!!,
+                transactionModel.type!!
                 // todo transactionModel.dateTime!!
             ).subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
