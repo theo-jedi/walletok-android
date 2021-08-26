@@ -1,119 +1,54 @@
 package com.theost.walletok.data.repositories
 
-import com.theost.walletok.R
+import com.theost.walletok.App
 import com.theost.walletok.data.api.WalletOkService
+import com.theost.walletok.data.db.entities.mapToEntity
+import com.theost.walletok.data.db.entities.mapToTransactionCategory
 import com.theost.walletok.data.dto.mapToCategory
 import com.theost.walletok.data.models.TransactionCategory
-import com.theost.walletok.data.models.TransactionCategoryType
-import io.reactivex.Completable
+import com.theost.walletok.utils.RxResource
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 
 object CategoriesRepository {
     private val service = WalletOkService.getInstance()
-    private val categories = mutableListOf(
-        TransactionCategory(
-            id = 0,
-            image = R.drawable.ic_category_card,
-            name = "Зарплата",
-            type = TransactionCategoryType.INCOME
-        ),
-        TransactionCategory(
-            id = 1,
-            image = R.drawable.ic_category_card,
-            name = "Подработка",
-            type = TransactionCategoryType.INCOME
-        ),
-        TransactionCategory(
-            id = 2,
-            image = R.drawable.ic_category_gift,
-            name = "Подарок",
-            type = TransactionCategoryType.INCOME
-        ),
-        TransactionCategory(
-            id = 3,
-            image = R.drawable.ic_category_percent,
-            name = "Капитализация",
-            type = TransactionCategoryType.INCOME
-        ),
-        TransactionCategory(
-            id = 4,
-            image = R.drawable.ic_category_food,
-            name = "Кафе и рестораны",
-            type = TransactionCategoryType.EXPENSE
-        ),
-        TransactionCategory(
-            id = 5,
-            image = R.drawable.ic_category_supermarket,
-            name = "Супермаркеты",
-            type = TransactionCategoryType.EXPENSE
-        ),
-        TransactionCategory(
-            id = 6,
-            image = R.drawable.ic_category_sport,
-            name = "Спорт",
-            type = TransactionCategoryType.EXPENSE
-        ),
-        TransactionCategory(
-            id = 7,
-            image = R.drawable.ic_category_transport,
-            name = "Транспорт",
-            type = TransactionCategoryType.EXPENSE
-        ),
-        TransactionCategory(
-            id = 8,
-            image = R.drawable.ic_category_pharmacy,
-            name = "Медицина",
-            type = TransactionCategoryType.EXPENSE
-        ),
-        TransactionCategory(
-            id = 9,
-            image = R.drawable.ic_category_gas,
-            name = "Бензин",
-            type = TransactionCategoryType.EXPENSE
-        ),
-        TransactionCategory(
-            id = 10,
-            image = R.drawable.ic_category_house,
-            name = "Квартплата",
-            type = TransactionCategoryType.EXPENSE
-        ),
-        TransactionCategory(
-            id = 11,
-            image = R.drawable.ic_category_travel,
-            name = "Путешествия",
-            type = TransactionCategoryType.EXPENSE
-        )
-    )
+    private val categories = mutableListOf<TransactionCategory>()
 
-    fun getCategories(): Single<List<TransactionCategory>> {
-        return if (categories.isNotEmpty()) Single.just(categories) else
-            service.getCategories().map { list -> list.map { it.mapToCategory() } }
-                .doOnSuccess {
+    fun getCategoriesFromServer(): Single<RxResource<List<TransactionCategory>>> {
+        return service.getCategories()
+            .map { list -> list.map { it.mapToCategory() } }
+            .map { RxResource.success(it) }
+            .onErrorReturn { RxResource.error(it, null) }
+            .subscribeOn(Schedulers.io())
+            .doOnSuccess { resource ->
+                if (resource.data != null) {
                     categories.clear()
-                    categories.addAll(it)
+                    categories.addAll(resource.data)
+                    saveCategoriesToDb(resource.data)
                 }
+            }
     }
 
-    fun addCategory(name: String, iconRes: Int, type: TransactionCategoryType): Completable {
-        return Completable.fromAction {
-            val category = simulateCreation(name, iconRes, type)
-            categories.add(category)
-        }
+    fun getCategoriesFromCache(): Single<RxResource<List<TransactionCategory>>> {
+        return if (!categories.isNullOrEmpty()) Single.just(categories)
+            .map { RxResource.success(it) }
+        else App.appDatabase.categoriesDao().getAll()
+            .map { list -> list.map { it.mapToTransactionCategory() } }
+            .map { RxResource.success(it) }
+            .subscribeOn(Schedulers.io())
     }
 
-    private fun simulateCreation(name: String, iconRes: Int, type: TransactionCategoryType): TransactionCategory {
-        return TransactionCategory(
-            categories.size + 1,
-            iconRes,
-            name,
-            type
+    fun getCategories(): Observable<RxResource<List<TransactionCategory>>> {
+        return Observable.concat(
+            getCategoriesFromCache().toObservable(),
+            getCategoriesFromServer().toObservable()
         )
     }
 
-    fun removeCategories(categoriesIds: List<Int>): Completable {
-        return Completable.fromAction {
-            categoriesIds.forEach { id -> categories.removeAll { it.id == id} }
-        }
+    private fun saveCategoriesToDb(categories: List<TransactionCategory>) {
+        App.appDatabase.categoriesDao().insertAll(categories.map {
+            it.mapToEntity()
+        }).subscribeOn(Schedulers.io()).subscribe()
     }
-
 }

@@ -4,10 +4,8 @@
     android:id="@+id/errorLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginTop="16dp"
-    android:layout_marginBottom="8dp"
     android:visibility="gone"
+    android:backgroundTint="?attr/secondBackgroundColor"
     app:cardCornerRadius="8dp">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -32,7 +30,7 @@
             android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:text="@string/default_error_message"
-            android:textColor="@color/dark_gray"
+            android:textColor="?attr/mainTextColor"
             android:textSize="16sp" />
 
         <ImageView

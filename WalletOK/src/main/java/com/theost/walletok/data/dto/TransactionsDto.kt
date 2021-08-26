@@ -1,9 +1,8 @@
 package com.theost.walletok.data.dto
 
 import com.theost.walletok.data.dto.TransactionsDto.Companion.dateTimeFormat
-import com.theost.walletok.data.models.Currency
 import com.theost.walletok.data.models.Transaction
-import com.theost.walletok.data.models.TransactionsAndNextId
+import com.theost.walletok.data.models.TransactionsAndLastId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
@@ -16,28 +15,32 @@ data class TransactionsDto(
 ) {
     companion object {
         val dateTimeFormat =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z", Locale("ru", "RU"))
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("ru", "RU"))
     }
 }
 
 @Serializable
 data class TransactionContentDto(
     @SerialName("id") val id: Int,
-    @SerialName("category_id") val categoryId: Int,
-    @SerialName("money") val money: Long,
-    @SerialName("currency") val currency: Currency,
-    @SerialName("date_time") val dateTime: String
+    @SerialName("walletId") val walletId: Int,
+    @SerialName("categoryId") val categoryId: Int,
+    @SerialName("amount") val money: Long,
+    @SerialName("date") val dateTime: String
 )
 
-fun TransactionsDto.mapToTransactionsAndNextId(): TransactionsAndNextId {
+fun TransactionsDto.mapToTransactionsAndNextId(): TransactionsAndLastId {
     val newList = this.transactions.map {
-        Transaction(
-            id = it.id,
-            categoryId = it.categoryId,
-            money = it.money,
-            currency = it.currency,
-            dateTime = dateTimeFormat.parse(it.dateTime)!!
-        )
+        it.mapToTransaction()
     }
-    return TransactionsAndNextId(newList, this.nextTransactionId)
+    return TransactionsAndLastId(newList, this.nextTransactionId)
+}
+
+fun TransactionContentDto.mapToTransaction(): Transaction {
+    return Transaction(
+        id = this.id,
+        categoryId = this.categoryId,
+        money = this.money,
+        dateTime = dateTimeFormat.parse(this.dateTime)!!,
+        walletId = this.walletId
+    )
 }
