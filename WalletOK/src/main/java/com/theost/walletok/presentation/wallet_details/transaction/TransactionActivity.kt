@@ -59,7 +59,6 @@ class TransactionActivity : FragmentActivity(),
 
     private var transactionModel = TransactionCreationModel()
     private var categoryModel: CategoryCreationModel? = null
-    private var isSending: Boolean = false
 
     private val viewModel: TransactionViewModel by viewModels()
     private val compositeDisposable = CompositeDisposable()
@@ -75,11 +74,11 @@ class TransactionActivity : FragmentActivity(),
         viewModel.sendingStatus.observe(this) { onObserveSending(it) }
 
         binding.errorWidget.retryButton.setOnClickListener {
-            if (isSending) {
-                onTransactionSubmitted()
-            } else {
-                viewModel.loadData(savedTransaction!!)
-            }
+            viewModel.loadData(savedTransaction!!)
+        }
+
+        binding.errorWidget.closeButton.setOnClickListener {
+            binding.errorWidget.errorLayout.visibility = View.GONE
         }
 
         binding.closeButton.setOnClickListener { onBackPressed() }
@@ -231,20 +230,26 @@ class TransactionActivity : FragmentActivity(),
     }
 
     private fun onObserveLoading(status: Resource<*>) {
-        binding.errorWidget.errorLayout.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
-        binding.closeButton.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
-        binding.transactionProgress.visibility = if (status is Resource.Loading) View.VISIBLE else View.GONE
+        if (status is Resource.Error) {
+            binding.errorWidget.errorLayout.visibility = View.VISIBLE
+            binding.errorWidget.retryButton.visibility = View.VISIBLE
+            binding.errorWidget.closeButton.visibility = View.GONE
+        } else if (status is Resource.Success) {
+            binding.errorWidget.errorLayout.visibility = View.GONE
+        }
     }
 
     private fun onObserveSending(status: Resource<*>) {
-        binding.errorWidget.errorLayout.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
-        binding.closeButton.visibility = if (status is Resource.Error) View.VISIBLE else View.GONE
         binding.transactionProgress.visibility = if (status is Resource.Loading) View.VISIBLE else View.GONE
-        if (status is Resource.Success) {
+        if (status is Resource.Error) {
+            binding.errorWidget.errorLayout.visibility = View.VISIBLE
+            binding.errorWidget.retryButton.visibility = View.GONE
+            binding.errorWidget.closeButton.visibility = View.VISIBLE
+        } else if (status is Resource.Success) {
+            binding.errorWidget.errorLayout.visibility = View.GONE
             setResult(RESULT_OK)
             finish()
         }
-        isSending = true
     }
 
     private fun startFragment(fragment: Fragment) {

@@ -83,6 +83,7 @@ class TransactionEditFragment : Fragment() {
 
         viewModel.loadingStatus.observe(viewLifecycleOwner) {
             binding.errorWidget.errorLayout.visibility = if (it is Resource.Error) View.VISIBLE else View.GONE
+            binding.transactionProgress.visibility = if (it is Resource.Loading) View.VISIBLE else View.GONE
         }
 
         binding.listPreferences.setHasFixedSize(true)

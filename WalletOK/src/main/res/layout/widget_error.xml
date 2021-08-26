@@ -42,6 +42,18 @@
             android:layout_margin="16dp"
             android:clickable="true"
             android:focusable="true"
-            android:src="@drawable/ic_refresh" />
+            android:src="@drawable/ic_refresh"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <ImageView
+            android:id="@+id/closeButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            android:src="@drawable/ic_close"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
     </androidx.appcompat.widget.LinearLayoutCompat>
 </com.google.android.material.card.MaterialCardView>
