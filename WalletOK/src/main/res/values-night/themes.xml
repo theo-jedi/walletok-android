@@ -15,7 +15,7 @@
         <!-- Customize your theme here. -->
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
 
-        <item name="mainBackgroundColor">@color/black</item>
+        <item name="mainBackgroundColor">@color/lighter_black</item>
         <item name="secondBackgroundColor">@color/dark_gray</item>
         <item name="mainTextColor">@color/white</item>
         <item name="secondTextColor">@color/white_opacity_60</item>

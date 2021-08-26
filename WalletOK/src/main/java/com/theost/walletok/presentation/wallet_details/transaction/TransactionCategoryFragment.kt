@@ -1,21 +1,22 @@
 package com.theost.walletok.presentation.wallet_details.transaction
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.theost.walletok.R
-import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
+import com.theost.walletok.delegates.ButtonAdapterDelegate
 import com.theost.walletok.delegates.CategoryAdapterDelegate
-import com.theost.walletok.delegates.CategoryItem
+import com.theost.walletok.delegates.ListButton
+import com.theost.walletok.delegates.ListButtonType
 import com.theost.walletok.presentation.base.BaseAdapter
-import com.theost.walletok.presentation.base.ErrorMessageHelper
+import com.theost.walletok.presentation.base.DelegateItem
+import com.theost.walletok.presentation.base.DiffAdapter
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
-import com.theost.walletok.utils.addTo
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.theost.walletok.utils.Resource
 import io.reactivex.disposables.CompositeDisposable
 
 class TransactionCategoryFragment : Fragment() {
@@ -38,21 +39,22 @@ class TransactionCategoryFragment : Fragment() {
         }
     }
 
-    private lateinit var binding: FragmentTransactionCategoryBinding
-    private lateinit var categoryItems: List<CategoryItem>
+    private var _binding: FragmentTransactionCategoryBinding? = null
+    private val binding get() = _binding!!
 
     private val compositeDisposable = CompositeDisposable()
     private var savedCategory: Int = TRANSACTION_CATEGORY_UNSET
-    private var lastSelected: Int = TRANSACTION_CATEGORY_UNSET
     private var savedType: String = ""
-    private val adapter = BaseAdapter()
+
+    private val viewModel: TransactionCategoryViewModel by viewModels()
+    private val adapter = DiffAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTransactionCategoryBinding.inflate(inflater, container, false)
+        _binding = FragmentTransactionCategoryBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
@@ -60,20 +62,64 @@ class TransactionCategoryFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
-            binding.submitButton.isEnabled = true
+        viewModel.allData.observe(viewLifecycleOwner) { list ->
+            val listItems = mutableListOf<DelegateItem>()
+            listItems.addAll(list)
+            listItems.addAll(listOf(
+                ListButton(
+                    text = getString(R.string.delete_category),
+                    type = ListButtonType.DELETION,
+                    isVisible = true,
+                    isEnabled = true
+                ),
+                ListButton(
+                    text = getString(R.string.create_category),
+                    type = ListButtonType.CREATION,
+                    isVisible = true,
+                    isEnabled = true
+                ))
+            )
+
+            val item = list.find { it.isSelected }
+            if (item != null) {
+                savedCategory = item.id
+                binding.submitButton.isEnabled = true
+            } else {
+                binding.submitButton.isEnabled = false
+            }
+
+            adapter.submitList(listItems)
         }
 
-        adapter.addDelegate(CategoryAdapterDelegate { onItemClicked(it) })
+        viewModel.loadingStatus.observe(viewLifecycleOwner) {
+            binding.errorWidget.errorLayout.visibility = if (it is Resource.Error) View.VISIBLE else View.GONE
+            binding.transactionProgress.visibility = if (it is Resource.Loading) View.VISIBLE else View.GONE
+        }
+
+        binding.errorWidget.retryButton.setOnClickListener {
+            viewModel.loadData(savedCategory, savedType)
+        }
+
+        adapter.apply {
+            addDelegate(CategoryAdapterDelegate { position ->
+                onItemClicked(position)
+            })
+            addDelegate(ButtonAdapterDelegate { type ->
+                when (type) {
+                    ListButtonType.CREATION -> (activity as TransactionCategoryListener).onCreateCategoryClicked()
+                    ListButtonType.DELETION -> (activity as TransactionCategoryListener).onDeleteCategoryClicked()
+                }
+            })
+        }
 
         binding.listCategory.adapter = adapter
         binding.listCategory.setHasFixedSize(true)
 
-        loadCategories()
-
         binding.submitButton.setOnClickListener {
-            setCurrentCategory()
+            (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
         }
+
+        viewModel.loadData(savedCategory, savedType)
 
         return binding.root
     }
@@ -98,48 +144,13 @@ class TransactionCategoryFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun onItemClicked(position: Int) {
-        if (lastSelected != TRANSACTION_CATEGORY_UNSET) categoryItems[lastSelected].isSelected =
-            false
-        categoryItems[position].isSelected = true
-        adapter.setData(categoryItems)
-
-        savedCategory = categoryItems[position].id
-        lastSelected = position
-
-        if (savedCategory != TRANSACTION_CATEGORY_UNSET) {
-            binding.submitButton.isEnabled = true
-        }
-    }
-
-    private fun setCurrentCategory() {
-        (activity as TransactionCategoryListener).onCategorySubmitted(savedCategory)
-    }
-
-    private fun loadCategories() {
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe({ list ->
-                categoryItems =
-                    list.filter { category -> category.type.uiName == savedType }.map { category ->
-                        CategoryItem(
-                            id = category.id,
-                            name = category.name,
-                            icon = category.image as Int,
-                            isSelected = savedCategory == category.id
-                        )
-                    }
-                lastSelected = categoryItems.indexOfFirst { it.id == savedCategory }
-                adapter.setData(categoryItems)
-            }, {
-                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                    loadCategories()
-                }
-            }).addTo(compositeDisposable)
+        viewModel.selectData(position)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        _binding = null
         compositeDisposable.dispose()
     }
 }

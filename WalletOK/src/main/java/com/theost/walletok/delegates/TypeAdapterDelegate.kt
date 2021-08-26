@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.presentation.base.AdapterDelegate
 import com.theost.walletok.databinding.ItemListTypeBinding
+import com.theost.walletok.presentation.base.DelegateItem
 
 class TypeAdapterDelegate(
     private val clickListener: (position: Int) -> Unit
@@ -45,5 +46,9 @@ class TypeAdapterDelegate(
 
 data class TypeItem(
     val name: String,
-    var isSelected: Boolean
-)
+    val isSelected: Boolean
+) : DelegateItem {
+    override fun content(): Any = isSelected
+
+    override fun id(): Any = name
+}

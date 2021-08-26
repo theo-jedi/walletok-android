@@ -16,7 +16,7 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun onLastSignedIn() {
-        val account = AuthUtils.getLastSignedInAccount(this)
+        val account = AuthUtils.getLastSignedInAccount()
         if (account == null) {
             startAuthActivity()
         } else {

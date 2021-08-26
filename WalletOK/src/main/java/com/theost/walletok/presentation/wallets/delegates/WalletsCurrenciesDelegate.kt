@@ -32,15 +32,15 @@ class WalletsCurrenciesDelegate : AdapterDelegate {
             binding.currencyRight.currencyValueTv.text = item.currencies[2].price
             binding.currencyLeft.currencyArrowIcon.setImageResource(
                 if (item.currencies[0].isGrowing)
-                    R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
+                    R.drawable.ic_green_arrow_up else R.drawable.ic_red_arrow_down
             )
             binding.currencyCenter.currencyArrowIcon.setImageResource(
                 if (item.currencies[1].isGrowing)
-                    R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
+                    R.drawable.ic_green_arrow_up else R.drawable.ic_red_arrow_down
             )
             binding.currencyRight.currencyArrowIcon.setImageResource(
                 if (item.currencies[2].isGrowing)
-                    R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
+                    R.drawable.ic_green_arrow_up else R.drawable.ic_red_arrow_down
             )
         }
     }

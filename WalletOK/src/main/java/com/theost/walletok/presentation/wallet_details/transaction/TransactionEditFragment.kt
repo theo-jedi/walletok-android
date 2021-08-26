@@ -1,25 +1,24 @@
-package com.theost.walletok
+package com.theost.walletok.presentation.wallet_details.transaction
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
+import com.theost.walletok.R
 import com.theost.walletok.data.models.TransactionCreationModel
-import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentTransactionEditBinding
 import com.theost.walletok.delegates.*
 import com.theost.walletok.presentation.base.BaseAdapter
-import com.theost.walletok.presentation.base.ErrorMessageHelper
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionDateListener
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionListener
 import com.theost.walletok.utils.DateTimeUtils
+import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.StringUtils
-import com.theost.walletok.utils.addTo
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import java.util.*
 
 class TransactionEditFragment : Fragment() {
@@ -38,27 +37,27 @@ class TransactionEditFragment : Fragment() {
         }
     }
 
-    private lateinit var transactionListener: TransactionListener
-    private lateinit var binding: FragmentTransactionEditBinding
+    private var _binding: FragmentTransactionEditBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var currentDate: Calendar
+    private lateinit var preferencesList: List<Any>
 
     private var categoryName: String? = null
     private var transaction: TransactionCreationModel? = null
 
     private val adapter = BaseAdapter()
-    private val compositeDisposable = CompositeDisposable()
+    private val viewModel: TransactionCreationViewModel by viewModels()
 
     private val titleRes: Int
         get() = arguments?.getInt(TRANSACTION_TITLE_KEY)!!
-
-    private var isDefaultDate: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTransactionEditBinding.inflate(inflater, container, false)
+        _binding = FragmentTransactionEditBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
         binding.toolbar.title = getString(titleRes)
@@ -67,21 +66,38 @@ class TransactionEditFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        transactionListener = activity as TransactionListener
-
         adapter.apply {
             addDelegate(PreferenceAdapterDelegate { onPreferenceClicked(it) })
             addDelegate(TitleAdapterDelegate())
         }
 
+        viewModel.allData.observe(viewLifecycleOwner) { pair ->
+            transaction = pair.first
+            categoryName = pair.second
+            preferencesList = getPreferencesList()
+
+            binding.submitButton.isEnabled = transaction!!.isFilled()
+
+            adapter.setData(preferencesList)
+        }
+
+        viewModel.loadingStatus.observe(viewLifecycleOwner) {
+            binding.errorWidget.errorLayout.visibility = if (it is Resource.Error) View.VISIBLE else View.GONE
+            binding.transactionProgress.visibility = if (it is Resource.Loading) View.VISIBLE else View.GONE
+        }
+
         binding.listPreferences.setHasFixedSize(true)
         binding.listPreferences.adapter = adapter
 
-        loadTransactionData()
+        binding.errorWidget.retryButton.setOnClickListener {
+            viewModel.loadData(transaction!!)
+        }
 
         binding.submitButton.setOnClickListener {
-            transactionListener.onTransactionSubmitted()
+            onTransactionSubmitted()
         }
+
+        viewModel.loadData(transaction!!)
 
         return binding.root
     }
@@ -98,9 +114,6 @@ class TransactionEditFragment : Fragment() {
         currentDate = Calendar.getInstance()
         if (transaction?.dateTime != null) {
             currentDate.time = transaction!!.dateTime!!
-            isDefaultDate = false
-        } else {
-            transaction?.dateTime = Date()
         }
     }
 
@@ -111,10 +124,10 @@ class TransactionEditFragment : Fragment() {
 
     private fun onPreferenceClicked(preferenceName: String) {
         when (preferenceName) {
-            TransactionPreferenceType.VALUE.uiName -> transactionListener.onValueEdit()
-            TransactionPreferenceType.TYPE.uiName -> transactionListener.onTypeEdit()
-            TransactionPreferenceType.CATEGORY.uiName -> transactionListener.onCategoryEdit()
-            TransactionPreferenceType.DATE.uiName -> pickDate()
+            PreferenceType.VALUE.uiName -> (activity as TransactionListener).onValueEdit()
+            PreferenceType.TYPE.uiName -> (activity as TransactionListener).onTypeEdit()
+            PreferenceType.CATEGORY.uiName -> (activity as TransactionListener).onCategoryEdit()
+            PreferenceType.DATE.uiName -> pickDate()
         }
     }
 
@@ -140,21 +153,13 @@ class TransactionEditFragment : Fragment() {
     }
 
     private fun onDateSubmitted() {
-        isDefaultDate = false
-        transaction?.dateTime = currentDate.time
-        loadTransactionData()
+        (activity as TransactionDateListener).onDateSubmitted(currentDate.time)
+        viewModel.setDate(currentDate.time)
     }
 
-    private fun loadTransactionData() {
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe({ list ->
-                categoryName = list.find { item -> item.id == transaction?.category }?.name
-                adapter.setData(getPreferencesList())
-            }, {
-                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                    loadTransactionData()
-                }
-            }).addTo(compositeDisposable)
+    private fun onTransactionSubmitted() {
+        if (transaction?.dateTime == null) (activity as TransactionDateListener).onDateSubmitted(Date())
+        (activity as TransactionListener).onTransactionSubmitted()
     }
 
     private fun getPreferencesList(): List<Any> {
@@ -166,29 +171,33 @@ class TransactionEditFragment : Fragment() {
         return listOf(
             ListTitle(getString(R.string.basic)),
             TransactionPreference(
-                TransactionPreferenceType.VALUE,
+                PreferenceType.VALUE,
                 value,
                 true
             ),
             TransactionPreference(
-                TransactionPreferenceType.TYPE,
-                transaction?.type ?: "",
+                PreferenceType.TYPE,
+                transaction?.type ?: getString(R.string.unset),
                 true
             ),
             TransactionPreference(
-                TransactionPreferenceType.CATEGORY,
-                categoryName ?: "",
+                PreferenceType.CATEGORY,
+                categoryName ?: getString(R.string.unset),
                 true
             ),
             ListTitle(getString(R.string.additional)),
             TransactionPreference(
-                TransactionPreferenceType.DATE,
-                if (!isDefaultDate)
+                PreferenceType.DATE, if (transaction!!.dateTime != null)
                     DateTimeUtils.getFormattedDateOrCurrent(transaction!!.dateTime!!)
                 else getString(R.string.now),
                 true
             )
         )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

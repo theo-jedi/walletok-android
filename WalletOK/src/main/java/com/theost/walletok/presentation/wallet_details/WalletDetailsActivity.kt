@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.R
+import com.theost.walletok.presentation.wallet_details.transaction.TransactionActivity
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.databinding.ActivityWalletDetailsBinding
 import com.theost.walletok.presentation.SwipeControllerActions
@@ -22,7 +23,6 @@ import com.theost.walletok.presentation.base.delegates.LoadingOrErrorAdapterDele
 import com.theost.walletok.presentation.wallet_details.delegates.DateAdapterDelegate
 import com.theost.walletok.presentation.wallet_details.delegates.TransactionAdapterDelegate
 import com.theost.walletok.presentation.wallet_details.delegates.WalletDetailsHeaderAdapterDelegate
-import com.theost.walletok.presentation.wallet_details.transaction.TransactionActivity
 import com.theost.walletok.utils.Resource
 
 
@@ -52,7 +52,7 @@ class WalletDetailsActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         walletDetailsAdapter = PaginationAdapter(PaginationAdapterHelper {
             if (viewModel.paginationStatus.value == PaginationStatus.Ready)
-                viewModel.loadData()
+                viewModel.loadNextPage()
         })
         viewModel.paginationStatus.observe(this) {
             setAdapterData()
@@ -66,7 +66,6 @@ class WalletDetailsActivity : AppCompatActivity() {
                 viewModel.loadData()
             })
         }
-        viewModel.loadData()
         viewModel.allData.observe(this) {
             setAdapterData()
         }
@@ -104,7 +103,8 @@ class WalletDetailsActivity : AppCompatActivity() {
             override fun onEditClicked(viewHolder: RecyclerView.ViewHolder) {
                 val transactionId =
                     (viewHolder as TransactionAdapterDelegate.ViewHolder).transactionId
-                val transaction = viewModel.allData.value!!.second.find { it.id == transactionId }
+                val transaction =
+                    viewModel.allData.value!!.transactions.find { it.id == transactionId }
                 if (transaction != null) editTransaction(transaction)
             }
 
@@ -119,6 +119,11 @@ class WalletDetailsActivity : AppCompatActivity() {
                     swipeController.onDraw(c)
                 }
             })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.loadData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -137,12 +142,11 @@ class WalletDetailsActivity : AppCompatActivity() {
         val data = viewModel.allData.value
         val paginationStatus = viewModel.paginationStatus.value
         if (data != null && paginationStatus != null) {
-            val (categories, transactions, wallet) = data
             walletDetailsAdapter.setData(
                 TransactionItemsHelper.getRecyclerItems(
-                    categories,
-                    transactions,
-                    wallet,
+                    data.categories,
+                    data.transactions,
+                    data.wallets.find { it.id == walletId }!!,
                     paginationStatus
                 )
             )

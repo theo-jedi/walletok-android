@@ -4,8 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import com.theost.walletok.App
 import com.theost.walletok.databinding.ItemListCategoryBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
+import com.theost.walletok.presentation.base.DelegateItem
+import com.theost.walletok.utils.ViewUtils
 
 class CategoryAdapterDelegate(
     private val clickListener: (position: Int) -> Unit
@@ -33,7 +37,10 @@ class CategoryAdapterDelegate(
         fun bind(category: CategoryItem) {
             binding.root.setOnClickListener { clickListener(adapterPosition) }
             binding.categoryTitle.text = category.name
-            binding.categoryIcon.setImageResource(category.icon)
+            if (category.iconColor != null && category.iconUrl != null) {
+                binding.categoryIcon.load(category.iconUrl, App.svgImageLoader)
+                ViewUtils.changeDrawableColor(binding.categoryCircle.background, category.iconColor)
+            }
             binding.categoryCheck.visibility = View.INVISIBLE
             if (category.isSelected) {
                 binding.categoryCheck.visibility = View.VISIBLE
@@ -47,6 +54,11 @@ class CategoryAdapterDelegate(
 data class CategoryItem(
     val id: Int,
     val name: String,
-    val icon: Int,
+    val iconUrl: String?,
+    val iconColor: Int?,
     var isSelected: Boolean
-)
+) : DelegateItem {
+    override fun content(): Any = isSelected
+
+    override fun id(): Any = id
+}
