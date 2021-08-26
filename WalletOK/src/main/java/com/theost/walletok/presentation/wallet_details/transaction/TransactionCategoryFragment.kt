@@ -118,14 +118,15 @@ class TransactionCategoryFragment : Fragment() {
     }
 
     private fun loadCategories() {
-        CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
+        CategoriesRepository.getCategories().observeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
                 categoryItems =
-                    list.filter { category -> category.type.uiName == savedType }.map { category ->
+                    list.data!!.filter { category -> category.type.uiName == savedType }.map { category ->
                         CategoryItem(
                             id = category.id,
                             name = category.name,
-                            icon = category.image as Int,
+                            iconUrl = category.iconLink,
+                            iconColor = category.iconColor,
                             isSelected = savedCategory == category.id
                         )
                     }

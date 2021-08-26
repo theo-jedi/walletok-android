@@ -148,7 +148,7 @@ class TransactionEditFragment : Fragment() {
     private fun loadTransactionData() {
         CategoriesRepository.getCategories().subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->
-                categoryName = list.find { item -> item.id == transaction?.category }?.name
+                categoryName = list.data!!.find { item -> item.id == transaction?.category }?.name
                 adapter.setData(getPreferencesList())
             }, {
                 ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {

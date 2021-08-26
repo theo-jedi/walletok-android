@@ -1,136 +1,141 @@
 package com.theost.walletok.data.repositories
 
+import android.accounts.NetworkErrorException
+import com.theost.walletok.App
 import com.theost.walletok.data.api.WalletOkService
-import com.theost.walletok.data.dto.TransactionsDto
-import com.theost.walletok.data.dto.mapToTransactionsAndNextId
-import com.theost.walletok.data.models.Currency
+import com.theost.walletok.data.db.entities.mapToEntity
+import com.theost.walletok.data.db.entities.mapToTransaction
+import com.theost.walletok.data.dto.TransactionPostDto
+import com.theost.walletok.data.dto.mapToTransaction
 import com.theost.walletok.data.models.Transaction
-import com.theost.walletok.data.models.TransactionCreationModel
-import com.theost.walletok.data.models.TransactionsAndNextId
+import com.theost.walletok.data.models.TransactionsAndLastId
+import com.theost.walletok.utils.RxResource
+import com.theost.walletok.utils.Status
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.*
+import io.reactivex.schedulers.Schedulers
 
 object TransactionsRepository {
     const val LIMIT = 20
     private val service = WalletOkService.getInstance()
-    private val transactions = mutableMapOf(Pair(0, (0..9).map {
-        Transaction(
-            id = it,
-            categoryId = 0,
-            money = 12000,
-            currency = Currency.RUB,
-            dateTime = TransactionsDto.dateTimeFormat
-                .parse("2021-08-${12 + it}T12:08:56Z+0300")!!
-        )
-    }.toMutableList()))
+    private val transactions = mutableMapOf<Int, MutableList<Transaction>>()
 
-    fun getNextTransactions(
-        walletId: Int,
-        nextTransactionId: Int?
-    ): Single<TransactionsAndNextId> {
-        if (nextTransactionId == null)
-            return if (transactions[walletId] != null) getTransactionsFromCache(walletId)
-            else getTransactionsFromServer(walletId, nextTransactionId).doOnSuccess {
-                addToCacheOrCreateNew(walletId, it.transactions)
-            }
-        return getTransactionsFromServer(walletId, nextTransactionId).doOnSuccess { entity ->
-            val currentTransactions = transactions[walletId]
-            if (currentTransactions != null) {
-                val nextTransactionInCache =
-                    currentTransactions.find { it.id == nextTransactionId }
-                if (nextTransactionInCache != null) {
-                    currentTransactions.subList(
-                        currentTransactions.indexOf(nextTransactionInCache),
-                        currentTransactions.size - 1
-                    ).clear()
-                }
-                addToCacheOrCreateNew(walletId, entity.transactions)
-            }
-        }
-    }
-
-    private fun addToCacheOrCreateNew(walletId: Int, transactions: List<Transaction>) {
-        TransactionsRepository.transactions[walletId]?.addAll(transactions)
-            ?: TransactionsRepository.transactions.put(walletId, transactions.toMutableList())
-    }
-
-    private fun getTransactionsFromServer(walletId: Int, nextTransactionId: Int?):
-            Single<TransactionsAndNextId> {
+    fun getTransactionsFromServer(walletId: Int, lastTransactionId: Int?):
+            Single<RxResource<TransactionsAndLastId>> {
         return service
-            .getTransactions(walletId, LIMIT, nextTransactionId)
-            .map { it.mapToTransactionsAndNextId() }
+            .getTransactions(walletId, LIMIT, lastTransactionId)
+            .subscribeOn(Schedulers.io())
+            .map { list ->
+                TransactionsAndLastId(
+                    list.map { it.mapToTransaction() },
+                    if (list.size < LIMIT) null
+                    else list.last().id
+                )
+            }
+            .map { RxResource.success(it) }
+            .onErrorReturn { RxResource.error(it, null) }
+            .subscribeOn(Schedulers.io())
     }
 
-    private fun getTransactionsFromCache(walletId: Int): Single<TransactionsAndNextId> {
-        val currentTransactions = transactions[walletId]
-        return Single.just(
-            currentTransactions?.let {
-                TransactionsAndNextId(
+    fun getTransactionsFromCache(walletId: Int): Single<RxResource<TransactionsAndLastId>> {
+        if (transactions[walletId] == null) transactions[walletId] = mutableListOf()
+        val currentTransactions: List<Transaction> = transactions[walletId]!!
+        return if (currentTransactions.isNotEmpty()) {
+            Single.just(
+                TransactionsAndLastId(
                     currentTransactions,
                     currentTransactions.last().id
                 )
+            ).map { RxResource.success(it) }
+        } else App.appDatabase.transactionsDao().getAllFromWallet(walletId)
+            .map { list -> list.map { it.mapToTransaction() } }
+            .map { TransactionsAndLastId(it, null) }
+            .map { RxResource.success(it) }
+            .subscribeOn(Schedulers.io())
+    }
+
+    fun getTransactions(
+        walletId: Int,
+        lastTransactionId: Int?
+    ): Observable<RxResource<TransactionsAndLastId>> {
+        return Single.concat(
+            getTransactionsFromCache(walletId),
+            getTransactionsFromServer(walletId, lastTransactionId)
+                .doOnSuccess {
+                    if (it.data != null)
+                        if (lastTransactionId == null) {
+                            overwriteCacheOrCreateNew(walletId, it.data.transactions)
+                            addTransactionsToDb(it.data.transactions)
+                        } else transactions[walletId]!!.addAll(it.data.transactions)
+                }
+        ).toObservable()
+    }
+
+    fun getNextTransactions(
+        walletId: Int,
+        lastTransactionId: Int?
+    ): Single<RxResource<TransactionsAndLastId>> {
+        return getTransactionsFromServer(walletId, lastTransactionId)
+            .map {
+                if (it.status == Status.SUCCESS) RxResource.success(
+                    TransactionsAndLastId(
+                        transactions[walletId]!!.plus(it.data!!.transactions),
+                        it.data.lastTransactionId
+                    )
+                )
+                else it
             }
-        )
     }
 
-    fun addTransaction(walletId: Int, value: Long, category: Int, dateTime: Date): Completable {
-        return Completable.fromAction {
-            val transaction = simulateCreation(value, category, dateTime)
-            transactions[walletId]!!.add(transaction)
-        }
-    }
-
-    private fun simulateCreation(value: Long, category: Int, dateTime: Date): Transaction {
-        return Transaction(
-            transactions.size + 1,
-            category,
-            value * 100,
-            Currency.RUB,
-            dateTime
-        )
-    }
-
-    private fun simulateEditing(id: Int, value: Long, category: Int, dateTime: Date, walletId: Int): Transaction {
-        var currency: Currency
-        var dateTime: Date
-        transactions[walletId]!!.find { it.id == id }.apply {
-            currency = this!!.currency
-            dateTime = this.dateTime
-        }
-        return Transaction(
-            id,
-            category,
-            value,
-            currency,
-            dateTime
+    fun addTransaction(walletId: Int, amount: Long, categoryId: Int): Completable {
+        return Completable.fromSingle(
+            service.addTransaction(TransactionPostDto(walletId, categoryId, amount))
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess {
+                    val transaction = it.mapToTransaction()
+                    transactions[walletId]!!.add(transaction)
+                    addTransactionsToDb(listOf(transaction))
+                }
         )
     }
 
     fun removeTransaction(walletId: Int, id: Int): Completable {
-        return Completable.fromAction {
-            transactions[walletId]!!.removeAll { it.id == id }
-        }
+        return service.deleteTransaction(id)
+            .subscribeOn(Schedulers.io())
+            .doOnComplete {
+                val transaction = transactions[walletId]!!.find { it.id == id }
+                if (transaction != null) {
+                    transactions[walletId]!!.removeAll { it.id == id }
+                    removeTransactionFromDb(transaction)
+                }
+            }
     }
 
-    fun editTransaction(id: Int, value: Long, category: Int, dateTime: Date, walletId: Int): Completable {
-        return Completable.fromAction {
-            val transaction = simulateEditing(id, value, category, dateTime, walletId)
-            transactions[walletId]!!.removeAll { it.id == id }
-            addToCacheOrCreateNew(walletId, listOf(transaction))
-        }
+    fun editTransaction(id: Int, value: Long, category: Int, walletId: Int): Completable {
+
+        return Completable.error(NetworkErrorException("Нет такого метода"))
     }
 
-    fun addTransaction(
-        walletId: Int,
-        transactionCreationModel: TransactionCreationModel
-    ): Completable {
-        return addTransaction(
-            walletId = walletId,
-            value = transactionCreationModel.value!!,
-            category = transactionCreationModel.category!!,
-            dateTime = transactionCreationModel.dateTime!!
-        )
+    private fun overwriteCacheOrCreateNew(walletId: Int, transactions: List<Transaction>) {
+        TransactionsRepository.transactions[walletId]?.let {
+            it.clear()
+            it.addAll(transactions)
+            App.appDatabase.transactionsDao().deleteAll(walletId)
+                .subscribeOn(Schedulers.io())
+                .subscribe()
+        } ?: TransactionsRepository.transactions.put(walletId, transactions.toMutableList())
     }
 
+    private fun addTransactionsToDb(transactions: List<Transaction>) {
+        App.appDatabase.transactionsDao().insertAll(transactions.map {
+            it.mapToEntity()
+        })
+            .subscribeOn(Schedulers.io()).subscribe()
+    }
+
+    private fun removeTransactionFromDb(transaction: Transaction) {
+        App.appDatabase.transactionsDao().delete(transaction.mapToEntity())
+            .subscribeOn(Schedulers.io()).subscribe()
+    }
 }
