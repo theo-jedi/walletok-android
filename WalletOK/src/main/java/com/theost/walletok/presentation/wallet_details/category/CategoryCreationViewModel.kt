@@ -19,12 +19,14 @@ class CategoryCreationViewModel : ViewModel() {
     }
 
     fun setColor(color: Int) {
-        _allData.value?.color = color
+        val category = _allData.value
+        category?.color =  color
+        _allData.value = category!!
     }
 
     fun setIcon(iconRes: Int) {
         val category = _allData.value
-        category!!.iconRes = iconRes
+        category?.iconRes = iconRes
         _allData.value = category!!
     }
 

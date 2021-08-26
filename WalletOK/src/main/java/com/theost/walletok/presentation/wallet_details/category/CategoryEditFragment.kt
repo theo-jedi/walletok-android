@@ -48,6 +48,7 @@ class CategoryEditFragment : Fragment() {
     private lateinit var preferencesList: MutableList<Any>
 
     private var category: CategoryCreationModel? = null
+    private var isNeedColorUpdate: Boolean = true
 
     private val adapter = BaseAdapter()
     private val compositeDisposable = CompositeDisposable()
@@ -94,11 +95,12 @@ class CategoryEditFragment : Fragment() {
 
         viewModel.allData.observe(viewLifecycleOwner) { categoryModel ->
             category = categoryModel
+            if (isNeedColorUpdate) {
+                isNeedColorUpdate = false
+                updateIconColor()
+            }
+
             preferencesList = getPreferencesList()
-
-            updateIcon()
-            updateIconColor()
-
             binding.submitButton.isEnabled = category!!.isFilled()
 
             adapter.setData(preferencesList)
@@ -156,7 +158,7 @@ class CategoryEditFragment : Fragment() {
         CategoriesRepository.addCategory(
             category!!.name!!,
             category!!.iconRes!!,
-            TransactionCategoryType.values().find { it.uiName == category!!.type!!}!!
+            TransactionCategoryType.values().find { it.uiName == category!!.type!! }!!
         ).subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 (activity as CategoryListener).onCategoryCreated()
@@ -168,48 +170,62 @@ class CategoryEditFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateIconColor(color: Int? = null) {
+    private fun updateIconColor(savedColor: Int? = null) {
         val green = ContextCompat.getColor(requireContext(), R.color.green)
-        val purple = ContextCompat.getColor(requireContext(), R.color.purple)
-        if (color != null) {
-            viewModel.setColor(color)
-            category!!.color = color
-        } else if (category!!.type == TransactionCategoryType.INCOME.uiName) {
-            viewModel.setColor(green)
-            category!!.color = green
-        } else if (category!!.color == null || category!!.color == green) {
-            viewModel.setColor(purple)
-            category!!.color = purple
-        }
-        iconDelegateAdapter.setBackgroundColor(category!!.color!!)
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun updateIcon() {
-        if (category!!.iconRes != null) {
-            iconDelegateAdapter.setSelectedIcon(category!!.iconRes!!)
-        }
+        val color = savedColor
+            ?: if (category!!.type == TransactionCategoryType.INCOME.uiName) {
+                green
+            } else if (category!!.color == null || category!!.color == green) {
+                ContextCompat.getColor(requireContext(), R.color.purple)
+            }  else {
+                category!!.color!!
+            }
+        viewModel.setColor(color)
     }
 
     private fun getPreferencesList(): MutableList<Any> {
         val list = mutableListOf(
             TransactionPreference(
                 PreferenceType.NAME,
-                category?.name ?: getString(R.string.unset),true
+                category?.name ?: getString(R.string.unset), true
             ),
             TransactionPreference(
                 PreferenceType.TYPE,
-                category?.type ?: getString(R.string.unset),true
+                category?.type ?: getString(R.string.unset), true
             ),
             TransactionPreference(
-                PreferenceType.ICON, getString(R.string.choose_color),true
+                PreferenceType.ICON, getString(R.string.choose_color), true
             ),
-            ListIcon(R.drawable.ic_category_plane),
-            ListIcon(R.drawable.ic_category_plane),
-            ListIcon(R.drawable.ic_category_plane),
-            ListIcon(R.drawable.ic_category_plane),
-            ListIcon(R.drawable.ic_category_gas),
-            ListIcon(R.drawable.ic_category_food),
+            ListIcon(
+                R.drawable.ic_category_plane,
+                category?.color!!,
+                category?.iconRes == R.drawable.ic_category_plane
+            ),
+            ListIcon(
+                R.drawable.ic_category_plane,
+                category?.color!!,
+                category?.iconRes == R.drawable.ic_category_plane
+            ),
+            ListIcon(
+                R.drawable.ic_category_plane,
+                category?.color!!,
+                category?.iconRes == R.drawable.ic_category_plane
+            ),
+            ListIcon(
+                R.drawable.ic_category_plane,
+                category?.color!!,
+                category?.iconRes == R.drawable.ic_category_plane
+            ),
+            ListIcon(
+                R.drawable.ic_category_gas,
+                category?.color!!,
+                category?.iconRes == R.drawable.ic_category_gas
+            ),
+            ListIcon(
+                R.drawable.ic_category_food,
+                category?.color!!,
+                category?.iconRes == R.drawable.ic_category_food
+            ),
         )
         if (category!!.type != TransactionCategoryType.EXPENSE.uiName) {
             list.remove(list.find {
