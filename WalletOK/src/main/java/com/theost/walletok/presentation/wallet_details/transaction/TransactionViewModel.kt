@@ -30,13 +30,12 @@ class TransactionViewModel : ViewModel() {
         _loadingStatus.postValue(Resource.Loading(Unit))
         CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                val savedCategory = list.find { it.id == savedTransaction.categoryId }!!
+                val savedCategory = list.data!!.find { it.id == savedTransaction.categoryId }!!
                 val transactionCreationModel = TransactionCreationModel()
                 transactionCreationModel.id = savedTransaction.id
                 transactionCreationModel.value = savedTransaction.money
                 transactionCreationModel.type = savedCategory.type.uiName
                 transactionCreationModel.category = savedTransaction.categoryId
-                transactionCreationModel.currency = savedTransaction.currency
                 transactionCreationModel.dateTime = savedTransaction.dateTime
                 _allData.postValue(transactionCreationModel)
                 _loadingStatus.postValue(Resource.Success(Unit))
@@ -52,7 +51,7 @@ class TransactionViewModel : ViewModel() {
                 transactionModel.id!!,
                 transactionModel.value!!,
                 transactionModel.category!!,
-                transactionModel.dateTime!!,
+                //transactionModel.dateTime!!,
                 walletId
             ).subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -65,7 +64,7 @@ class TransactionViewModel : ViewModel() {
                 walletId,
                 transactionModel.value!!,
                 transactionModel.category!!,
-                transactionModel.dateTime!!
+                //transactionModel.dateTime!!
             ).subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     _sendingStatus.postValue(Resource.Success(Unit))

@@ -27,7 +27,7 @@ class TransactionCreationViewModel : ViewModel() {
         _loadingStatus.postValue(Resource.Loading(Unit))
         CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                categoryName = list.find { item -> item.id == transactionCreationModel.category }?.name!!
+                categoryName = list.data!!.find { item -> item.id == transactionCreationModel.category }?.name!!
                 _allData.postValue(Pair(transactionCreationModel, categoryName))
                 _loadingStatus.postValue(Resource.Success(Unit))
             }, {

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.delegates.CategoryItem
 import com.theost.walletok.utils.Resource
+import com.theost.walletok.utils.Status
 import com.theost.walletok.utils.addTo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -23,17 +24,20 @@ class UserCategoriesViewModel : ViewModel() {
     fun loadData() {
         _loadingStatus.postValue(Resource.Loading(Unit))
         CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
-            .subscribe({ list ->
-                val categoryItems = list.map { category ->
-                    CategoryItem(
-                        id = category.id,
-                        name = category.name,
-                        icon = category.image as Int,
-                        isSelected = false
-                    )
+            .subscribe({ resource ->
+                if (resource.status == Status.SUCCESS) {
+                    val categoryItems = resource.data!!.map { category ->
+                        CategoryItem(
+                            id = category.id,
+                            name = category.name,
+                            iconColor = category.iconColor,
+                            iconUrl = category.iconLink,
+                            isSelected = false
+                        )
+                    }
+                    _allData.postValue(categoryItems)
+                    _loadingStatus.postValue(Resource.Success(Unit))
                 }
-                _allData.postValue(categoryItems)
-                _loadingStatus.postValue(Resource.Success(Unit))
             }, {
                 _loadingStatus.postValue(Resource.Error(Unit, it))
             }).addTo(compositeDisposable)
@@ -50,13 +54,13 @@ class UserCategoriesViewModel : ViewModel() {
         _loadingStatus.postValue(Resource.Loading(Unit))
         val selectedCategories = mutableListOf<Int>()
         _allData.value?.forEach { if (it.isSelected) selectedCategories.add(it.id) }
-        CategoriesRepository.removeCategories(selectedCategories)
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _loadingStatus.postValue(Resource.Success(Unit))
-            }, {
-                _loadingStatus.postValue(Resource.Error(Unit, it))
-            }).addTo(compositeDisposable)
+//        CategoriesRepository.removeCategories(selectedCategories)
+//            .subscribeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                _loadingStatus.postValue(Resource.Success(Unit))
+//            }, {
+//                _loadingStatus.postValue(Resource.Error(Unit, it))
+//            }).addTo(compositeDisposable)
     }
 
     override fun onCleared() {

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.delegates.CategoryItem
 import com.theost.walletok.utils.Resource
+import com.theost.walletok.utils.Status
 import com.theost.walletok.utils.addTo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -23,18 +24,22 @@ class TransactionCategoryViewModel : ViewModel() {
     fun loadData(savedCategory: Int, savedType: String) {
         _loadingStatus.postValue(Resource.Loading(Unit))
         CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
-            .subscribe({ list ->
-                val categoryItems = list.filter { category -> category.type.uiName == savedType }
-                    .map { category ->
-                    CategoryItem(
-                        id = category.id,
-                        name = category.name,
-                        icon = category.image as Int,
-                        isSelected = category.id == savedCategory
-                    )
+            .subscribe({ resource ->
+                if (resource.status == Status.SUCCESS) {
+                    val categoryItems =
+                        resource.data!!.filter { category -> category.type.uiName == savedType }
+                            .map { category ->
+                                CategoryItem(
+                                    id = category.id,
+                                    name = category.name,
+                                    iconColor = category.iconColor,
+                                    iconUrl = category.iconLink,
+                                    isSelected = category.id == savedCategory
+                                )
+                            }
+                    _allData.postValue(categoryItems)
+                    _loadingStatus.postValue(Resource.Success(Unit))
                 }
-                _allData.postValue(categoryItems)
-                _loadingStatus.postValue(Resource.Success(Unit))
             }, {
                 _loadingStatus.postValue(Resource.Error(Unit, it))
             }).addTo(compositeDisposable)
