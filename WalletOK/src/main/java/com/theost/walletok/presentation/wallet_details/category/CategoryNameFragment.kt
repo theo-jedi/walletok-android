@@ -10,7 +10,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentCategoryNameBinding
-import com.theost.walletok.widgets.CategoryNameListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryNameListener
 
 
 class CategoryNameFragment : Fragment() {

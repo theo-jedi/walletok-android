@@ -19,10 +19,10 @@ import com.theost.walletok.presentation.wallet_details.category.CategoryNameFrag
 import com.theost.walletok.presentation.wallet_details.category.CategoryTypeFragment
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.*
 import com.theost.walletok.utils.Resource
-import com.theost.walletok.widgets.CategoryIconListener
-import com.theost.walletok.widgets.CategoryListener
-import com.theost.walletok.widgets.CategoryNameListener
-import com.theost.walletok.widgets.CategoryTypeListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryIconListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryNameListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryTypeListener
 import io.reactivex.disposables.CompositeDisposable
 import java.util.*
 

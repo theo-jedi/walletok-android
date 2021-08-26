@@ -10,7 +10,7 @@ import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentTransactionTypeBinding
 import com.theost.walletok.delegates.TypeAdapterDelegate
 import com.theost.walletok.presentation.base.BaseAdapter
-import com.theost.walletok.widgets.CategoryTypeListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryTypeListener
 
 class CategoryTypeFragment : Fragment() {
 

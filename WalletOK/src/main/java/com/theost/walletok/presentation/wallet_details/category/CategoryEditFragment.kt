@@ -21,7 +21,7 @@ import com.theost.walletok.delegates.*
 import com.theost.walletok.presentation.base.BaseAdapter
 import com.theost.walletok.presentation.base.ErrorMessageHelper
 import com.theost.walletok.utils.addTo
-import com.theost.walletok.widgets.CategoryListener
+import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
