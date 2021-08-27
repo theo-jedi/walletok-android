@@ -68,7 +68,7 @@ class WalletDetailsViewModel(private val walletId: Int) : ViewModel() {
                             lastTransactionId = it.data.lastTransactionId
                             PaginationStatus.Ready
                         }
-                    _allData.value = it.data
+                    _allData.value = it.data!!
                 }
                 if (it.status == Status.ERROR)
                     _paginationStatus.value = PaginationStatus.Error

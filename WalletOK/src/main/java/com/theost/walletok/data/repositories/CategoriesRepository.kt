@@ -63,10 +63,7 @@ object CategoriesRepository {
     }
 
     fun removeCategory(category: CategoryItem): Completable {
-        return service.deleteCategory(
-            CategoryDeleteDto(
-                id = category.id,
-            )
+        return service.deleteCategory(category.id
         ).subscribeOn(Schedulers.io())
     }
 }

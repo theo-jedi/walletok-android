@@ -34,9 +34,9 @@ interface WalletOkService {
         @Body body: TransactionPatchDto
     ): Completable
 
-    @DELETE("categories")
+    @DELETE("categories/{id}")
     fun deleteCategory(
-        @Body body: CategoryDeleteDto
+        @Path("id") id: Int
     ): Completable
 
     @POST("categories")

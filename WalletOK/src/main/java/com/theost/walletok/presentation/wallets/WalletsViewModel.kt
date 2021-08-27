@@ -42,7 +42,7 @@ class WalletsViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 if (it.data != null) {
-                    _walletsAndOverall.value = it.data
+                    _walletsAndOverall.value = it.data!!
                     _loadingStatus.value = Resource.Success(Unit)
                 } else if (it.status == Status.ERROR)
                     _loadingStatus.value = Resource.Error(Unit, it.error!!)
@@ -54,7 +54,7 @@ class WalletsViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 if (it.data != null)
-                    _currenciesPrices.value = it.data
+                    _currenciesPrices.value = it.data!!
                 if (it.status == Status.ERROR)
                     it.error!!.printStackTrace()
             }, {
