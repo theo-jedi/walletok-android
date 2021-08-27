@@ -9,20 +9,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import com.skydoves.colorpickerview.ColorEnvelope
-import com.skydoves.colorpickerview.ColorPickerDialog
-import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import com.theost.walletok.R
 import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.models.TransactionCategoryType
-import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentCategoryEditBinding
 import com.theost.walletok.delegates.*
 import com.theost.walletok.presentation.base.BaseAdapter
-import com.theost.walletok.presentation.base.ErrorMessageHelper
-import com.theost.walletok.utils.addTo
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryListener
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 class CategoryEditFragment : Fragment() {
@@ -141,32 +134,35 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun showColorPicker() {
-        ColorPickerDialog.Builder(requireContext())
-            .setPositiveButton(getString(R.string.submit), object : ColorEnvelopeListener {
-                override fun onColorSelected(envelope: ColorEnvelope?, fromUser: Boolean) {
-                    val color = envelope?.color
-                    if (fromUser && color != null) updateIconColor(color)
-                }
-            })
-            .setNegativeButton(getString(R.string.cancel), null)
-            .attachAlphaSlideBar(false)
-            .setBottomSpace(12)
-            .show()
+//        ColorPickerDialog.Builder(requireContext())
+//            .setPositiveButton(getString(R.string.submit), object : ColorEnvelopeListener {
+//                override fun onColorSelected(envelope: ColorEnvelope?, fromUser: Boolean) {
+//                    val color = envelope?.color
+//                    if (fromUser && color != null) updateIconColor(color)
+//                }
+//            })
+//            .setNegativeButton(getString(R.string.cancel), null)
+//            .attachAlphaSlideBar(false)
+//            .setBottomSpace(12)
+//            .show()
     }
 
     private fun createCategory() {
-        /*CategoriesRepository.addCategory(
-            category!!.name!!,
-            category!!.iconRes!!,
-            TransactionCategoryType.values().find { it.uiName == category!!.type!! }!!
-        ).subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                (activity as CategoryListener).onCategoryCreated()
-            }, {
-                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-                    createCategory()
-                }
-            }).addTo(compositeDisposable) todo*/
+//        CategoriesRepository.addCategory(
+//            category = CategoryPostDto(
+//                name = category!!.name!!,
+//                iconColor = category!!.color!!,
+//                iconLink = category!!.iconRes!!,
+//                income = category!!.type == TransactionCategoryType.INCOME.uiName
+//            )
+//        ).subscribeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                (activity as CategoryListener).onCategoryCreated()
+//            }, {
+//                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+//                    createCategory()
+//                }
+//            }).addTo(compositeDisposable)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -177,7 +173,7 @@ class CategoryEditFragment : Fragment() {
                 green
             } else if (category!!.color == null || category!!.color == green) {
                 ContextCompat.getColor(requireContext(), R.color.purple)
-            }  else {
+            } else {
                 category!!.color!!
             }
         viewModel.setColor(color)
