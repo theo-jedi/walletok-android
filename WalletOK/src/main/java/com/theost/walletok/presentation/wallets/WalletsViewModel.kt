@@ -41,8 +41,8 @@ class WalletsViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                if (it.status == Status.SUCCESS) {
-                    _walletsAndOverall.value = it.data!!
+                if (it.data != null) {
+                    _walletsAndOverall.value = it.data
                     _loadingStatus.value = Resource.Success(Unit)
                 } else if (it.status == Status.ERROR)
                     _loadingStatus.value = Resource.Error(Unit, it.error!!)
