@@ -4,6 +4,6 @@ interface CategoryIconListener {
 
     fun onCategoryColorSubmitted(color: Int)
 
-    fun onCategoryIconSubmitted(iconRes: Int)
+    fun onCategoryIconSubmitted(iconUrl: String)
 
 }

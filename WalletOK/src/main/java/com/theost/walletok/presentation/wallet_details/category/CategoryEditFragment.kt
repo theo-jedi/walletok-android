@@ -9,13 +9,22 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.skydoves.colorpickerview.ColorEnvelope
+import com.skydoves.colorpickerview.ColorPickerDialog
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import com.theost.walletok.R
+import com.theost.walletok.data.api.WalletOkService
+import com.theost.walletok.data.dto.CategoryPostDto
 import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.models.TransactionCategoryType
+import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.databinding.FragmentCategoryEditBinding
 import com.theost.walletok.delegates.*
 import com.theost.walletok.presentation.base.BaseAdapter
+import com.theost.walletok.presentation.base.ErrorMessageHelper
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryListener
+import com.theost.walletok.utils.addTo
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 class CategoryEditFragment : Fragment() {
@@ -39,6 +48,7 @@ class CategoryEditFragment : Fragment() {
 
     private lateinit var iconDelegateAdapter: IconAdapterDelegate
     private lateinit var preferencesList: MutableList<Any>
+    private lateinit var iconUrls: List<String>
 
     private var category: CategoryCreationModel? = null
     private var isNeedColorUpdate: Boolean = true
@@ -62,8 +72,8 @@ class CategoryEditFragment : Fragment() {
 
         binding.submitButton.setOnClickListener { createCategory() }
 
-        iconDelegateAdapter = IconAdapterDelegate { iconRes ->
-            viewModel.setIcon(iconRes)
+        iconDelegateAdapter = IconAdapterDelegate { iconUrl ->
+            viewModel.setIcon(iconUrl)
         }
 
         adapter.apply {
@@ -87,7 +97,9 @@ class CategoryEditFragment : Fragment() {
             }
 
         viewModel.allData.observe(viewLifecycleOwner) { categoryModel ->
-            category = categoryModel
+            category = categoryModel.first
+            iconUrls = categoryModel.second
+
             if (isNeedColorUpdate) {
                 isNeedColorUpdate = false
                 updateIconColor()
@@ -134,35 +146,35 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun showColorPicker() {
-//        ColorPickerDialog.Builder(requireContext())
-//            .setPositiveButton(getString(R.string.submit), object : ColorEnvelopeListener {
-//                override fun onColorSelected(envelope: ColorEnvelope?, fromUser: Boolean) {
-//                    val color = envelope?.color
-//                    if (fromUser && color != null) updateIconColor(color)
-//                }
-//            })
-//            .setNegativeButton(getString(R.string.cancel), null)
-//            .attachAlphaSlideBar(false)
-//            .setBottomSpace(12)
-//            .show()
+        ColorPickerDialog.Builder(requireContext())
+            .setPositiveButton(getString(R.string.submit), object : ColorEnvelopeListener {
+                override fun onColorSelected(envelope: ColorEnvelope?, fromUser: Boolean) {
+                    val color = envelope?.color
+                    if (fromUser && color != null) updateIconColor(color)
+                }
+            })
+            .setNegativeButton(getString(R.string.cancel), null)
+            .attachAlphaSlideBar(false)
+            .setBottomSpace(12)
+            .show()
     }
 
     private fun createCategory() {
-//        CategoriesRepository.addCategory(
-//            category = CategoryPostDto(
-//                name = category!!.name!!,
-//                iconColor = category!!.color!!,
-//                iconLink = category!!.iconRes!!,
-//                income = category!!.type == TransactionCategoryType.INCOME.uiName
-//            )
-//        ).subscribeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//                (activity as CategoryListener).onCategoryCreated()
-//            }, {
-//                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
-//                    createCategory()
-//                }
-//            }).addTo(compositeDisposable)
+        CategoriesRepository.addCategory(
+            category = CategoryPostDto(
+                name = category!!.name!!,
+                iconColor = category!!.color!!,
+                iconLink = category!!.iconUrl!!.replace(WalletOkService.BASE_URL, ""),
+                income = category!!.type == TransactionCategoryType.INCOME.uiName
+            )
+        ).subscribeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                (activity as CategoryListener).onCategoryCreated()
+            }, {
+                ErrorMessageHelper.setUpErrorMessage(binding.errorWidget) {
+                    createCategory()
+                }
+            }).addTo(compositeDisposable)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -180,7 +192,7 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun getPreferencesList(): MutableList<Any> {
-        val list = mutableListOf(
+        val list = mutableListOf<Any>(
             TransactionPreference(
                 PreferenceType.NAME,
                 category?.name ?: getString(R.string.unset), true
@@ -191,38 +203,15 @@ class CategoryEditFragment : Fragment() {
             ),
             TransactionPreference(
                 PreferenceType.ICON, getString(R.string.choose_color), true
-            ),
-            ListIcon(
-                R.drawable.ic_category_plane,
-                category?.color!!,
-                category?.iconRes == R.drawable.ic_category_plane
-            ),
-            ListIcon(
-                R.drawable.ic_category_plane,
-                category?.color!!,
-                category?.iconRes == R.drawable.ic_category_plane
-            ),
-            ListIcon(
-                R.drawable.ic_category_plane,
-                category?.color!!,
-                category?.iconRes == R.drawable.ic_category_plane
-            ),
-            ListIcon(
-                R.drawable.ic_category_plane,
-                category?.color!!,
-                category?.iconRes == R.drawable.ic_category_plane
-            ),
-            ListIcon(
-                R.drawable.ic_category_gas,
-                category?.color!!,
-                category?.iconRes == R.drawable.ic_category_gas
-            ),
-            ListIcon(
-                R.drawable.ic_category_food,
-                category?.color!!,
-                category?.iconRes == R.drawable.ic_category_food
-            ),
+            )
         )
+        iconUrls.forEach {
+            list.add(ListIcon(
+                it,
+                category?.color!!,
+                it == category?.iconUrl
+            ))
+        }
         if (category!!.type != TransactionCategoryType.EXPENSE.uiName) {
             list.remove(list.find {
                 it is TransactionPreference && it.type == PreferenceType.ICON

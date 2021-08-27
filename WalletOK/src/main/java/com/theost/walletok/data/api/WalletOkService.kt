@@ -36,7 +36,7 @@ interface WalletOkService {
 
     @DELETE("categories")
     fun deleteCategory(
-        @Body body: CategoryDto
+        @Body body: CategoryDeleteDto
     ): Completable
 
     @POST("categories")
