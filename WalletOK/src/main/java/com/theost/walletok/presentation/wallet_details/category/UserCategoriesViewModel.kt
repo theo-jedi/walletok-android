@@ -26,7 +26,7 @@ class UserCategoriesViewModel : ViewModel() {
         _loadingStatus.postValue(Resource.Loading(Unit))
         CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                val categoryItems = list.data!!.map { category ->
+                val categoryItems = list.data!!.filter { it.userId != null }.map { category ->
                     CategoryItem(
                         id = category.id,
                         name = category.name,

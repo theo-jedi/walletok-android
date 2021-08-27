@@ -3,9 +3,12 @@ package com.theost.walletok.presentation.wallets
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.theost.walletok.R
 import com.theost.walletok.databinding.ActivityWalletsBinding
 import com.theost.walletok.presentation.base.BaseAdapter
 import com.theost.walletok.presentation.base.delegates.EmptyListAdapterDelegate
@@ -15,6 +18,7 @@ import com.theost.walletok.presentation.wallets.delegates.WalletsCurrenciesDeleg
 import com.theost.walletok.presentation.wallets.delegates.WalletsHeaderDelegate
 import com.theost.walletok.presentation.wallets.wallet_creation.WalletCreationActivity
 import com.theost.walletok.utils.Resource
+import com.theost.walletok.utils.ViewUtils
 
 class WalletsActivity : AppCompatActivity() {
 
@@ -46,16 +50,25 @@ class WalletsActivity : AppCompatActivity() {
         }
         binding.errorWidget.retryButton.setOnClickListener {
             viewModel.loadData()
+            ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
         }
+        binding.loadingBar.visibility = View.VISIBLE
+        binding.createWalletBtn.visibility = View.GONE
         binding.createWalletBtn.setOnClickListener {
             startActivity(WalletCreationActivity.newIntent(this))
         }
         viewModel.loadingStatus.observe(this) {
-            binding.errorWidget.errorLayout.visibility =
-                if (it is Resource.Error) View.VISIBLE
-                else View.GONE
+            if (it is Resource.Error) ViewUtils.showErrorMessage(binding.errorWidget.errorLayout)
         }
         viewModel.walletsAndOverall.observe(this) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            val tapedValue = TypedValue()
+            theme.resolveAttribute(R.attr.colorPrimary, tapedValue, true)
+            window.statusBarColor = tapedValue.data
+
+            binding.loadingBar.visibility = View.GONE
+            binding.createWalletBtn.visibility = View.VISIBLE
+
             walletsAdapter.setData(
                 WalletsItemHelper.getData(
                     wallets = it.wallets,

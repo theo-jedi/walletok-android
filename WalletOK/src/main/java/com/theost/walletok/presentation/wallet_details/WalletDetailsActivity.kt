@@ -5,6 +5,9 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -54,6 +57,7 @@ class WalletDetailsActivity : AppCompatActivity() {
             if (viewModel.paginationStatus.value == PaginationStatus.Ready)
                 viewModel.loadNextPage()
         })
+        binding.loadingBar.visibility = View.VISIBLE
         viewModel.paginationStatus.observe(this) {
             setAdapterData()
         }
@@ -67,6 +71,9 @@ class WalletDetailsActivity : AppCompatActivity() {
             })
         }
         viewModel.allData.observe(this) {
+            binding.loadingBar.visibility = View.GONE
+            binding.emptyList.emptyLayout.visibility = if (it.transactions.isNotEmpty()) View.GONE else View.VISIBLE
+
             setAdapterData()
         }
 
@@ -131,12 +138,21 @@ class WalletDetailsActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        showErrorToast()
+        return super.onOptionsItemSelected(item)
+    }
+
     private val transactionHandler =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
             if (result?.resultCode == RESULT_OK) {
                 viewModel.loadData()
             }
         }
+
+    private fun showErrorToast() {
+        Toast.makeText(this, getString(R.string.not_available), Toast.LENGTH_SHORT).show()
+    }
 
     private fun setAdapterData() {
         val data = viewModel.allData.value

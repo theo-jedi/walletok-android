@@ -8,6 +8,7 @@ import com.theost.walletok.data.db.entities.mapToTransaction
 import com.theost.walletok.data.dto.TransactionPostDto
 import com.theost.walletok.data.dto.mapToTransaction
 import com.theost.walletok.data.models.Transaction
+import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.data.models.TransactionsAndLastId
 import com.theost.walletok.utils.RxResource
 import com.theost.walletok.utils.Status
@@ -15,6 +16,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import kotlin.math.abs
 
 object TransactionsRepository {
     const val LIMIT = 20
@@ -88,9 +90,10 @@ object TransactionsRepository {
             }
     }
 
-    fun addTransaction(walletId: Int, amount: Long, categoryId: Int): Completable {
+    fun addTransaction(walletId: Int, amount: Long, categoryId: Int, date: String, type: String): Completable {
         return Completable.fromSingle(
-            service.addTransaction(TransactionPostDto(walletId, categoryId, amount))
+            service.addTransaction(TransactionPostDto(walletId, categoryId,
+                if (type == TransactionCategoryType.INCOME.uiName) amount else -abs(amount)))
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess {
                     val transaction = it.mapToTransaction()
@@ -112,7 +115,7 @@ object TransactionsRepository {
             }
     }
 
-    fun editTransaction(id: Int, value: Long, category: Int, walletId: Int): Completable {
+    fun editTransaction(id: Int, value: Long, category: Int, date: String, walletId: Int): Completable {
 
         return Completable.error(NetworkErrorException("Нет такого метода"))
     }

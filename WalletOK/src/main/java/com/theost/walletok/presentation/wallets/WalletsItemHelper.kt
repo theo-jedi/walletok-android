@@ -20,11 +20,11 @@ object WalletsItemHelper {
         val result = mutableListOf<Any>()
         result.add(
             WalletsOverallContent(
-                overallIncome = "${StringUtils.convertMoneyForDisplay(walletsOverall.totalIncome)} " +
+                overallIncome = "${StringUtils.formatMoney(StringUtils.convertMoneyForDisplay(walletsOverall.totalIncome))} " +
                         walletsOverall.currency.symbol,
-                overallExpense = "${StringUtils.convertMoneyForDisplay(walletsOverall.totalExpense)} " +
+                overallExpense = "${StringUtils.formatMoney(StringUtils.convertMoneyForDisplay(walletsOverall.totalExpense))} " +
                         walletsOverall.currency.symbol,
-                overallMoney = "${StringUtils.convertMoneyForDisplay(walletsOverall.totalIncome - walletsOverall.totalExpense)} " +
+                overallMoney = "${StringUtils.formatMoney(StringUtils.convertMoneyForDisplay(walletsOverall.totalIncome - walletsOverall.totalExpense))} " +
                         walletsOverall.currency.symbol
             )
         )

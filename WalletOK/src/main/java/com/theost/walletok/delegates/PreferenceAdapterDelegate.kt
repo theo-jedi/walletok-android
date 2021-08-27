@@ -49,5 +49,6 @@ data class TransactionPreference(
 
 enum class PreferenceType(val uiName: String) {
     VALUE("Сумма"), TYPE("Тип"), CATEGORY("Категория"),
-    DATE("Дата операции"), NAME("Название"), ICON("Иконка")
+    DATE("Дата операции"), NAME("Название"), ICON("Иконка"),
+    CURRENCY("Валюта"), LIMIT("Лимит")
 }

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.theost.walletok.data.models.Currency
 import com.theost.walletok.databinding.ItemListCurrencyBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
+import com.theost.walletok.presentation.base.DelegateItem
 
 class CurrencyItemDelegate(private val onClick: (Currency) -> Unit) : AdapterDelegate {
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
@@ -34,4 +35,9 @@ data class CurrencyItemContent(
     val currency: Currency,
     val currencyName: String,
     val isSelected: Boolean = false
-)
+) : DelegateItem {
+    override fun content(): Any = isSelected
+
+    override fun id(): Any = currency
+
+}
