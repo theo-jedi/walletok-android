@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/empty_list_tv"
-    android:layout_width="match_parent"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/emptyLayout"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="48dp"
-    android:gravity="center_horizontal"
-    android:text="@string/no_entries_text_view"
-    android:textColor="@color/blue_gray"
-    android:textSize="13sp" />
+    android:visibility="visible"
+    android:backgroundTint="?attr/secondBackgroundColor"
+    app:cardCornerRadius="8dp">
+
+    <TextView
+        android:id="@+id/empty_list_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:text="@string/no_entries_text_view"
+        android:textColor="@color/blue_gray"
+        android:textSize="13sp" />
+</com.google.android.material.card.MaterialCardView>

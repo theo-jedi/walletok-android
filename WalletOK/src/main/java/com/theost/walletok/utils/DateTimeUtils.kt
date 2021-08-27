@@ -9,4 +9,8 @@ object DateTimeUtils {
         return SimpleDateFormat("HH:mm - dd.MM.yyyy", Locale.getDefault()).format(date)
     }
 
+    fun getFormattedForServer(date: Date = Date()) : String {
+        return SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(date)
+    }
+
 }

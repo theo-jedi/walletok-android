@@ -7,7 +7,7 @@
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorOnSurface">@color/dark_gray</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/purple_200</item>
+        <item name="colorSecondary">@color/purple</item>
         <item name="colorSecondaryVariant">@color/purple_500</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
@@ -23,7 +23,6 @@
     </style>
 
     <style name="Theme.Walletokandroid.Blue" parent="Theme.Walletokandroid">
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
     </style>
 </resources>

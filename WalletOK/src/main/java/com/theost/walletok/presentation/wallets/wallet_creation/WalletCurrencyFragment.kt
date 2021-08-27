@@ -9,7 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentWalletCurrencyBinding
-import com.theost.walletok.presentation.base.BaseAdapter
+import com.theost.walletok.presentation.base.DiffAdapter
 import com.theost.walletok.presentation.wallets.delegates.CurrencyItemDelegate
 
 class WalletCurrencyFragment : Fragment() {
@@ -33,23 +33,39 @@ class WalletCurrencyFragment : Fragment() {
         binding.toolbar.setNavigationOnClickListener {
             activity?.onBackPressed()
         }
-        val adapter = BaseAdapter()
+        val adapter = DiffAdapter()
         viewModel.loadCurrencies()
         viewModel.currencies.observe(viewLifecycleOwner) {
-            adapter.setData(WalletCurrencyItemsHelper.getData(requireContext(), null, it))
+            adapter.submitList(WalletCurrencyItemsHelper.getData(requireContext(), null, it))
         }
         adapter.addDelegate(CurrencyItemDelegate {
-            viewModel.walletCreationModel.currency = it
-            val currencies = viewModel.currencies.value
-            if (currencies != null) {
-                adapter.setData(WalletCurrencyItemsHelper.getData(requireContext(), it, currencies))
-                binding.submitButton.isEnabled = true
+            if (viewModel.walletCreationModel.currency != it || !binding.submitButton.isEnabled) {
+                viewModel.walletCreationModel.currency = it
+                val currencies = viewModel.currencies.value
+                if (currencies != null) {
+                    adapter.submitList(
+                        WalletCurrencyItemsHelper.getData(
+                            requireContext(),
+                            it,
+                            currencies
+                        )
+                    )
+                    binding.submitButton.isEnabled = true
+                }
+            } else {
+                binding.submitButton.isEnabled = false
             }
         })
         binding.recycler.adapter = adapter
         binding.submitButton.setOnClickListener {
             if (container != null) {
                 parentFragmentManager.commit {
+                    setCustomAnimations(
+                    R.anim.fade_in,
+                    R.anim.fade_out,
+                    R.anim.fade_in,
+                    R.anim.fade_out
+                    )
                     replace(container.id, WalletEditFragment.newInstance())
                     setReorderingAllowed(true)
                     addToBackStack(FRAGMENT_TAG)

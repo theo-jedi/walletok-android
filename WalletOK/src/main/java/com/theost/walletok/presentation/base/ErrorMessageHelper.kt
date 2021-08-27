@@ -1,11 +1,11 @@
 package com.theost.walletok.presentation.base
 
 import android.view.View
-import com.theost.walletok.databinding.WidgetErrorBinding
+import com.theost.walletok.databinding.WidgetNetworkBinding
 
 object ErrorMessageHelper {
     fun setUpErrorMessage(
-        binding: WidgetErrorBinding,
+        binding: WidgetNetworkBinding,
         text: String? = null,
         iconResId: Int? = null,
         onRetry: () -> Unit

@@ -57,12 +57,14 @@
     <string name="wallet_rub">₽</string>
     <string name="retry">Повторить</string>
     <string name="default_error_message">Что-то пошло не так</string>
+    <string name="network_error_message">Отсутствует соединение с интернетом</string>
     <string name="wallets_overall_balance">Общий баланс</string>
     <string name="overall_income">Общий доход</string>
     <string name="limit_is_exceeded">Превышен лимит</string>
     <string name="client_id">"1046661703173-3iaos9geq21oi76ct19gki6797ooq3rd.apps.googleusercontent.com"</string>
     <string name="new_wallet">Новый кошелек</string>
     <string name="create_wallet">Создать кошелек</string>
+    <string name="choose_currency">Выберите валюту</string>
     <string name="wallet_name">Название кошелька</string>
     <string name="enter_wallet_name">Введите название</string>
     <string name="show_more">Показать больше</string>

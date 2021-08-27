@@ -23,6 +23,7 @@ import com.theost.walletok.presentation.wallet_details.transaction.widgets.Categ
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryListener
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryNameListener
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryTypeListener
+import com.theost.walletok.utils.ViewUtils
 import io.reactivex.disposables.CompositeDisposable
 import java.util.*
 
@@ -73,12 +74,8 @@ class TransactionActivity : FragmentActivity(),
         viewModel.loadingStatus.observe(this) { onObserveLoading(it) }
         viewModel.sendingStatus.observe(this) { onObserveSending(it) }
 
-        binding.errorWidget.retryButton.setOnClickListener {
-            viewModel.loadData(savedTransaction!!)
-        }
-
         binding.errorWidget.closeButton.setOnClickListener {
-            binding.errorWidget.errorLayout.visibility = View.GONE
+            ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
         }
 
         binding.closeButton.setOnClickListener { onBackPressed() }
@@ -232,22 +229,18 @@ class TransactionActivity : FragmentActivity(),
 
     private fun onObserveLoading(status: Resource<*>) {
         if (status is Resource.Error) {
-            binding.errorWidget.errorLayout.visibility = View.VISIBLE
-            binding.errorWidget.retryButton.visibility = View.VISIBLE
-            binding.errorWidget.closeButton.visibility = View.GONE
+            ViewUtils.showErrorMessage(binding.errorWidget.errorLayout)
         } else if (status is Resource.Success) {
-            binding.errorWidget.errorLayout.visibility = View.GONE
+            ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
         }
     }
 
     private fun onObserveSending(status: Resource<*>) {
         binding.transactionProgress.visibility = if (status is Resource.Loading) View.VISIBLE else View.GONE
         if (status is Resource.Error) {
-            binding.errorWidget.errorLayout.visibility = View.VISIBLE
-            binding.errorWidget.retryButton.visibility = View.GONE
-            binding.errorWidget.closeButton.visibility = View.VISIBLE
+            ViewUtils.showErrorMessage(binding.errorWidget.errorLayout)
         } else if (status is Resource.Success) {
-            binding.errorWidget.errorLayout.visibility = View.GONE
+            ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
             setResult(RESULT_OK)
             finish()
         }

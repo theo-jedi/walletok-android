@@ -90,7 +90,7 @@ object TransactionsRepository {
             }
     }
 
-    fun addTransaction(walletId: Int, amount: Long, categoryId: Int, type: String): Completable {
+    fun addTransaction(walletId: Int, amount: Long, categoryId: Int, date: String, type: String): Completable {
         return Completable.fromSingle(
             service.addTransaction(TransactionPostDto(walletId, categoryId,
                 if (type == TransactionCategoryType.INCOME.uiName) amount else -abs(amount)))
@@ -115,7 +115,7 @@ object TransactionsRepository {
             }
     }
 
-    fun editTransaction(id: Int, value: Long, category: Int, walletId: Int): Completable {
+    fun editTransaction(id: Int, value: Long, category: Int, date: String, walletId: Int): Completable {
 
         return Completable.error(NetworkErrorException("Нет такого метода"))
     }

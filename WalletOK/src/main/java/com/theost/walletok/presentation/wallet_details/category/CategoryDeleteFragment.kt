@@ -9,10 +9,10 @@ import androidx.fragment.app.viewModels
 import com.theost.walletok.R
 import com.theost.walletok.databinding.FragmentTransactionCategoryBinding
 import com.theost.walletok.delegates.CategoryAdapterDelegate
-import com.theost.walletok.presentation.base.BaseAdapter
 import com.theost.walletok.presentation.base.DiffAdapter
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.CategoryListener
 import com.theost.walletok.utils.Resource
+import com.theost.walletok.utils.ViewUtils
 import io.reactivex.disposables.CompositeDisposable
 
 class CategoryDeleteFragment : Fragment() {
@@ -59,27 +59,23 @@ class CategoryDeleteFragment : Fragment() {
             viewModel.deleteSelectedData()
         }
 
-        binding.errorWidget.retryButton.setOnClickListener {
-            viewModel.loadData()
-        }
-
         binding.errorWidget.closeButton.setOnClickListener {
-            binding.errorWidget.errorLayout.visibility = View.GONE
+            ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
         }
 
         viewModel.loadingStatus.observe(viewLifecycleOwner) {
             if (it is Resource.Error) {
-                binding.errorWidget.errorLayout.visibility = View.VISIBLE
-                binding.errorWidget.retryButton.visibility = if (binding.submitButton.isEnabled) View.GONE else View.VISIBLE
-                binding.errorWidget.closeButton.visibility = if (binding.submitButton.isEnabled) View.VISIBLE else View.GONE
+                ViewUtils.showErrorMessage(binding.errorWidget.errorLayout)
             } else if (it is Resource.Success) {
-                binding.errorWidget.errorLayout.visibility = View.GONE
+                ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
                 if (binding.submitButton.isEnabled) (activity as CategoryListener).onCategoryDeleted()
             }
         }
 
         viewModel.allData.observe(viewLifecycleOwner) { list ->
             binding.submitButton.isEnabled = list.find { it.isSelected } != null
+            binding.emptyList.emptyLayout.visibility = if (list.isNotEmpty()) View.GONE else View.VISIBLE
+
             adapter.submitList(list)
         }
 

@@ -34,7 +34,7 @@ class WalletNameFragment : Fragment() {
             activity?.onBackPressed()
         }
         binding.inputValue.addTextChangedListener {
-            if (it.isNullOrEmpty()) {
+            if (it?.trim().isNullOrEmpty()) {
                 viewModel.walletCreationModel.name = ""
                 binding.submitButton.isEnabled = false
             } else {
@@ -45,6 +45,12 @@ class WalletNameFragment : Fragment() {
         binding.submitButton.setOnClickListener {
             if (container != null) {
                 parentFragmentManager.commit {
+                    setCustomAnimations(
+                    R.anim.fade_in,
+                    R.anim.fade_out,
+                    R.anim.fade_in,
+                    R.anim.fade_out
+                    )
                     replace(container.id, WalletCurrencyFragment.newInstance())
                     setReorderingAllowed(true)
                     addToBackStack(FRAGMENT_TAG)

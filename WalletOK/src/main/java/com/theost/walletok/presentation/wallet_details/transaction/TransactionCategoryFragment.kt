@@ -17,6 +17,7 @@ import com.theost.walletok.presentation.base.DelegateItem
 import com.theost.walletok.presentation.base.DiffAdapter
 import com.theost.walletok.presentation.wallet_details.transaction.widgets.TransactionCategoryListener
 import com.theost.walletok.utils.Resource
+import com.theost.walletok.utils.ViewUtils
 import io.reactivex.disposables.CompositeDisposable
 
 class TransactionCategoryFragment : Fragment() {
@@ -92,12 +93,16 @@ class TransactionCategoryFragment : Fragment() {
         }
 
         viewModel.loadingStatus.observe(viewLifecycleOwner) {
-            binding.errorWidget.errorLayout.visibility = if (it is Resource.Error) View.VISIBLE else View.GONE
+            if (it is Resource.Error) {
+                ViewUtils.showErrorMessage(binding.errorWidget.errorLayout)
+            } else {
+                ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
+            }
             binding.transactionProgress.visibility = if (it is Resource.Loading) View.VISIBLE else View.GONE
         }
 
-        binding.errorWidget.retryButton.setOnClickListener {
-            viewModel.loadData(savedCategory, savedType)
+        binding.errorWidget.closeButton.setOnClickListener {
+            ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
         }
 
         adapter.apply {

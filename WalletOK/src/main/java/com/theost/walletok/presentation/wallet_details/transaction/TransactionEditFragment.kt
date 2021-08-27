@@ -19,6 +19,7 @@ import com.theost.walletok.presentation.wallet_details.transaction.widgets.Trans
 import com.theost.walletok.utils.DateTimeUtils
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.StringUtils
+import com.theost.walletok.utils.ViewUtils
 import java.util.*
 
 class TransactionEditFragment : Fragment() {
@@ -82,16 +83,20 @@ class TransactionEditFragment : Fragment() {
         }
 
         viewModel.loadingStatus.observe(viewLifecycleOwner) {
-            binding.errorWidget.errorLayout.visibility = if (it is Resource.Error) View.VISIBLE else View.GONE
+            if (it is Resource.Error) {
+                ViewUtils.showErrorMessage(binding.errorWidget.errorLayout)
+            } else {
+                ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
+            }
             binding.transactionProgress.visibility = if (it is Resource.Loading) View.VISIBLE else View.GONE
+        }
+
+        binding.errorWidget.closeButton.setOnClickListener {
+            ViewUtils.hideErrorMessage(binding.errorWidget.errorLayout)
         }
 
         binding.listPreferences.setHasFixedSize(true)
         binding.listPreferences.adapter = adapter
-
-        binding.errorWidget.retryButton.setOnClickListener {
-            viewModel.loadData(transaction!!)
-        }
 
         binding.submitButton.setOnClickListener {
             onTransactionSubmitted()

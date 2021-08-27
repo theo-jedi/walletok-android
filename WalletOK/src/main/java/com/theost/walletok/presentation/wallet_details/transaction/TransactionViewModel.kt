@@ -7,6 +7,7 @@ import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
+import com.theost.walletok.utils.DateTimeUtils
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -52,7 +53,7 @@ class TransactionViewModel : ViewModel() {
                 transactionModel.id!!,
                 transactionModel.value!!,
                 transactionModel.category!!,
-                // todo transactionModel.dateTime!!,
+                DateTimeUtils.getFormattedForServer(transactionModel.dateTime!!),
                 walletId
             ).subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -65,8 +66,8 @@ class TransactionViewModel : ViewModel() {
                 walletId,
                 transactionModel.value!!,
                 transactionModel.category!!,
+                DateTimeUtils.getFormattedForServer(transactionModel.dateTime!!),
                 transactionModel.type!!
-                // todo transactionModel.dateTime!!
             ).subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     _sendingStatus.postValue(Resource.Success(Unit))
