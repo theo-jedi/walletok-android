@@ -13,6 +13,7 @@ import com.theost.walletok.utils.addTo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.lang.Math.abs
 import java.util.*
 
 class TransactionViewModel : ViewModel() {
@@ -34,7 +35,7 @@ class TransactionViewModel : ViewModel() {
                 val savedCategory = list.data!!.find { it.id == savedTransaction.categoryId }!!
                 val transactionCreationModel = TransactionCreationModel()
                 transactionCreationModel.id = savedTransaction.id
-                transactionCreationModel.value = savedTransaction.money
+                transactionCreationModel.value = kotlin.math.abs(savedTransaction.money)
                 transactionCreationModel.type = savedCategory.type.uiName
                 transactionCreationModel.category = savedTransaction.categoryId
                 //todo transactionCreationModel.currency = savedTransaction.currency

@@ -54,7 +54,7 @@ object WalletsItemHelper {
             WalletContent(
                 id = wallet.id,
                 name = wallet.name,
-                money = "${StringUtils.convertMoneyForDisplay(wallet.amountOfMoney)} " +
+                money = "${StringUtils.formatMoney(StringUtils.convertMoneyForDisplay(wallet.amountOfMoney))} " +
                         wallet.currency.symbol,
                 isLimitExceeded = wallet.loseLimit != null && (wallet.loseLimit < wallet.lose)
             )
