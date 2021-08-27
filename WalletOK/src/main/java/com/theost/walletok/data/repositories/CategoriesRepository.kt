@@ -4,11 +4,13 @@ import com.theost.walletok.App
 import com.theost.walletok.data.api.WalletOkService
 import com.theost.walletok.data.db.entities.mapToEntity
 import com.theost.walletok.data.db.entities.mapToTransactionCategory
+import com.theost.walletok.data.dto.CategoryDeleteDto
 import com.theost.walletok.data.dto.CategoryDto
 import com.theost.walletok.data.dto.CategoryPostDto
 import com.theost.walletok.data.dto.mapToCategory
 import com.theost.walletok.data.models.TransactionCategory
 import com.theost.walletok.data.models.TransactionCategoryType
+import com.theost.walletok.delegates.CategoryItem
 import com.theost.walletok.utils.RxResource
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -60,15 +62,10 @@ object CategoriesRepository {
         return service.addCategory(category).subscribeOn(Schedulers.io())
     }
 
-    private fun removeCategory(category: TransactionCategory): Completable {
+    fun removeCategory(category: CategoryItem): Completable {
         return service.deleteCategory(
-            CategoryDto(
-                name = category.name,
-                iconLink = category.iconLink,
-                iconColor = category.iconColor,
-                income = category.type == TransactionCategoryType.INCOME,
+            CategoryDeleteDto(
                 id = category.id,
-                userId = category.userId
             )
         ).subscribeOn(Schedulers.io())
     }

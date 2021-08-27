@@ -3,10 +3,12 @@ package com.theost.walletok.delegates
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import com.theost.walletok.App
 import com.theost.walletok.databinding.ItemListIconBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
 
-class IconAdapterDelegate(private val clickListener: (iconRes: Int) -> Unit) :
+class IconAdapterDelegate(private val clickListener: (iconUrl: String) -> Unit) :
     AdapterDelegate {
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
@@ -24,18 +26,18 @@ class IconAdapterDelegate(private val clickListener: (iconRes: Int) -> Unit) :
 
     class ViewHolder(
         private val binding: ItemListIconBinding,
-        private val clickListener: (iconRes: Int) -> Unit
+        private val clickListener: (iconUrl: String) -> Unit
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(iconItem: ListIcon) {
-            binding.root.alpha = 1.0f
+            binding.root.alpha = 0.5f
             binding.root.isEnabled = true
-            binding.root.setOnClickListener { clickListener(iconItem.iconRes) }
-            binding.cateogryIcon.setImageResource(iconItem.iconRes)
+            binding.root.setOnClickListener { clickListener(iconItem.iconUrl) }
+            binding.cateogryIcon.load(iconItem.iconUrl, App.svgImageLoader)
             binding.categoryBackground.setColorFilter(iconItem.iconColor, android.graphics.PorterDuff.Mode.SRC_IN)
             if (iconItem.isSelected) {
-                binding.root.alpha = 0.5f
+                binding.root.alpha = 1.0f
                 binding.root.isEnabled = false
             }
         }
@@ -45,7 +47,7 @@ class IconAdapterDelegate(private val clickListener: (iconRes: Int) -> Unit) :
 }
 
 data class ListIcon(
-    val iconRes: Int,
+    val iconUrl: String,
     val iconColor: Int,
     val isSelected: Boolean
 )
