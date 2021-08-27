@@ -105,8 +105,8 @@ interface WalletOkService {
                 val builder = chain.request().newBuilder()
                 val account = AuthUtils.getLastSignedInAccount()
                 builder.addHeader("accept", "*/*")
-                account?.email?.let {
-                    builder.addHeader("X-Email", it)
+                account?.idToken?.let {
+                    builder.addHeader("X-Token", it)
                 }
                 builder.addHeader("Content-Type", "application/json")
                 chain.proceed(builder.build())
