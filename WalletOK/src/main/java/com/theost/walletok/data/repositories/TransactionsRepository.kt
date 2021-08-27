@@ -1,10 +1,10 @@
 package com.theost.walletok.data.repositories
 
-import android.accounts.NetworkErrorException
 import com.theost.walletok.App
 import com.theost.walletok.data.api.WalletOkService
 import com.theost.walletok.data.db.entities.mapToEntity
 import com.theost.walletok.data.db.entities.mapToTransaction
+import com.theost.walletok.data.dto.TransactionPatchDto
 import com.theost.walletok.data.dto.TransactionPostDto
 import com.theost.walletok.data.dto.mapToTransaction
 import com.theost.walletok.data.models.Transaction
@@ -90,10 +90,20 @@ object TransactionsRepository {
             }
     }
 
-    fun addTransaction(walletId: Int, amount: Long, categoryId: Int, date: String, type: String): Completable {
+    fun addTransaction(
+        walletId: Int,
+        amount: Long,
+        categoryId: Int,
+        date: String,
+        type: String
+    ): Completable {
         return Completable.fromSingle(
-            service.addTransaction(TransactionPostDto(walletId, categoryId,
-                if (type == TransactionCategoryType.INCOME.uiName) amount else -abs(amount)))
+            service.addTransaction(
+                TransactionPostDto(
+                    walletId, categoryId,
+                    if (type == TransactionCategoryType.INCOME.uiName) amount else -abs(amount)
+                )
+            )
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess {
                     val transaction = it.mapToTransaction()
@@ -115,9 +125,22 @@ object TransactionsRepository {
             }
     }
 
-    fun editTransaction(id: Int, value: Long, category: Int, date: String, walletId: Int): Completable {
-
-        return Completable.error(NetworkErrorException("Нет такого метода"))
+    fun editTransaction(
+        id: Int,
+        value: Long,
+        category: Int,
+        walletId: Int,
+        date: String
+    ): Completable {
+        return service.editTransaction(
+            id, TransactionPatchDto(
+                transactionId = id,
+                walletId = walletId,
+                categoryId = category,
+                amount = value,
+                date = date
+            )
+        ).subscribeOn(Schedulers.io())
     }
 
     private fun overwriteCacheOrCreateNew(walletId: Int, transactions: List<Transaction>) {

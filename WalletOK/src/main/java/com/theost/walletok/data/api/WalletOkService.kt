@@ -32,7 +32,17 @@ interface WalletOkService {
     fun editTransaction(
         @Path("id") transactionId: Int,
         @Body body: TransactionPatchDto
-    )
+    ): Completable
+
+    @DELETE("categories")
+    fun deleteCategory(
+        @Body body: CategoryDto
+    ): Completable
+
+    @POST("categories")
+    fun addCategory(
+        @Body body: CategoryPostDto
+    ): Completable
 
     @GET("currencies")
     fun getCurrencies(): Single<List<CurrencyDto>>

@@ -18,7 +18,7 @@ import java.util.*
 class TransactionViewModel : ViewModel() {
 
     private val _allData = MutableLiveData<TransactionCreationModel>()
-    val allData : LiveData<TransactionCreationModel> = _allData
+    val allData: LiveData<TransactionCreationModel> = _allData
     private val compositeDisposable = CompositeDisposable()
 
     private val _loadingStatus = MutableLiveData<Resource<*>>()
@@ -53,8 +53,8 @@ class TransactionViewModel : ViewModel() {
                 transactionModel.id!!,
                 transactionModel.value!!,
                 transactionModel.category!!,
-                DateTimeUtils.getFormattedForServer(transactionModel.dateTime!!),
-                walletId
+                walletId,
+                DateTimeUtils.getFormattedForServer(transactionModel.dateTime!!)
             ).subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     _sendingStatus.postValue(Resource.Success(Unit))
