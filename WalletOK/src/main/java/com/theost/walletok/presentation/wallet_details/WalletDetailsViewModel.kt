@@ -78,34 +78,36 @@ class WalletDetailsViewModel(private val walletId: Int) : ViewModel() {
     }
 
     fun loadNextPage() {
-        _paginationStatus.postValue(PaginationStatus.Loading)
-        TransactionsRepository.getNextTransactions(walletId, lastTransactionId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                if (it.status == Status.SUCCESS) {
-                    _paginationStatus.value =
-                        if (it.data!!.lastTransactionId == null)
-                            PaginationStatus.End
-                        else {
-                            lastTransactionId = it.data.lastTransactionId
-                            PaginationStatus.Ready
-                        }
-                    val oldData = _allData.value
-                    if (oldData != null)
-                        _allData.value =
-                            CategoriesWalletsTransactionsAndLastId(
-                                oldData.categories,
-                                oldData.wallets,
-                                it.data.transactions,
-                                it.data.lastTransactionId
-                            )
-                }
-                if (it.status == Status.ERROR)
+        if (_allData.value == null || _allData.value!!.transactions.isNullOrEmpty()) {
+            _paginationStatus.postValue(PaginationStatus.Loading)
+            TransactionsRepository.getNextTransactions(walletId, lastTransactionId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (it.status == Status.SUCCESS) {
+                        _paginationStatus.value =
+                            if (it.data!!.lastTransactionId == null)
+                                PaginationStatus.End
+                            else {
+                                lastTransactionId = it.data.lastTransactionId
+                                PaginationStatus.Ready
+                            }
+                        val oldData = _allData.value
+                        if (oldData != null)
+                            _allData.value =
+                                CategoriesWalletsTransactionsAndLastId(
+                                    oldData.categories,
+                                    oldData.wallets,
+                                    it.data.transactions,
+                                    it.data.lastTransactionId
+                                )
+                    }
+                    if (it.status == Status.ERROR)
+                        _paginationStatus.postValue(PaginationStatus.Error)
+                }, {
                     _paginationStatus.postValue(PaginationStatus.Error)
-            }, {
-                _paginationStatus.postValue(PaginationStatus.Error)
-            }).addTo(compositeDisposable)
+                }).addTo(compositeDisposable)
+        }
     }
 
     fun removeTransaction(id: Int) {
