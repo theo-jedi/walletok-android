@@ -21,12 +21,12 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:background="@drawable/ic_category_circle" />
+            android:src="@drawable/ic_category_circle" />
 
         <ImageView
             android:id="@+id/transaction_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center" />
     </FrameLayout>
 

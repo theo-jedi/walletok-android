@@ -16,7 +16,9 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 import kotlin.math.abs
+import kotlin.random.Random
 
 object TransactionsRepository {
     const val LIMIT = 20
@@ -52,6 +54,9 @@ object TransactionsRepository {
             ).map { RxResource.success(it) }
         } else App.appDatabase.transactionsDao().getAllFromWallet(walletId)
             .map { list -> list.map { it.mapToTransaction() } }
+            .doOnSuccess {
+                transactions[walletId] = it.toMutableList()
+            }
             .map { TransactionsAndLastId(it, null) }
             .map { RxResource.success(it) }
             .subscribeOn(Schedulers.io())
@@ -94,35 +99,29 @@ object TransactionsRepository {
         walletId: Int,
         amount: Long,
         categoryId: Int,
-        date: String,
-        type: String
+        date: Date
     ): Completable {
-        return Completable.fromSingle(
-            service.addTransaction(
-                TransactionPostDto(
-                    walletId, categoryId,
-                    if (type == TransactionCategoryType.INCOME.uiName) amount else -abs(amount)
-                )
+        return Completable.fromAction {
+            val transaction = Transaction(
+                id = (10000..100000000).random(),
+                categoryId = categoryId,
+                money = amount,
+                dateTime = date,
+                walletId = walletId
             )
-                .subscribeOn(Schedulers.io())
-                .doOnSuccess {
-                    val transaction = it.mapToTransaction()
-                    transactions[walletId]!!.add(transaction)
-                    addTransactionsToDb(listOf(transaction))
-                }
-        )
+            transactions[walletId]!!.add(transaction)
+            addTransactionsToDb(listOf(transaction))
+        }
     }
 
     fun removeTransaction(walletId: Int, id: Int): Completable {
-        return service.deleteTransaction(id)
-            .subscribeOn(Schedulers.io())
-            .doOnComplete {
-                val transaction = transactions[walletId]!!.find { it.id == id }
-                if (transaction != null) {
-                    transactions[walletId]!!.removeAll { it.id == id }
-                    removeTransactionFromDb(transaction)
-                }
+        return Completable.fromAction {
+            val transaction = transactions[walletId]!!.find { it.id == id }
+            if (transaction != null) {
+                transactions[walletId]!!.removeAll { it.id == id }
+                removeTransactionFromDb(transaction)
             }
+        }
     }
 
     fun editTransaction(
@@ -130,17 +129,22 @@ object TransactionsRepository {
         value: Long,
         category: Int,
         walletId: Int,
-        date: String
+        date: Date
     ): Completable {
-        return service.editTransaction(
-            id, TransactionPatchDto(
-                transactionId = id,
-                walletId = walletId,
+        return Completable.fromAction {
+            val oldTransaction = transactions[walletId]!!.find { it.id == id }!!
+            val transaction = Transaction(
+                id = id,
                 categoryId = category,
-                amount = value,
-                date = date
+                money = value,
+                dateTime = date,
+                walletId = walletId
             )
-        ).subscribeOn(Schedulers.io())
+            removeTransactionFromDb(oldTransaction)
+            addTransactionsToDb(listOf(transaction))
+            transactions[walletId]!!.remove(oldTransaction)
+            transactions[walletId]!!.add(transaction)
+        }
     }
 
     private fun overwriteCacheOrCreateNew(walletId: Int, transactions: List<Transaction>) {

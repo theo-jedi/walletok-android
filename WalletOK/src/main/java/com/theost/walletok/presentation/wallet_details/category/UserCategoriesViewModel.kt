@@ -3,6 +3,7 @@ package com.theost.walletok.presentation.wallet_details.category
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.theost.walletok.App
 import com.theost.walletok.data.api.WalletOkService
 import com.theost.walletok.data.dto.CategoryPostDto
 import com.theost.walletok.data.models.TransactionCategoryType
@@ -29,9 +30,9 @@ class UserCategoriesViewModel : ViewModel() {
 
     fun loadData() {
         _loadingStatus.postValue(Resource.Loading(Unit))
-        CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
+        App.appDatabase.categoriesDao().getAll().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                val categoryItems = list.data!!.filter { it.userId != null }.map { category ->
+                val categoryItems = list.filter { it.userId != null }.map { category ->
                     CategoryItem(
                         id = category.id,
                         name = category.name,
@@ -48,7 +49,7 @@ class UserCategoriesViewModel : ViewModel() {
     }
 
     fun selectData(position: Int) {
-        _allData.value = ModelUtils.selectCategoryData(_allData.value!!, position, false)
+        _allData.value = ModelUtils.selectCategoryData(_allData.value!!, position, true)
     }
 
     fun deleteSelectedData() {

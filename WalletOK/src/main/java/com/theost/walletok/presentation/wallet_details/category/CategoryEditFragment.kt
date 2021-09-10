@@ -48,7 +48,7 @@ class CategoryEditFragment : Fragment() {
 
     private lateinit var iconDelegateAdapter: IconAdapterDelegate
     private lateinit var preferencesList: MutableList<Any>
-    private lateinit var iconUrls: List<String>
+    private lateinit var iconUrls: List<Int>
 
     private var category: CategoryCreationModel? = null
     private var isNeedColorUpdate: Boolean = true
@@ -160,14 +160,7 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun createCategory() {
-        CategoriesRepository.addCategory(
-            category = CategoryPostDto(
-                name = category!!.name!!,
-                iconColor = category!!.color!!,
-                iconLink = category!!.iconUrl!!.replace(WalletOkService.BASE_URL, ""),
-                income = category!!.type == TransactionCategoryType.INCOME.uiName
-            )
-        ).subscribeOn(AndroidSchedulers.mainThread())
+        CategoriesRepository.addCategory(category!!).subscribeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 (activity as CategoryListener).onCategoryCreated()
             }, {

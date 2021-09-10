@@ -19,6 +19,7 @@
             android:paddingTop="16dp"
             android:paddingEnd="40dp"
             android:paddingBottom="16dp"
+            android:background="?attr/secondBackgroundColor"
             android:text="@string/no_entries_text_view"
             android:textAlignment="center"
             android:textColor="@color/blue_gray"

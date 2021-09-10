@@ -3,6 +3,8 @@ package com.theost.walletok.presentation.wallet_details.transaction
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.theost.walletok.App
+import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.delegates.CategoryItem
 import com.theost.walletok.utils.ModelUtils
@@ -23,9 +25,9 @@ class TransactionCategoryViewModel : ViewModel() {
 
     fun loadData(savedCategory: Int, savedType: String) {
         _loadingStatus.postValue(Resource.Loading(Unit))
-        CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
+        App.appDatabase.categoriesDao().getAll().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                val categoryItems = list.data!!.filter { category -> category.type.uiName == savedType }
+                val categoryItems = list.filter { category -> category.income == (savedType == TransactionCategoryType.INCOME.uiName) }
                     .map { category ->
                     CategoryItem(
                         id = category.id,

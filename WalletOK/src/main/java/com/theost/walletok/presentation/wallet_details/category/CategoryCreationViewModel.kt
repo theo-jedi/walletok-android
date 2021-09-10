@@ -3,6 +3,7 @@ package com.theost.walletok.presentation.wallet_details.category
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.theost.walletok.App
 import com.theost.walletok.data.models.CategoryCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.utils.Resource
@@ -12,8 +13,8 @@ import io.reactivex.schedulers.Schedulers
 
 class CategoryCreationViewModel : ViewModel() {
 
-    private val _allData = MutableLiveData<Pair<CategoryCreationModel, List<String>>>()
-    val allData : LiveData<Pair<CategoryCreationModel, List<String>>> = _allData
+    private val _allData = MutableLiveData<Pair<CategoryCreationModel, List<Int>>>()
+    val allData : LiveData<Pair<CategoryCreationModel, List<Int>>> = _allData
     private val compositeDisposable = CompositeDisposable()
 
     private val _loadingStatus = MutableLiveData<Resource<*>>()
@@ -21,9 +22,9 @@ class CategoryCreationViewModel : ViewModel() {
 
     fun loadData(categoryCreationModel: CategoryCreationModel? = null) {
         _loadingStatus.postValue(Resource.Loading(Unit))
-        CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
+        App.appDatabase.categoriesDao().getAll().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                val iconUrls = list.data!!.map { category -> category.iconLink }.toSet().toList()
+                val iconUrls = list.map { category -> category.iconLink }.toSet().toList()
                 if (categoryCreationModel == null) {
                     val pair = Pair(CategoryCreationModel(), iconUrls)
                     _allData.postValue(pair)
@@ -43,7 +44,7 @@ class CategoryCreationViewModel : ViewModel() {
         _allData.value = Pair(category!!, _allData.value?.second!!)
     }
 
-    fun setIcon(iconUrl: String) {
+    fun setIcon(iconUrl: Int) {
         val category = _allData.value?.first
         category?.iconUrl = iconUrl
         _allData.value = Pair(category!!, _allData.value?.second!!)

@@ -3,7 +3,11 @@ package com.theost.walletok.presentation.wallet_details.transaction
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.theost.walletok.App
+import com.theost.walletok.R
 import com.theost.walletok.data.models.Transaction
+import com.theost.walletok.data.models.TransactionCategory
+import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.data.repositories.TransactionsRepository
@@ -30,9 +34,30 @@ class TransactionViewModel : ViewModel() {
 
     fun loadData(savedTransaction: Transaction) {
         _loadingStatus.postValue(Resource.Loading(Unit))
-        CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
+        App.appDatabase.categoriesDao().getAll().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                val savedCategory = list.data!!.find { it.id == savedTransaction.categoryId }!!
+                val category = list.find { it.id == savedTransaction.categoryId }
+                val savedCategory: TransactionCategory
+                if (category != null) {
+                    savedCategory = TransactionCategory(
+                        id = category.id,
+                        iconColor = category.iconColor,
+                        iconLink = category.iconLink,
+                        type = if (category.income) TransactionCategoryType.INCOME else TransactionCategoryType.EXPENSE,
+                        name = category.name,
+                        userId = category.userId
+                    )
+                } else {
+                    savedCategory = TransactionCategory(
+                        id = -1,
+                        iconColor = -4278091,
+                        iconLink = R.drawable.ic_category_deleted,
+                        type = TransactionCategoryType.EXPENSE,
+                        name = "Категория удалена",
+                        userId = null
+                    )
+                }
+
                 val transactionCreationModel = TransactionCreationModel()
                 transactionCreationModel.id = savedTransaction.id
                 transactionCreationModel.value = kotlin.math.abs(savedTransaction.money)
@@ -55,7 +80,7 @@ class TransactionViewModel : ViewModel() {
                 transactionModel.value!!,
                 transactionModel.category!!,
                 walletId,
-                DateTimeUtils.getFormattedForServer(transactionModel.dateTime!!)
+                transactionModel.dateTime!!
             ).subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     _sendingStatus.postValue(Resource.Success(Unit))
@@ -67,8 +92,7 @@ class TransactionViewModel : ViewModel() {
                 walletId,
                 transactionModel.value!!,
                 transactionModel.category!!,
-                DateTimeUtils.getFormattedForServer(transactionModel.dateTime!!),
-                transactionModel.type!!
+                transactionModel.dateTime!!
             ).subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     _sendingStatus.postValue(Resource.Success(Unit))

@@ -3,10 +3,12 @@ package com.theost.walletok.presentation.wallet_details.transaction
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.theost.walletok.App
 import com.theost.walletok.data.models.TransactionCreationModel
 import com.theost.walletok.data.repositories.CategoriesRepository
 import com.theost.walletok.utils.Resource
 import com.theost.walletok.utils.addTo
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -25,9 +27,10 @@ class TransactionCreationViewModel : ViewModel() {
 
     fun loadData(transactionCreationModel: TransactionCreationModel) {
         _loadingStatus.postValue(Resource.Loading(Unit))
-        CategoriesRepository.getCategories().subscribeOn(Schedulers.io())
+        App.appDatabase.categoriesDao().getAll().subscribeOn(Schedulers.io())
             .subscribe({ list ->
-                categoryName = list.data!!.find { item -> item.id == transactionCreationModel.category }?.name!!
+                val category = list.find { item -> item.id == transactionCreationModel.category }
+                categoryName = category?.name ?: "Категория удалена"
                 _allData.postValue(Pair(transactionCreationModel, categoryName))
                 _loadingStatus.postValue(Resource.Success(Unit))
             }, {

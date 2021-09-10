@@ -15,7 +15,7 @@ class CategoryEntity(
     @ColumnInfo(name = "icon_color")
     val iconColor: Int,
     @ColumnInfo(name = "icon_link")
-    val iconLink: String,
+    val iconLink: Int,
     @ColumnInfo(name = "income")
     val income: Boolean,
     @ColumnInfo(name = "user_id")

@@ -8,7 +8,7 @@ class CategoryCreationModel(
     var name: String? = null,
     var type: String? = null,
     var color: Int? = null,
-    var iconUrl: String? = null,
+    var iconUrl: Int? = null,
 ) : Parcelable {
 
     fun isFilled(): Boolean =

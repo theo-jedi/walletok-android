@@ -11,7 +11,7 @@ data class CategoryDto(
     @SerialName("name") val name: String,
     @SerialName("id") val id: Int,
     @SerialName("iconColor") val iconColor: Int,
-    @SerialName("iconLink") val iconLink: String,
+    @SerialName("iconLink") val iconLink: Int,
     @SerialName("income") val income: Boolean,
     @SerialName("userId") val userId: Int?
 )
@@ -20,7 +20,7 @@ fun CategoryDto.mapToCategory(): TransactionCategory {
     return TransactionCategory(
         id = this.id,
         iconColor = this.iconColor,
-        iconLink = WalletOkService.BASE_URL + this.iconLink,
+        iconLink = this.iconLink,
         name = this.name,
         type = if (this.income) TransactionCategoryType.INCOME else TransactionCategoryType.EXPENSE,
         userId = this.userId

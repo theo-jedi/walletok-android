@@ -13,7 +13,20 @@ import io.reactivex.schedulers.Schedulers
 
 object CurrenciesRepository {
     private val service = WalletOkService.getInstance()
-    private val currencies = mutableListOf<Currency>()
+    private val currencies = mutableListOf(
+        Currency(
+            shortName = "RUB",
+            decimalDigits = 2
+        ),
+        Currency(
+            shortName = "USD",
+            decimalDigits = 2,
+        ),
+        Currency(
+            shortName = "EUR",
+            decimalDigits = 2,
+        )
+    )
     private val currenciesPrices =
         mutableListOf<Pair<String, Double>>(
             Pair("USD", 74.28),
@@ -60,6 +73,7 @@ object CurrenciesRepository {
 
     fun getCurrenciesFromCache(): Single<RxResource<List<Currency>>> {
         return if (!currencies.isNullOrEmpty()) Single.just(currencies)
+            .doOnSuccess { addCurrenciesToDb(it) }
             .map { RxResource.success(it) }
         else App.appDatabase.currenciesDao().getAll()
             .map { list ->

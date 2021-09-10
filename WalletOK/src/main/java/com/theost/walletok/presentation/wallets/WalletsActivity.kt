@@ -58,7 +58,7 @@ class WalletsActivity : AppCompatActivity() {
             startActivity(WalletCreationActivity.newIntent(this))
         }
         viewModel.loadingStatus.observe(this) {
-            if (it is Resource.Error) ViewUtils.showErrorMessage(binding.errorWidget.errorLayout)
+            //if (it is Resource.Error) ViewUtils.showErrorMessage(binding.errorWidget.errorLayout)
         }
         viewModel.walletsAndOverall.observe(this) {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)

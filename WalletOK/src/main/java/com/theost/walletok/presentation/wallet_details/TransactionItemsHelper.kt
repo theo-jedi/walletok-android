@@ -1,12 +1,16 @@
 package com.theost.walletok.presentation.wallet_details
 
+import android.graphics.Color
+import com.theost.walletok.R
 import com.theost.walletok.data.models.Transaction
 import com.theost.walletok.data.models.TransactionCategory
+import com.theost.walletok.data.models.TransactionCategoryType
 import com.theost.walletok.data.models.Wallet
 import com.theost.walletok.presentation.base.PaginationStatus
 import com.theost.walletok.presentation.wallet_details.delegates.DateContent
 import com.theost.walletok.presentation.wallet_details.delegates.HeaderContent
 import com.theost.walletok.presentation.wallet_details.delegates.TransactionContent
+import com.theost.walletok.utils.DateTimeUtils
 import com.theost.walletok.utils.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
@@ -56,8 +60,15 @@ object TransactionItemsHelper {
                         }
                     )
                 }
-                val category =
-                    categories.find { category -> category.id == transaction.categoryId }!!
+                var category = categories.find { category -> category.id == transaction.categoryId }
+                if (category == null) category = TransactionCategory(
+                    id = -1,
+                    iconColor = -4278091,
+                    iconLink = R.drawable.ic_category_deleted,
+                    type = TransactionCategoryType.EXPENSE,
+                    name = "Категория удалена",
+                    userId = null
+                )
                 result.add(
                     TransactionContent(
                         transactionId = transaction.id,
@@ -70,7 +81,7 @@ object TransactionItemsHelper {
                                 )
                             )
                         } ${wallet.currency.symbol}",
-                        time = timeFormat.format(transaction.dateTime),
+                        time = DateTimeUtils.getFormattedTime(transaction.dateTime),
                         iconColor = category.iconColor,
                         iconUrl = category.iconLink
                     )

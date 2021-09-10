@@ -35,12 +35,9 @@ class TransactionAdapterDelegate : AdapterDelegate {
         fun bind(item: TransactionContent) {
             if (item.iconColor != null && item.iconUrl != null) {
                 transactionId = item.transactionId
-                ViewUtils.changeDrawableColor(
-                    binding.transactionCategoryCircle.background,
-                    item.iconColor
-                )
+                binding.transactionIcon.setImageResource(item.iconUrl)
+                binding.transactionCategoryCircle.setColorFilter(item.iconColor, android.graphics.PorterDuff.Mode.SRC_IN)
             }
-            binding.transactionIcon.load(item.iconUrl, App.svgImageLoader)
             binding.transactionNameTextView.text = item.categoryName
             binding.transactionTypeTextView.text = item.transactionType
             binding.transactionTimeTextView.text = item.time
@@ -55,6 +52,6 @@ data class TransactionContent(
     val transactionType: String,
     val moneyAmount: String,
     val time: String,
-    val iconUrl: String?,
+    val iconUrl: Int?,
     val iconColor: Int?
 )

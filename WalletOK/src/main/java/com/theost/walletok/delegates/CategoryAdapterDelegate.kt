@@ -38,8 +38,8 @@ class CategoryAdapterDelegate(
             binding.root.setOnClickListener { clickListener(adapterPosition) }
             binding.categoryTitle.text = category.name
             if (category.iconColor != null && category.iconUrl != null) {
-                binding.categoryIcon.load(category.iconUrl, App.svgImageLoader)
-                ViewUtils.changeDrawableColor(binding.categoryCircle.background, category.iconColor)
+                binding.categoryIcon.setImageResource(category.iconUrl)
+                binding.categoryCircle.setColorFilter(category.iconColor, android.graphics.PorterDuff.Mode.SRC_IN)
             }
             binding.categoryCheck.visibility = View.INVISIBLE
             if (category.isSelected) {
@@ -54,7 +54,7 @@ class CategoryAdapterDelegate(
 data class CategoryItem(
     val id: Int,
     val name: String,
-    val iconUrl: String?,
+    val iconUrl: Int?,
     val iconColor: Int?,
     var isSelected: Boolean
 ) : DelegateItem {

@@ -16,7 +16,7 @@ data class Transaction(
 data class TransactionCategory(
     val id: Int,
     val iconColor: Int,
-    val iconLink: String,
+    val iconLink: Int,
     val name: String,
     val type: TransactionCategoryType,
     val userId: Int?

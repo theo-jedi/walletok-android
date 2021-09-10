@@ -214,7 +214,7 @@ class TransactionActivity : FragmentActivity(),
         categoryModel?.color = color
     }
 
-    override fun onCategoryIconSubmitted(iconUrl: String) {
+    override fun onCategoryIconSubmitted(iconUrl: Int) {
         categoryModel?.iconUrl = iconUrl
     }
 

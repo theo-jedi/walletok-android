@@ -6,10 +6,7 @@ import com.theost.walletok.data.api.WalletOkService
 import com.theost.walletok.data.db.entities.mapToCurrency
 import com.theost.walletok.data.db.entities.mapToEntity
 import com.theost.walletok.data.db.entities.mapToWallet
-import com.theost.walletok.data.dto.CurrencyPostDto
-import com.theost.walletok.data.dto.WalletPostDto
-import com.theost.walletok.data.dto.mapToWallet
-import com.theost.walletok.data.dto.mapToWalletsOverall
+import com.theost.walletok.data.dto.*
 import com.theost.walletok.data.models.Currency
 import com.theost.walletok.data.models.Wallet
 import com.theost.walletok.data.models.WalletCreationModel
@@ -19,6 +16,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import kotlin.random.Random
 
 object WalletsRepository {
     private val service = WalletOkService.getInstance()
@@ -85,22 +83,20 @@ object WalletsRepository {
     }
 
     fun addWallet(walletCreationModel: WalletCreationModel): Completable {
-        return Completable.fromSingle(
-            service.addWallet(
-                WalletPostDto(
-                    currency = CurrencyPostDto(
-                        walletCreationModel.currency!!.shortName
-                    ),
-                    balanceLimit = walletCreationModel.balanceLimit,
-                    name = walletCreationModel.name
-                )
+        return Completable.fromAction {
+            val wallet = Wallet(
+                id = (10000..100000000).random(),
+                name = walletCreationModel.name,
+                currency = walletCreationModel.currency!!,
+                amountOfMoney = 0,
+                gain = 0,
+                lose = 0,
+                loseLimit = walletCreationModel.balanceLimit,
+                hidden = false
             )
-                .subscribeOn(Schedulers.io())
-                .doOnSuccess {
-                    wallets.add(it.mapToWallet())
-                    addWalletsToDb(listOf(it.mapToWallet()))
-                }
-        )
+            wallets.add(wallet)
+            addWalletsToDb(listOf(wallet))
+        }
     }
 
     fun addWalletsToDb(wallets: List<Wallet>) {

@@ -8,7 +8,7 @@ import com.theost.walletok.App
 import com.theost.walletok.databinding.ItemListIconBinding
 import com.theost.walletok.presentation.base.AdapterDelegate
 
-class IconAdapterDelegate(private val clickListener: (iconUrl: String) -> Unit) :
+class IconAdapterDelegate(private val clickListener: (iconUrl: Int) -> Unit) :
     AdapterDelegate {
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
@@ -26,7 +26,7 @@ class IconAdapterDelegate(private val clickListener: (iconUrl: String) -> Unit) 
 
     class ViewHolder(
         private val binding: ItemListIconBinding,
-        private val clickListener: (iconUrl: String) -> Unit
+        private val clickListener: (iconUrl: Int) -> Unit
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -47,7 +47,7 @@ class IconAdapterDelegate(private val clickListener: (iconUrl: String) -> Unit) 
 }
 
 data class ListIcon(
-    val iconUrl: String,
+    val iconUrl: Int,
     val iconColor: Int,
     val isSelected: Boolean
 )

@@ -10,7 +10,7 @@ class CategoryPostDto(
     @SerialName("iconColor")
     val iconColor: Int,
     @SerialName("iconLink")
-    val iconLink: String,
+    val iconLink: Int,
     @SerialName("income")
     val income: Boolean
 )
